@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './style.css';
-
+import { Link } from 'react-router-dom';
 
 import Button from '../../components/ui/ButtonYellow/Button';
 import Input from '../../components/ui/InputWhite/Input';
@@ -13,6 +13,12 @@ function LoginPage() {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
+    if (!email || !password) {
+      alert('Por favor, preencha o e-mail e a senha.');
+      return; 
+    }
+
+
     console.log('Email:', email, 'Senha:', password);
     alert('Tentativa de login!');
   };
@@ -25,9 +31,9 @@ function LoginPage() {
         <div className="login-form-container">
           <h1 className="login-title">Login</h1>
           <p className="signup-link">
-            Não tem uma conta? <a href="#">Criar conta</a>
+            Não tem uma conta?{' '}
+            <Link to="/register">Criar conta</Link>
           </p>
-
           <Input
             label="Email:"
             type="email"
