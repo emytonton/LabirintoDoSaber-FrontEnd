@@ -1,0 +1,48 @@
+.register-page-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden; 
+    background-color: #FFFFFF; 
+}
+
+.form-side {
+    flex: 1; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.register-form-container {
+    background-color: #AEE2E0; 
+    padding: 40px; 
+    border-radius: 20px;
+    width: 100%;
+    max-width: 400px; 
+    box-shadow: none; 
+    min-width: 0;
+}
+
+.register-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 48px; 
+    font-weight: 700;
+    margin-top: 0px; 
+    margin-bottom: 2px; 
+    text-align: left;
+}
+
+.sign-link {
+    margin-top: 0px;
+    margin-bottom: 30px; 
+    text-align: left;
+    font-size: 20px; 
+    font-weight: 400; 
+}
+
+.sign-link a {
+    color: #0E54A3; 
+    text-decoration: none;
+    font-weight: 500; 
+}
