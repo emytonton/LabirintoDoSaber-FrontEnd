@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import './register.css';
+import './style.css';
 
 import Button from '../../components/ui/ButtonYellow/Button';
 import Input from '../../components/ui/InputWhite/Input';
 import logo from '../../assets/images/logo.png'; 
 import onda from '../../assets/images/ondaLogin.png'; 
 import googleIcon from '../../assets/images/Google.png';
+import { Link } from 'react-router-dom';
 
 function RegisterPage() {
     const [nomeCompleto, setNomeCompleto] = useState('');
@@ -46,9 +47,11 @@ function RegisterPage() {
                     <form onSubmit={handleRegister}> 
                         <h1 className="register-title">Criar Conta</h1>
                         
-                        <p className="sign-link">
-                            Já possui uma conta? <a href="#">Login</a>
-                        </p>
+                        
+                            <p className="sign-link">
+                                Já possui uma conta?{' '}
+                                <Link to="/">Login</Link>
+                            </p>
 
                         <Input
                             label="Nome Completo:"
