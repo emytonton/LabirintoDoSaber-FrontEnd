@@ -13,6 +13,12 @@ function LoginPage() {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
+    if (!email || !password) {
+      alert('Por favor, preencha o e-mail e a senha.');
+      return; 
+    }
+
+    
     console.log('Email:', email, 'Senha:', password);
     alert('Tentativa de login!');
   };
