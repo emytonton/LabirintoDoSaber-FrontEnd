@@ -1,0 +1,23 @@
+
+.input-group {
+  width: 100%;
+  margin-bottom: 20px; 
+  text-align: left; 
+}
+
+.input-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 30px;
+  color: #333;
+  font-weight: 200;
+}
+
+.custom-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: none;
+  border-radius: 8px; 
+  font-size: 16px;
+  box-sizing: border-box; 
+}

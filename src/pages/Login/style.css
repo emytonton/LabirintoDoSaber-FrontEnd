@@ -1,0 +1,195 @@
+
+.login-page-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden; 
+}
+
+.form-side {
+  flex: 1; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FFFFFF; 
+  padding: 20px;
+}
+
+.branding-side {
+  flex: 1; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover; 
+  background-position: left center; 
+  background-repeat: no-repeat;
+}
+
+.logo-image {
+  max-width: 80%;
+  height: auto;
+  position: relative;
+  top: 0px;   
+  left: -100px; 
+}
+
+
+
+.login-form-container {
+  background-color: #AEE2E0;
+  padding: 1px 40px 40px 40px ; 
+  border-radius: 20px;
+  width: 100%;
+  max-width: 450px; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  min-width: 500px;
+  
+}
+
+.login-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 48px;
+  margin-bottom: 1px;
+  text-align: left;
+  font-weight: 500;
+}
+
+.signup-link {
+  margin-top: 0px;
+  margin-bottom: 30px;
+  text-align: left;
+  font-size: 20px;
+  font-weight: 200;
+}
+
+.signup-link a {
+  color: #0E54A3;
+  text-decoration: none;
+  font-weight: 200;
+}
+
+
+
+.options-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: -10px;
+  margin-bottom: 25px;
+  font-size: 20px;
+  font-weight: 200;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkbox-group input {
+  margin-right: 8px;
+}
+.checkbox-group input[type="checkbox"] {
+  opacity: 0;
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+
+.checkbox-group label {
+  position: relative;
+  padding-left: 40px; 
+  margin-left: 10px;
+  line-height: 33px; 
+}
+
+
+.checkbox-group label::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30px;  
+  height: 30px; 
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px; 
+  transition: all 0.2s ease;
+}
+
+
+.checkbox-group input[type="checkbox"]:checked + label::before {
+  background-color: #FFFBD8; 
+  border-color: #f7c934;
+}
+
+.checkbox-group input[type="checkbox"]:checked + label::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 5px;
+  width: 8px;
+  height: 14px;
+  border: solid #333; 
+  border-width: 0 3px 3px 0; 
+  transform: rotate(45deg);
+}
+
+.forgot-password {
+  color: #0E54A3;
+  text-decoration: none;
+  font-weight: 200;
+  font-size: 20px;
+}
+
+
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #000000;
+  margin: 25px 0;
+  font-size: 20px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #000000;
+}
+
+.divider span {
+  padding: 0 10px;
+}
+
+
+.google-button {
+  width: 100%;
+  height: 55px; 
+  background-color: #FFFFFF;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.google-button:hover {
+  background-color: #f7f7f7;
+  transform: translateY(-2px);
+}
+
+
+.google-logo {
+  height: 39px; 
+  width: 39px;
+}
+
+.login-form-container .google-button {
+  margin-top: auto; 
+}

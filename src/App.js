@@ -1,10 +1,11 @@
+
 import './App.css';
+import LoginPage from './pages/Login/index'; 
 
 function App() {
   return (
     <div className="App">
-      {/* Nossas páginas de Login e Cadastro entrarão aqui depois */}
-      <h1>Labirinto do Saber</h1>
+      <LoginPage /> 
     </div>
   );
 }
