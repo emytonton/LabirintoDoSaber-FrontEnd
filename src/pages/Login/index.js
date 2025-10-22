@@ -53,9 +53,9 @@ function LoginPage() {
               <input type="checkbox" id="remember-me" />
               <label htmlFor="remember-me">Se lembre de mim</label>
             </div>
-            <a href="#" className="forgot-password">Esqueceu a senha?</a>
+            <Link to="/forgotPassword" className="forgot-password">Esqueceu a senha?</Link>
           </div>
-
+    
           <Button onClick={handleLogin}>
             Entrar
           </Button>

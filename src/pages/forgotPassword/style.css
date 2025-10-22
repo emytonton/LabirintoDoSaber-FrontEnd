@@ -76,3 +76,13 @@ svg {
     text-decoration: none;
     margin-bottom: 10px;
 }
+
+.forgot-form-container.smaller-container {
+    height: 310px; 
+    padding-top: 50px; 
+}
+
+.forgot-form-container.smaller-container .forgot-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
