@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import './style.css';
+import { Link, useNavigate } from 'react-router-dom';
 
 import Button from '../../components/ui/ButtonYellow/Button';
 import Input from '../../components/ui/InputWhite/Input';
-import { Link } from 'react-router-dom';
+
 
 function ForgotPasswordPage() {
-    const [step, setStep] = useState(1);
+    const navigate = useNavigate();
+
+    const [step, setStep] = useState(1); 
     const [email, setEmail] = useState('');
-    const [code, setCode] = useState('');
+    const [code, setCode] = useState(''); 
 
     const handleSendCode = (e) => {
         e.preventDefault();
@@ -17,8 +20,6 @@ function ForgotPasswordPage() {
             alert('Por favor, digite seu e-mail.');
             return;
         }
-
-        console.log('Solicitação de código para:', email);
         
         alert(`Solicitação de código enviada para ${email}.`);
         setStep(2); 
@@ -32,9 +33,14 @@ function ForgotPasswordPage() {
             return;
         }
 
-        console.log('Tentativa de recuperação com código:', code);
-        
-        alert('Código verificado! Redirecionando para alteração de senha...');
+        if (code.length >= 6) { 
+            alert('Código verificado! Indo para a tela de nova senha.');
+            
+            navigate('/resetPassword'); 
+
+        } else {
+            alert('Código inválido. Tente novamente.');
+        }
     };
 
     const renderLockIcon = () => (
