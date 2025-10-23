@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './style.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate} from 'react-router-dom';
+
 
 import Button from '../../components/ui/ButtonYellow/Button';
 import Input from '../../components/ui/InputWhite/Input';
@@ -11,16 +12,20 @@ import googleIcon from '../../assets/images/Google.png';
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+   const navigate = useNavigate();
+
 
   const handleLogin = () => {
     if (!email || !password) {
       alert('Por favor, preencha o e-mail e a senha.');
       return; 
+
     }
 
 
     console.log('Email:', email, 'Senha:', password);
     alert('Tentativa de login!');
+    navigate('/home');
   };
 
   return (
