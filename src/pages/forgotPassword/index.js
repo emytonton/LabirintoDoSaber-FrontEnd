@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './style.css';
 import { Link, useNavigate } from 'react-router-dom';
 
-import Button from '../../components/ui/ButtonYellow/Button';
+
 import Input from '../../components/ui/InputWhite/Input';
 
 
@@ -71,9 +71,9 @@ function ForgotPasswordPage() {
                 onChange={(e) => setEmail(e.target.value)}
             />
 
-            <Button type="submit">
+            <button className="custom-button-forgot" type="submit">
                 Receber código
-            </Button>
+            </button>
             
             <div className="separator-line"></div>
             <Link to="/Register "className="create-account-link">
@@ -96,9 +96,9 @@ function ForgotPasswordPage() {
                 placeholder="AED340G" 
             />
 
-            <Button type="submit">
+            <button className="custom-button-forgot" type="submit">
                 Recuperar senha
-            </Button>
+            </button>
         </>
     );
 
