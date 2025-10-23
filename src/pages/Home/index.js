@@ -22,10 +22,10 @@ function Home() {
       <header className="header">
         <img src={logo} alt="Labirinto do Saber" className="logo" />
         <nav className="navbar">
-          <a href="#" className="nav-link active">Dashboard</a>
-          <a href="#" className="nav-link">Atividades</a>
-          <a href="#" className="nav-link">Alunos</a>
-          <a href="#" className="nav-link">Relatórios</a>
+        <a href="/home" className="nav-link active">Dashboard</a> 
+        <a href="#" className="nav-link">Atividades</a>
+        <a href="/alunos" className="nav-link">Alunos</a> 
+        <a href="#" className="nav-link">Relatórios</a>
         </nav>
         <div className="user-controls">
           <img src={iconNotification} alt="Notificações" className="icon" />

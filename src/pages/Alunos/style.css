@@ -1,0 +1,216 @@
+
+.alunos-main-content {
+  flex: 1;
+  display: flex;
+  justify-content: center; 
+  padding: 2.5rem;
+  background-color: #fcfcff; 
+
+
+}
+
+.alunos-container {
+
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+
+  
+}
+
+.alunos-container h1 {
+  font-family: 'Nunito', sans-serif;
+  font-size: 2.25rem;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #111;
+}
+
+.alunos-container .subtitle {
+  color: #777;
+  font-size: 1.1rem;
+  margin-top: 0;
+  margin-bottom: 2.5rem;
+}
+
+
+.student-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; 
+  margin-left: 15px;
+}
+
+
+.student-list-item-card {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 24px; 
+  padding: 1.5rem 2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease-in-out;
+}
+
+.student-list-item-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.student-card-avatar {
+  height: 70px; /* Avatar maior */
+  width: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 1.5rem;
+}
+
+.student-card-info {
+  flex: 1; /* Ocupa o espaço do meio */
+}
+
+.student-card-info h3 {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 0.25rem 0;
+}
+
+.student-card-info p {
+  font-family: 'Nunito', sans-serif;
+  margin: 0;
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* Botão "Editar perfil" */
+.edit-profile-btn {
+  background-color: #FFF6D8;
+  color: #5c5c5c; /* Cor do texto mais escura para contraste */
+  padding: 0.75rem 1.5rem;
+  border-radius: 20px;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: 'Nunito', sans-serif;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: auto; /* Empurra o botão para a direita */
+}
+
+.edit-profile-btn:hover {
+  background-color: #f7e9b0;
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Controles de Paginação */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3rem; /* Espaço acima da paginação */
+  gap: 0.5rem;
+}
+
+.page-arrow,
+.page-number {
+  text-decoration: none;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #999;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.page-arrow {
+  font-size: 1.3rem;
+  color: #aaa;
+}
+
+.page-number:hover {
+  background-color: #f0f0f0;
+  color: #555;
+}
+
+.page-number.active {
+  background-color: #D8F5F3; /* Cor verde-água do tema */
+  color: #008D85; /* Cor mais escura para contraste */
+}
+
+
+/* --- Estilos Globais e do Header (Reutilizados) --- */
+
+body {
+  margin: 0;
+  font-family: -apple-system, 'Nunito', sans-serif;
+  background-color: #fcfcff; 
+  color: #333;
+}
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2.5rem;
+  background-color: #fff;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.logo {
+  width: 150px;
+  height: 70px;
+ object-fit: contain;
+}
+
+.navbar {
+  display: flex;
+  gap: 2rem;
+  margin-left: -10%; 
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #555;
+  font-weight: 600;
+  font-size: 20px;
+  padding-bottom: 4px;
+  margin-left: 10%;
+}
+
+.nav-link.active {
+  color: #63E9E2; 
+  border-bottom: 3px solid #63E9E2;
+}
+
+.user-controls {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.icon {
+  height: 41px;
+  width: 48px;
+  cursor: pointer;
+  object-fit: contain;
+}
+
+.profile-icon {
+  border-radius: 50%;
+  background-color: #333; 
+  height: 59px;
+  width: 59px;
+}
