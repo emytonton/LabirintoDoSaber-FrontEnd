@@ -4,6 +4,7 @@ import LoginPage from './pages/Login/index';
 import RegisterPage from './pages/Register/index';
 import ForgotPasswordPage from './pages/forgotPassword/index';
 import ResetPasswordPage from './pages/resetPassword/index.js';
+import HomePage from './pages/Home/index';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgotPassword" element={<ForgotPasswordPage />} />
         <Route path="/resetPassword" element={<ResetPasswordPage />} />
+        <Route path="/home" element={<HomePage />} />
       </Routes>
     </div>
   );
