@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import './style.css';
 
 import Button from '../../components/ui/ButtonYellow/Button';
@@ -7,6 +8,7 @@ function ResetPasswordPage() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
+    const navigate = useNavigate(); 
 
     const handleResetPassword = (e) => {
         e.preventDefault();
@@ -27,11 +29,15 @@ function ResetPasswordPage() {
             return;
         }
 
+        
         console.log('Redefinindo senha com a nova senha...');
         alert('Senha redefinida com sucesso! Redirecionando para o login.');
 
+     
         setPassword('');
         setConfirmPassword('');
+
+        navigate('/');
     };
 
     const renderLockIcon = () => (
