@@ -1,0 +1,93 @@
+.reset-page-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    background-color: #FFFFFF; 
+}
+
+.form-side {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.reset-form-container {
+    background-color: #AEE2E0; 
+    padding: 30px; 
+    border-radius: 20px;
+    width: 100%;
+    height: 500px;
+    max-width: 350px; 
+    text-align: center; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.reset-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 24px; 
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-align: center; 
+    color: #333;
+}
+
+.lock-icon-wrapper {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.lock-icon{
+    width: 80px;
+    height: 80px;
+    border: 2px solid #333;; 
+    border-radius: 50%; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+svg {
+    width: 40px;
+    height: 40px;
+}
+
+.error-message {
+    color: #FF4D4D; 
+    font-size: 14px;
+    font-weight: 600; 
+    text-align: center;
+    margin-top: -15px; 
+    margin-bottom: 15px;
+}
+
+/*input*/
+
+
+.input-group {
+  width: 100%;
+  margin-bottom: 40px; 
+  text-align: left; 
+}
+
+.input-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 23px;
+  color: #333;
+  font-weight: 200;
+}
+
+.custom-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: none;
+  border-radius: 8px; 
+  font-size: 16px;
+  box-sizing: border-box; 
+}
+
