@@ -5,7 +5,8 @@ import RegisterPage from './pages/Register/index';
 import ForgotPasswordPage from './pages/forgotPassword/index';
 import ResetPasswordPage from './pages/resetPassword/index.js';
 import HomePage from './pages/Home/index';
-import AlunosPage from './pages/Alunos';
+import AlunosPage from './pages/patients';
+import AlunosDetails from './pages/patientsDetails'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/resetPassword" element={<ResetPasswordPage />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/alunos" element={<AlunosPage />} />
+        <Route path="/alunosDetails" element={<AlunosDetails />} />
       </Routes>
     </div>
   );

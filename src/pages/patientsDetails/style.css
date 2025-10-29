@@ -1,0 +1,350 @@
+
+body {
+  margin: 0;
+  font-family: -apple-system, 'Nunito', sans-serif;
+  background-color: #fcfcff; 
+  color: #333;
+}
+
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2.5rem;
+  background-color: #fff;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.logo {
+  width: 150px;
+  height: 70px;
+  object-fit: contain;
+}
+
+.navbar {
+  display: flex;
+  gap: 2rem;
+  margin-left: -10%; 
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #555;
+  font-weight: 600;
+  font-size: 20px;
+  padding-bottom: 4px;
+  margin-left: 10%;
+}
+
+.nav-link.active {
+  color: #63E9E2; 
+  border-bottom: 3px solid #63E9E2;
+}
+
+.user-controls {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.icon {
+  height: 41px;
+  width: 48px;
+  cursor: pointer;
+  object-fit: contain;
+}
+
+.profile-icon {
+  border-radius: 50%;
+  background-color: #333; 
+  height: 59px;
+  width: 59px;
+}
+
+
+
+
+.aluno-detalhe-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content-detalhe {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  gap: 2rem; 
+  padding: 2.5rem;
+  background-color: #f9f9f9; 
+  
+  
+}
+
+
+.back-arrow-container {
+  width: 90%; 
+  max-width: 1200px; 
+  margin-right: 40px;
+}
+
+.back-arrow {
+  font-size: 2.5rem;
+  font-weight: 300;
+  color: #555;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+
+.info-card {
+
+  background-color: #fff;
+  border-radius: 50px; 
+  padding: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  width: 90%;
+  max-width: 1200px;
+  box-sizing: border-box; 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  height: 200px;
+
+ 
+}
+
+.info-section {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-right: 2%;
+  
+}
+
+
+
+.avatar-grande1 {
+  height: 70px;
+  width: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-left: 20px;
+}
+.avatar-grande2 {
+  height: 70px;
+  width: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+
+
+
+
+.info-text1 h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.25rem;
+  color: #333;
+  margin-right: 250px;
+}
+
+.info-text1 p {
+  margin: 0;
+  color: #777;
+  font-size: 1rem;
+}
+
+
+
+
+.info-text2 h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.info-text2 p {
+  margin: 0;
+  color: #777;
+  font-size: 1rem;
+}
+
+.vertical-divider {
+  width: 1px;
+  height: 80px; 
+  background-color: #e0e0e0;
+}
+
+
+.btn-tag {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: 'Nunito', sans-serif;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.btn-editar {
+  background-color: #FFF6D8; 
+  color: #5c5c5c;
+  margin-bottom: 120px;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 200;
+  width: 140px;
+
+
+
+}
+
+
+.progress-card {
+  background-color: #fff;
+  border-radius: 50px; 
+  padding: 2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  width: 90%;
+  max-width: 1200px;
+  box-sizing: border-box; 
+}
+
+.progress-card h2 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.progress-card .subtitle {
+  color: #777;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.progress-main-container {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.progress-bar-main {
+  flex: 1; 
+  height: 20px;
+  background-color: #e9ecef;
+  border-radius: 10px;
+  overflow: hidden; 
+}
+
+.progress-bar-inner {
+  height: 100%;
+  background-color: #63E9E2;
+  border-radius: 10px;
+}
+
+.progress-percent-main {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #63E9E2; 
+}
+
+.sub-progress-container {
+  display: flex;
+  justify-content: space-around; 
+  margin-top: 1rem;
+}
+
+.sub-progress-item {
+  text-align: center;
+}
+
+.sub-progress-item p {
+  margin: 0 0 0.25rem 0;
+  color: #777;
+  font-size: 1rem;
+}
+
+.sub-progress-item span {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #333;
+}
+
+
+.history-card {
+
+  background-color: #fff;
+  border-radius: 50px; 
+  padding: 2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  width: 90%;
+  max-width: 1200px;
+  box-sizing: border-box; 
+}
+
+.history-card h2 {
+  margin-top: 0;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+
+}
+
+.history-table th,
+.history-table td {
+  padding: 1.25rem 1rem; 
+  text-align: center;
+}
+
+
+.history-table th:not(:last-child),
+.history-table td:not(:last-child) {
+  border-right: 1px solid #e0e0e0;
+}
+
+.history-table th {
+  color: #999;
+  font-weight: 500;
+  font-size: 30px;
+
+}
+
+.history-table td {
+  color: #333;
+  font-weight: 600;
+}
+
+.tag-atividade {
+  background-color: #D8F5F3; 
+  color: #333;
+}
+
+.tag-pendente {
+  background-color: #FFF6D8; 
+  color: #5c5c5c;
+}
+
+
+.iconEdit{
+  height: 15px;
+  width: 15px;
+  margin-left: 10%;
+
+}
+
+.seta{
+  width: 50px;
+  height: 50px;
+}
+
