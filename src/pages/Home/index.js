@@ -23,7 +23,7 @@ function Home() {
         <img src={logo} alt="Labirinto do Saber" className="logo" />
         <nav className="navbar">
         <a href="/home" className="nav-link active">Dashboard</a> 
-        <a href="#" className="nav-link">Atividades</a>
+        <a href="/activities" className="nav-link">Atividades</a>
         <a href="/alunos" className="nav-link">Alunos</a> 
         <a href="#" className="nav-link">Relatórios</a>
         </nav>
