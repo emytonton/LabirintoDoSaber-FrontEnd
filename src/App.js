@@ -8,6 +8,8 @@ import HomePage from './pages/Home/index';
 import AlunosPage from './pages/patients';
 import AlunosDetails from './pages/patientsDetails';
 import ActivitiesPage from './pages/activities';
+import ActivitiesMain from './pages/mainActivities/index.js'
+import CreatePacient from './pages/createPacient/index.js'
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
         <Route path="/alunos" element={<AlunosPage />} />
         <Route path="/alunosDetails" element={<AlunosDetails />} />
         <Route path="/activities" element={<ActivitiesPage />} />
+        <Route path="/activitiesMain" element={<ActivitiesMain />} />
+        <Route path="/createPacient" element={<CreatePacient />} />
       </Routes>
     </div>
   );

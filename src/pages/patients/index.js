@@ -25,7 +25,7 @@ function AlunosPage() {
         <img src={logo} alt="Labirinto do Saber" className="logo" />
         <nav className="navbar">
           <a href="/home" className="nav-link">Dashboard</a> 
-          <a href="#" className="nav-link">Atividades</a>
+          <a href="/activitiesMain" className="nav-link">Atividades</a>
           <a href="/alunos" className="nav-link active">Alunos</a> 
           <a href="#" className="nav-link">Relatórios</a>
         </nav>
@@ -40,17 +40,21 @@ function AlunosPage() {
         
           
           <div className="top-container">
-            <h1>Alunos</h1>
-           
-                <button 
-                  className="create-patient-bnt" 
-                  onClick={ () => navigate('/createPatient') }
-                >
-                  Cadastrar novo aluno
-               </button>
-          </div>
+  
+  
+            <div>
+              <h1>Alunos</h1>
+              <p className="subtitle">Visualize e gerencie informações e progresso de cada aluno.</p>
+            </div>
 
-          <p className="subtitle">Visualize e gerencie informações e progresso de cada aluno.</p>
+          
+            <button 
+              className="create-patient-bnt" 
+              onClick={ () => navigate('/CreatePacient ') }
+            >
+              Cadastrar novo aluno
+            </button>
+          </div>
 
           <div className="student-card-list">
         
