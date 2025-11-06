@@ -10,6 +10,7 @@ import AlunosDetails from './pages/patientsDetails';
 import ActivitiesPage from './pages/activities';
 import ActivitiesMain from './pages/mainActivities/index.js'
 import CreatePacient from './pages/createPacient/index.js'
+import AddNotebook from './pages/addNotebook/index.js'
 
 function App() {
   return (
@@ -25,6 +26,8 @@ function App() {
         <Route path="/activities" element={<ActivitiesPage />} />
         <Route path="/activitiesMain" element={<ActivitiesMain />} />
         <Route path="/createPacient" element={<CreatePacient />} />
+        <Route path="/createNotebook" element={<AddNotebook/>} />
+
       </Routes>
     </div>
   );
