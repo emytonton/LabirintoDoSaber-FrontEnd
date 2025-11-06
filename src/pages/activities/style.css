@@ -96,8 +96,8 @@ ESTILOS DO CONTEÚDO PRINCIPAL (FORMULÁRIO)
 
 .title-separator {
     border: 0;
-    height: 1px;
-    background-color: #eaeaea;
+    height: 2px;
+    background-color: #000000;
     margin-bottom: 30px;
 }
 

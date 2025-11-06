@@ -17,6 +17,7 @@ const ActivityChip = ({ label, isSelected, onClick }) => (
 );
 
 function AdicionarAtividade() {
+    const navigate = useNavigate();
     const location = useLocation();
     const currentPath = location.pathname;
     const [selectedCategory, setSelectedCategory] = useState('Leitura');
@@ -31,8 +32,8 @@ function AdicionarAtividade() {
     ];
 
     const handleNext = () => {
-        // Lógica de navegação ou submissão
         console.log("Próximo passo acionado!");
+        navigate('/activitiesDetails');
     };
     
     // O Navbar está incluído aqui, seguindo o seu padrão da AlunosPage.
@@ -125,7 +126,7 @@ function AdicionarAtividade() {
 
                     {/* 4. Botão Próximo */}
                     <div className="next-button-container">
-                        <button className = "button-next" type = "submit">
+                        <button className = "button-next" type = "button" onClick={handleNext}>
                             Próximo
                         </button>
                     </div>
