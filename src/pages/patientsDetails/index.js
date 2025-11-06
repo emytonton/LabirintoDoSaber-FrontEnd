@@ -21,7 +21,7 @@ function AlunoDetalhe() {
         <img src={logo} alt="Labirinto do Saber" className="logo" />
         <nav className="navbar">
           <a href="/home" className="nav-link">Dashboard</a>
-          <a href="#" className="nav-link">Atividades</a>
+          <a href="/activitiesMain" className="nav-link">Atividades</a>
           <a href="/alunos" className="nav-link active">Alunos</a> 
           <a href="#" className="nav-link">Relatórios</a>
         </nav>

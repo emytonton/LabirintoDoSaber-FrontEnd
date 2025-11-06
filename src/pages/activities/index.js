@@ -51,7 +51,7 @@ function AdicionarAtividade() {
                     </a> 
                     <a 
                         href="/activities" 
-                        className={`nav-link ${currentPath === '/activities' ? 'active' : ''}`}
+                        className={`nav-link ${currentPath === '/activitiesMain' ? 'active' : ''}`}
                     >
                         Atividades
                     </a>

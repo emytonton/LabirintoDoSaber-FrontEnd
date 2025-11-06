@@ -1,18 +1,11 @@
 import React from 'react';
 import './style.css';
-
-
 import logo from '../../assets/images/logo.png';
 import boyHome from '../../assets/images/boy_home.png';
 import girlHome from '../../assets/images/girl_home.png';
 import setaIcon from '../../assets/images/seta_icon.png'
-
-
-
 import iconNotification from '../../assets/images/icon_notification.png';
 import iconProfile from '../../assets/images/icon_profile.png';
-
-
 import iconRandom from '../../assets/images/icon_random.png';
 
 
@@ -23,7 +16,7 @@ function Home() {
         <img src={logo} alt="Labirinto do Saber" className="logo" />
         <nav className="navbar">
         <a href="/home" className="nav-link active">Dashboard</a> 
-        <a href="/activities" className="nav-link">Atividades</a>
+        <a href="/activitiesMain" className="nav-link">Atividades</a>
         <a href="/alunos" className="nav-link">Alunos</a> 
         <a href="#" className="nav-link">Relatórios</a>
         </nav>

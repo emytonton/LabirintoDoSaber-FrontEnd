@@ -26,8 +26,8 @@ function AlunosPage() {
         <img src={logo} alt="Labirinto do Saber" className="logo" />
         <nav className="navbar">
           <a href="/home" className="nav-link">Dashboard</a> 
-          <a href="#" className="nav-link">Atividades</a>
-          <a href="/alunos" className="nav-link active">Alunos</a> 
+          <a href="/activitiesMain" className="nav-link active">Atividades</a>
+          <a href="/alunos" className="nav-link">Alunos</a> 
           <a href="#" className="nav-link">Relatórios</a>
         </nav>
         <div className="user-controls">
@@ -43,8 +43,9 @@ function AlunosPage() {
           <div className="top-container">
           <h1>Atividades</h1>
           <div className="bnts-top">
-          <button className="create-caderno" onClick={ () => navigate('/createPatient') }> Criar novo caderno </button>
-          <button className="create-caderno" onClick={ () => navigate('/createPatient') }> Criar nova atividade </button>
+          <button className="create-caderno" onClick={ () => navigate('/createNotebook') }> Criar novo caderno </button>
+          <button className="create-caderno" onClick={ () => navigate('/activities') }> Criar nova atividade </button>
+          <button className="create-caderno" onClick={ () => navigate('') }> Gerenciar </button>
           </div>
             </div>
          
