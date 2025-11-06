@@ -3,7 +3,8 @@ import './style.css';
 import logo from '../../assets/images/logo.png';
 import iconNotification from '../../assets/images/icon_notification.png';
 import iconProfile from '../../assets/images/icon_profile.png';
-import iconRandom from '../../assets/images/icon_random.png';
+import iconCaderno from '../../assets/images/caderneta.png';
+import iconSeta from '../../assets/images/seta_icon.png'
 import { useNavigate } from 'react-router-dom'; 
 
 function AlunosPage() {
@@ -37,57 +38,53 @@ function AlunosPage() {
 
       <main className="alunos-main-content">
         <div className="alunos-container">
-        
           
-          <div className="top-container">
-            <h1>Alunos</h1>
-           
-                <button 
-                  className="create-patient-bnt" 
-                  onClick={ () => navigate('/createPatient') }
-                >
-                  Cadastrar novo aluno
-               </button>
-          </div>
 
-          <p className="subtitle">Visualize e gerencie informações e progresso de cada aluno.</p>
+          <div className="top-container">
+          <h1>Atividades</h1>
+          <div className="bnts-top">
+          <button className="create-caderno" onClick={ () => navigate('/createPatient') }> Criar novo caderno </button>
+          <button className="create-caderno" onClick={ () => navigate('/createPatient') }> Criar nova atividade </button>
+          </div>
+            </div>
+         
 
           <div className="student-card-list">
-        
-           
+            
+      
             <div className="student-list-item-card" onClick={handleAlunoClick} style={{cursor: 'pointer'}}>
-              <img src={iconRandom} alt="Avatar" className="student-card-avatar" />
+              <img src={iconCaderno} alt="Avatar" className="caderno-avatar" />
               <div className="student-card-info">
-                <h3>Lucas Silva</h3>
-                <p>7 anos</p>
-                <p>Alfabetização inicial</p>
+                <h3>Caderno: Apredizagem das sílabas </h3>
+                <p>Foco na montagem e reconhecimento das sílabas tônicas.</p>
+                <button className="bnt-details"> Vocabulárion e Leitura </button>
               </div>
            
-              <button className="edit-profile-btn" onClick={handleEditClick}>Editar perfil</button>
+              <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta"/></a>
             </div>
 
            
             <div className="student-list-item-card" onClick={handleAlunoClick} style={{cursor: 'pointer'}}>
-              <img src={iconRandom} alt="Avatar" className="student-card-avatar" />
+              <img src={iconCaderno} alt="Avatar" className="caderno-avatar" />
               <div className="student-card-info">
-                <h3>Maria Santos</h3>
-                <p>14 anos</p>
-                <p>Desenvolvimento da fala</p>
+                <h3>Caderno: Apredizagem das sílabas  </h3>
+                <p>Foco na montagem e reconhecimento das sílabas tônicas.</p>
+                <button className="bnt-details"> Escrita </button>
               </div>
               
-              <button className="edit-profile-btn" onClick={handleEditClick}>Editar perfil</button>
+              <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta"/></a>
             </div>
 
            
             <div className="student-list-item-card" onClick={handleAlunoClick} style={{cursor: 'pointer'}}>
-              <img src={iconRandom} alt="Avatar" className="student-card-avatar" />
+              <img src={iconCaderno} alt="Avatar" className="caderno-avatar" />
               <div className="student-card-info">
-                <h3>João Pedro</h3>
-                <p>8 anos</p>
-                <p>Alfabetização inicial</p>
+                <h3>Caderno: Apredizagem das sílabas  </h3>
+                <p>Foco na montagem e reconhecimento das sílabas tônicas.</p>
+                <button className="bnt-details"> Leitura </button>
               </div>
            
-              <button className="edit-profile-btn" onClick={handleEditClick}>Editar perfil</button>
+             <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta"/></a>
             </div>
 
           </div>

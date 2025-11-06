@@ -6,7 +6,8 @@ import ForgotPasswordPage from './pages/forgotPassword/index';
 import ResetPasswordPage from './pages/resetPassword/index.js';
 import HomePage from './pages/Home/index';
 import AlunosPage from './pages/patients';
-import AlunosDetails from './pages/patientsDetails'
+import AlunosDetails from './pages/patientsDetails';
+import ActivitiesPage from './pages/activities';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/home" element={<HomePage />} />
         <Route path="/alunos" element={<AlunosPage />} />
         <Route path="/alunosDetails" element={<AlunosDetails />} />
+        <Route path="/activities" element={<ActivitiesPage />} />
       </Routes>
     </div>
   );
