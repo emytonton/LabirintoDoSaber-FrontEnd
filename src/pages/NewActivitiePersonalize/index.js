@@ -55,6 +55,13 @@ const FileField = ({ id, label, accept, helper, suffixIcon }) => {
 export default function AdicionarAtividade() {
   const location = useLocation();
   const currentPath = location.pathname;
+  // --- LÓGICA ALTERADA: Recebendo o esquema selecionado do state da rota ---
+    const defaultSchema = 'Enunciado e alternativas';
+    const selectedSchema = location.state?.selectedSchema || defaultSchema;
+    
+  // Variáveis booleanas para controlar a renderização dos campos de arquivo
+    const showImageField = selectedSchema.includes('Imagem');
+    const showAudioField = selectedSchema.includes('Áudio');
 
   const [prompt, setPrompt] = useState('');
   const [alternativas, setAlternativas] = useState([{ id: crypto.randomUUID(), texto: '' }]);
@@ -92,40 +99,48 @@ export default function AdicionarAtividade() {
       </header>
 
       <main className="main-content">
-        <form className="adicionar-atividade-container" onSubmit={handleNext}>
-          <h1 className="form-title">Personalize a sua atividade 1</h1>
-          <hr className="title-separator" />
+      <form className="adicionar-atividade-container" onSubmit={handleNext}>
+              <h1 className="form-title">Personalize a sua atividade</h1>
+                {/* Mensagem de debug/confirmação do esquema (Opcional, mas útil) */}
+                <p style={{marginBottom: '20px', color: '#666', fontSize: '0.9em'}}>
+                    Esquema Selecionado: <strong>{selectedSchema}</strong>
+                </p>
+              <hr className="title-separator" />
 
-          {/* Campo de IMAGEM: bolinha com ícone A */}
-          <FileField
-            id="imgAssoc"
-            label="Imagem para associação"
-            accept="image/png,image/jpeg"
-            helper="Formatos aceitos: JPG, PNG. Tamanho máximo: 2MB."
-            suffixIcon={
-              // Ícone A (duas setas)
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M20 9C20 9 19.6797 9.667 19 10.514M12 14c-1.608 0-2.952-.412-4.051-.999M12 14c1.608 0 2.952-.412 4.051-.999M12 14v3.5M4 9s.354.737 1.106 1.645M7.949 13 5 16m2.949-3c-1.26-.673-2.198-1.577-2.843-2.355M16.051 13 18.5 16m-2.449-3c1.331-.711 2.302-1.68 2.949-2.486M5.106 10.645 2 12m17-1.486L22 12"
-                      stroke="currentColor" strokeLinecap="round" />
-              </svg>
-            }
-          />
+              {/* --- RENDERIZAÇÃO CONDICIONAL DE IMAGEM --- */}
+              {showImageField && (
+                  <FileField
+                    id="imgAssoc"
+                    label="Imagem para associação"
+                    accept="image/png,image/jpeg"
+                    helper="Formatos aceitos: JPG, PNG. Tamanho máximo: 2MB."
+                    suffixIcon={
+                      // Ícone A (duas setas)
+                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M20 9C20 9 19.6797 9.667 19 10.514M12 14c-1.608 0-2.952-.412-4.051-.999M12 14c1.608 0 2.952-.412 4.051-.999M12 14v3.5M4 9s.354.737 1.106 1.645M7.949 13 5 16m2.949-3c-1.26-.673-2.198-1.577-2.843-2.355M16.051 13 18.5 16m-2.449-3c1.331-.711 2.302-1.68 2.949-2.486M5.106 10.645 2 12m17-1.486L22 12"
+                            stroke="currentColor" strokeLinecap="round" />
+                      </svg>
+                    }
+                  />
+              )}
 
-          {/* Campo de ÁUDIO: bolinha com ícone B */}
-          <FileField
-            id="audioAssoc"
-            label="Áudio para associação"
-            accept=".mp3,.wav,audio/*"
-            helper="Formatos aceitos: MP3, WAV. Duração máxima: 30s."
-            suffixIcon={
-              // Ícone B (olho/preview)
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M17.6667 12L8.91675 17.25L8.91675 6.75L17.6667 12Z" stroke="black" stroke-linejoin="round"/>
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="black"/>
-            </svg>
+              {/* --- RENDERIZAÇÃO CONDICIONAL DE ÁUDIO --- */}
+              {showAudioField && (
+                  <FileField
+                    id="audioAssoc"
+                    label="Áudio para associação"
+                    accept=".mp3,.wav,audio/*"
+                    helper="Formatos aceitos: MP3, WAV. Duração máxima: 30s."
+                    suffixIcon={
+                      // Ícone B (olho/preview)
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fillRule="evenodd" clipRule="evenodd" d="M17.6667 12L8.91675 17.25L8.91675 6.75L17.6667 12Z" stroke="black" strokeLinejoin="round"/>
+                    <path fillRule="evenodd" clipRule="evenodd" d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="black"/>
+                    </svg>
 
-            }
-          />
+                    }
+                  />
+              )}
 
           <div className="form-group">
             <label className="form-label required" htmlFor="enunciado">Enunciado da atividade</label>

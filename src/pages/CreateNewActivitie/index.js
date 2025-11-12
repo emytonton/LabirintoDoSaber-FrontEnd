@@ -26,14 +26,19 @@ function AdicionarAtividade() {
 
     const categories = ['Leitura', 'Escrita', 'Vocabulário', 'Compreensão'];
     const schemas = [
-        'Atividade 1: Imagem, Áudio, Enunciado e Alternativas',
-        'Atividade 2: Somente Enunciado e Resposta Curta',
-        'Atividade 3: Associação de Colunas'
+        'Imagem, Áudio, Enunciado e Alternativas',
+        'Imagem, Enunciado e alternativas',
+        'Áudio, Enunciado e alternativas',
+        'Enunciado e alternativas'
     ];
 
     const handleNext = () => {
-        console.log("Próximo passo acionado!");
-        navigate('/NewActivitiePersonalize');
+        console.log("Próximo passo acionado! Esquema:", activitySchema);
+        navigate('/NewActivitiePersonalize', { 
+            state: { 
+                selectedSchema: activitySchema 
+            } 
+        });
     };
     
     // O Navbar está incluído aqui, seguindo o seu padrão da AlunosPage.
