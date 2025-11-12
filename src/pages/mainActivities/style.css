@@ -233,11 +233,11 @@ body {
     color: #333; /* Cor do texto, se necessário */
 }
 
-.top-container{
+.top-container-head{
   display: flex;
   align-items: center;        
   margin-bottom: 60px; 
-  
+  justify-content: space-between;
 }
 
 .seta{

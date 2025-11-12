@@ -57,7 +57,7 @@ function AlunosPage() {
         <div className="alunos-container">
           
 
-          <div className="top-container">
+          <div className="top-container-head">
           <h1>Atividades</h1>
           <div className="bnts-top">
                 {/* Wrapper para o botão CRIAR e seu subtítulo */}
@@ -81,9 +81,6 @@ function AlunosPage() {
                             </div>
                         )}
                     </div>
-                    <p className="dropdown-subtitle">
-                        *criar cadernos, grupo de atividades e atividades
-                    </p>
                 </div>
 
 
@@ -104,13 +101,10 @@ function AlunosPage() {
                             <div className="dropdown-menu">
                                 <a onClick={() => handleNavigate('/manageNotebooks')}>Gerenciar cadernos</a>
                                 <a onClick={() => handleNavigate('/manageGroups')}>Gerenciar grupo de atividades</a>
-                                <a onClick={() => handleNavigate('/manageActivities')}>Gerenciar atividades</a>
+                                <a onClick={() => handleNavigate('/ManageActivities')}>Gerenciar atividades</a>
                             </div>
                         )}
                     </div>
-                    <p className="dropdown-subtitle">
-                        *gerenciar cadernos, grupo de atividades e atividades
-                    </p>
                 </div>
 
             </div>
