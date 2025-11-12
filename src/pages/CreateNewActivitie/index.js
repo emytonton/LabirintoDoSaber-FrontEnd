@@ -33,7 +33,7 @@ function AdicionarAtividade() {
 
     const handleNext = () => {
         console.log("Próximo passo acionado!");
-        navigate('/activitiesDetails');
+        navigate('/NewActivitiePersonalize');
     };
     
     // O Navbar está incluído aqui, seguindo o seu padrão da AlunosPage.

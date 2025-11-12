@@ -44,7 +44,7 @@ function AlunosPage() {
           <h1>Atividades</h1>
           <div className="bnts-top">
           <button className="create-caderno" onClick={ () => navigate('/createNotebook') }> Criar novo caderno </button>
-          <button className="create-caderno" onClick={ () => navigate('/activities') }> Criar nova atividade </button>
+          <button className="create-caderno" onClick={ () => navigate('/CreateNewActivitie') }> Criar nova atividade </button>
           <button className="create-caderno" onClick={ () => navigate('') }> Gerenciar </button>
           </div>
             </div>
