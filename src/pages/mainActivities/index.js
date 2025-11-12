@@ -122,7 +122,7 @@ function AlunosPage() {
                 <button className="bnt-details"> Vocabulárion e Leitura </button>
               </div>
            
-              <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta"/></a>
+              <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta-main"/></a>
             </div>
 
            
@@ -134,7 +134,7 @@ function AlunosPage() {
                 <button className="bnt-details"> Escrita </button>
               </div>
               
-              <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta"/></a>
+              <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta-main"/></a>
             </div>
 
            
@@ -146,7 +146,7 @@ function AlunosPage() {
                 <button className="bnt-details"> Leitura </button>
               </div>
            
-             <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta"/></a>
+             <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta-main"/></a>
             </div>
 
           </div>
