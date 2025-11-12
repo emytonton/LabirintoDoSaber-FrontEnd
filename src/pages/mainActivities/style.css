@@ -211,17 +211,26 @@ body {
 .create-caderno{
   padding: 0.8rem 1.5rem;
   border: none;
-  border-radius: 20px;
-  font-weight: 600;
+  border-radius: 25px;
+  font-weight: 1;
   cursor: pointer;
-  font-size: 16px;
+  
   transition: background-color 0.2s;
   background-color: #D8F5F3;
   font-family: Nunito;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); 
-  width: 200px;
+  width: 200px; /* Mantém a largura fixa do botão */
   margin-right: 20px;
-  font-weight: 500px;
+  
+  display: flex;
+  justify-content: space-between; /* <-- Isso empurra o texto para esquerda e seta para direita */
+  align-items: center;
+}
+
+.create-caderno span {
+    font-size: 22px; /* Altere este valor para o tamanho desejado da fonte */
+    line-height: 1;
+    color: #333; /* Cor do texto, se necessário */
 }
 
 .top-container{
@@ -256,4 +265,87 @@ body {
   margin-right: 50px;
   width: 70px;
   height: 70px;
+}
+
+/* Container para posicionar o dropdown */
+.dropdown-button-container {
+    position: relative;
+    display: inline-block;
+    width: 200px; /* Para manter o alinhamento com o .create-caderno */
+    margin-right: 100px; /* Para manter o espaçamento entre os botões */
+}
+
+/* O botão base (Criar/Gerenciar) */
+.create-caderno.dropdown-toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Manter os estilos de .create-caderno */
+}
+
+/* Menu Dropdown - Estilo da Caixa */
+.dropdown-menu {
+    position: absolute;
+    top: 100%; /* Posiciona abaixo do botão */
+    left: 0;
+    z-index: 10; /* Garante que fique acima de outros elementos */
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 250px; /* Largura mínima para as opções */
+    display: flex;
+    flex-direction: column;
+    margin-top: 5px; /* Pequeno espaçamento do botão */
+}
+
+/* Links dentro do Dropdown */
+.dropdown-menu a {
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s;
+    border-bottom: 1px solid #eee; /* Separador entre as opções */
+}
+
+.dropdown-menu a:last-child {
+    border-bottom: none; /* Remove a borda do último item */
+}
+
+.dropdown-subtitle {
+    font-size: 0.75rem; /* Fonte bem pequena */
+    color: #666; 
+    margin: 5px 0 0 10px; /* Margem para alinhar abaixo do botão */
+    width: 200px; /* Garante que ocupe a mesma largura do botão */
+    line-height: 1.2;
+    font-family: Nunito;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f0f8ff; /* Cor ao passar o mouse */
+    color: #008D85;
+}
+
+.dropdown-arrow {
+    width: 32px; 
+    height: 12px;
+}
+
+.button-and-subtitle-wrapper {
+    display: flex;
+    flex-direction: column; /* Para empilhar o botão e o subtítulo */
+    align-items: flex-start; /* Alinha o conteúdo à esquerda dentro do wrapper */
+}
+
+.bnts-top {
+    /* Tornar o contêiner flexível para alinhar os wrappers lado a lado */
+    display: flex;
+    /* Adiciona espaço entre os dois blocos (Criar e Gerenciar) */
+    gap: 20px; 
+    /* Garante que os itens fiquem alinhados ao topo ou centro, se houver diferença de altura */
+    align-items: flex-start; 
+    
+    /* Você pode remover a margin-right dos botões, pois o 'gap' já fará isso */
 }
