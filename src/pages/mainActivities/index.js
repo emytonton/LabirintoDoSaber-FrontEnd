@@ -100,7 +100,7 @@ function AlunosPage() {
                         {isGerenciarOpen && (
                             <div className="dropdown-menu">
                                 <a onClick={() => handleNavigate('/manageNotebooks')}>Gerenciar cadernos</a>
-                                <a onClick={() => handleNavigate('/manageGroups')}>Gerenciar grupo de atividades</a>
+                                <a onClick={() => handleNavigate('/ManageGroup')}>Gerenciar grupo de atividades</a>
                                 <a onClick={() => handleNavigate('/ManageActivities')}>Gerenciar atividades</a>
                             </div>
                         )}
