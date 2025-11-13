@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; 
-import './style.css';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom'; 
+import axios from 'axios'; 
 
 import Button from '../../components/ui/ButtonYellow/Button';
 
@@ -8,38 +8,78 @@ function ResetPasswordPage() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
+    
     const navigate = useNavigate(); 
+    const location = useLocation(); 
 
-    const handleResetPassword = (e) => {
+   
+    const [email, setEmail] = useState('');
+    const [code, setCode] = useState('');
+
+    
+    useEffect(() => {
+        if (location.state?.email && location.state?.code) {
+           
+            setEmail(location.state.email);
+            setCode(location.state.code);
+        } else {
+           
+            alert('Sessão inválida. Por favor, solicite um novo código.');
+            navigate('/forgotPassword'); 
+        }
+    }, [location.state, navigate]); 
+
+    const handleResetPassword = async (e) => {
         e.preventDefault();
         setError('');
 
+        
         if (!password || !confirmPassword) {
             setError('Todos os campos são obrigatórios.');
             return;
         }
-
         if (password !== confirmPassword) {
             setError('As senhas não coincidem.');
             return;
         }
-
         if (password.length < 6) {
             setError('A senha deve ter pelo menos 6 caracteres.');
             return;
         }
 
         
-        console.log('Redefinindo senha com a nova senha...');
-        alert('Senha redefinida com sucesso! Redirecionando para o login.');
+        const payload = {
+            email: email,
+            newPassword: password,
+            code: code 
+        };
 
-     
-        setPassword('');
-        setConfirmPassword('');
+        const API_URL = 'http://localhost:3000/educators/update-password';
 
-        navigate('/');
+        try {
+            
+            await axios.post(API_URL, payload);
+
+            alert('Senha redefinida com sucesso! Redirecionando para o login.');
+            
+            setPassword('');
+            setConfirmPassword('');
+
+            navigate('/'); 
+
+        } catch (err) {
+            
+            console.error('Erro ao redefinir senha:', err);
+            if (err.response?.status === 400 || err.response?.status === 401) {
+                
+                setError('O código de verificação está incorreto ou expirou. Por favor, solicite um novo.');
+            } else {
+                setError('Ocorreu um erro inesperado. Tente novamente.');
+            }
+        }
     };
 
+  
     const renderLockIcon = () => (
         <div className="lock-icon-wrapper">
             <div className="lock-icon">

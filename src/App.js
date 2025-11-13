@@ -7,10 +7,14 @@ import ResetPasswordPage from './pages/resetPassword/index.js';
 import HomePage from './pages/Home/index';
 import AlunosPage from './pages/patients';
 import AlunosDetails from './pages/patientsDetails';
-import ActivitiesPage from './pages/activities';
-import ActivitiesMain from './pages/mainActivities/index.js'
-import CreatePacient from './pages/createPacient/index.js'
-import AddNotebook from './pages/addNotebook/index.js'
+import CreateActivitiePage from './pages/CreateNewActivitie';
+import ActivitiePersonalizePage from './pages/NewActivitiePersonalize';
+import ActivitiesMain from './pages/mainActivities/index.js';
+import CreatePacient from './pages/createPacient/index.js';
+import AddNotebook from './pages/addNotebook/index.js';
+import GroupActivitiesPage from './pages/GroupActivities';
+import ManageActivitiesPage from './pages/ManageActivities';
+import ManageGroupPage from './pages/ManageGroup';
 
 function App() {
   return (
@@ -23,11 +27,14 @@ function App() {
         <Route path="/home" element={<HomePage />} />
         <Route path="/alunos" element={<AlunosPage />} />
         <Route path="/alunosDetails" element={<AlunosDetails />} />
-        <Route path="/activities" element={<ActivitiesPage />} />
+        <Route path="/CreateNewActivitie" element={<CreateActivitiePage />} />
+        <Route path="/NewActivitiePersonalize" element={<ActivitiePersonalizePage />} />
         <Route path="/activitiesMain" element={<ActivitiesMain />} />
         <Route path="/createPacient" element={<CreatePacient />} />
-        <Route path="/createNotebook" element={<AddNotebook/>} />
-
+        <Route path="/addNotebook" element={<AddNotebook />} />
+        <Route path="/GroupActivities" element={<GroupActivitiesPage />} />
+        <Route path="/ManageActivities" element={<ManageActivitiesPage />} />
+        <Route path="/ManageGroup" element={<ManageGroupPage />} />
       </Routes>
     </div>
   );
