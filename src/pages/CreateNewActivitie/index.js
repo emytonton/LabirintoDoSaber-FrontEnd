@@ -17,6 +17,7 @@ const ActivityChip = ({ label, isSelected, onClick }) => (
 );
 
 function AdicionarAtividade() {
+    const navigate = useNavigate();
     const location = useLocation();
     const currentPath = location.pathname;
     const [selectedCategory, setSelectedCategory] = useState('Leitura');
@@ -25,14 +26,19 @@ function AdicionarAtividade() {
 
     const categories = ['Leitura', 'Escrita', 'Vocabulário', 'Compreensão'];
     const schemas = [
-        'Atividade 1: Imagem, Áudio, Enunciado e Alternativas',
-        'Atividade 2: Somente Enunciado e Resposta Curta',
-        'Atividade 3: Associação de Colunas'
+        'Imagem, Áudio, Enunciado e Alternativas',
+        'Imagem, Enunciado e alternativas',
+        'Áudio, Enunciado e alternativas',
+        'Enunciado e alternativas'
     ];
 
     const handleNext = () => {
-        // Lógica de navegação ou submissão
-        console.log("Próximo passo acionado!");
+        console.log("Próximo passo acionado! Esquema:", activitySchema);
+        navigate('/NewActivitiePersonalize', { 
+            state: { 
+                selectedSchema: activitySchema 
+            } 
+        });
     };
     
     // O Navbar está incluído aqui, seguindo o seu padrão da AlunosPage.
@@ -125,7 +131,7 @@ function AdicionarAtividade() {
 
                     {/* 4. Botão Próximo */}
                     <div className="next-button-container">
-                        <button className = "button-next" type = "submit">
+                        <button className = "button-next" type = "button" onClick={handleNext}>
                             Próximo
                         </button>
                     </div>

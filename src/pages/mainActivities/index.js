@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './style.css'; 
 import logo from '../../assets/images/logo.png';
 import iconNotification from '../../assets/images/icon_notification.png';
@@ -12,12 +12,29 @@ function AlunosPage() {
   const handleAlunoClick = () => {
     navigate('/alunosDetails');
   };
-
   
-  const handleEditClick = (e) => {
-    e.stopPropagation();
-    console.log("Clicou em Editar Perfil");
-   
+  // Estados para controlar a visibilidade dos menus dropdown
+  const [isCriarOpen, setIsCriarOpen] = useState(false);
+  const [isGerenciarOpen, setIsGerenciarOpen] = useState(false);
+
+  // Função para fechar qualquer menu aberto ao navegar
+  const handleNavigate = (path) => {
+      setIsCriarOpen(false);
+      setIsGerenciarOpen(false);
+      navigate(path);
+  };
+  
+
+  // Função para alternar o estado de 'Criar' (e fechar o 'Gerenciar')
+  const toggleCriar = () => {
+      setIsCriarOpen(!isCriarOpen);
+      setIsGerenciarOpen(false); // Garante que apenas um esteja aberto
+  };
+
+  // Função para alternar o estado de 'Gerenciar' (e fechar o 'Criar')
+  const toggleGerenciar = () => {
+      setIsGerenciarOpen(!isGerenciarOpen);
+      setIsCriarOpen(false); // Garante que apenas um esteja aberto
   };
 
   return (
@@ -40,14 +57,58 @@ function AlunosPage() {
         <div className="alunos-container">
           
 
-          <div className="top-container">
+          <div className="top-container-head">
           <h1>Atividades</h1>
           <div className="bnts-top">
-          <button className="create-caderno" onClick={ () => navigate('/createNotebook') }> Criar novo caderno </button>
-          <button className="create-caderno" onClick={ () => navigate('/activities') }> Criar nova atividade </button>
-          <button className="create-caderno" onClick={ () => navigate('') }> Gerenciar </button>
-          </div>
+                {/* Wrapper para o botão CRIAR e seu subtítulo */}
+                <div className="button-and-subtitle-wrapper">
+                    <div className={`dropdown-button-container ${isCriarOpen ? 'active' : ''}`}>
+                        <div 
+                            className="create-caderno dropdown-toggle" 
+                            onClick={toggleCriar}
+                        > 
+                            <span>Criar</span> 
+                            <svg width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg" className="dropdown-arrow">
+                                <path d="M0.5 0.5L6.5 6.5L12.5 0.5" stroke="black" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        
+                        {isCriarOpen && (
+                            <div className="dropdown-menu">
+                                <a onClick={() => handleNavigate('/addNotebook')}>Criar caderno</a>
+                                <a onClick={() => handleNavigate('/GroupActivities')}>Criar grupo de atividades</a>
+                                <a onClick={() => handleNavigate('/CreateNewActivitie')}>Criar atividade</a>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+
+                {/* Wrapper para o botão GERENCIAR e seu subtítulo */}
+                <div className="button-and-subtitle-wrapper">
+                    <div className={`dropdown-button-container ${isGerenciarOpen ? 'active' : ''}`}>
+                        <div 
+                            className="create-caderno dropdown-toggle" 
+                            onClick={toggleGerenciar}
+                        > 
+                            <span>Gerenciar</span> 
+                            <svg width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg" className="dropdown-arrow">
+                                <path d="M0.5 0.5L6.5 6.5L12.5 0.5" stroke="black" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        
+                        {isGerenciarOpen && (
+                            <div className="dropdown-menu">
+                                <a onClick={() => handleNavigate('/manageNotebooks')}>Gerenciar cadernos</a>
+                                <a onClick={() => handleNavigate('/ManageGroup')}>Gerenciar grupo de atividades</a>
+                                <a onClick={() => handleNavigate('/ManageActivities')}>Gerenciar atividades</a>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
             </div>
+        </div>
          
 
           <div className="student-card-list">
@@ -61,7 +122,7 @@ function AlunosPage() {
                 <button className="bnt-details"> Vocabulárion e Leitura </button>
               </div>
            
-              <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta"/></a>
+              <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta-main"/></a>
             </div>
 
            
@@ -73,7 +134,7 @@ function AlunosPage() {
                 <button className="bnt-details"> Escrita </button>
               </div>
               
-              <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta"/></a>
+              <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta-main"/></a>
             </div>
 
            
@@ -85,7 +146,7 @@ function AlunosPage() {
                 <button className="bnt-details"> Leitura </button>
               </div>
            
-             <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta"/></a>
+             <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta-main"/></a>
             </div>
 
           </div>
