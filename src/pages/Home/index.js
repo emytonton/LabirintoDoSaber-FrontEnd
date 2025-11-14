@@ -54,8 +54,7 @@ function Home() {
 
         <div className="content-right">
           <div className="action-buttons">
-            <button className="btn btn-secondary">Ver relatórios</button>
-            <button className="btn btn-primary">Criar nova atividade</button>
+            <button className="btn btn-secondary">Iniciar Sessão</button>
           </div>
 
           <h2>Meus alunos</h2>
