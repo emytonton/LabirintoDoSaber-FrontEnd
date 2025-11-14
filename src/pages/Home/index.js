@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom'; 
 import './style.css';
 import logo from '../../assets/images/logo.png';
 import boyHome from '../../assets/images/boy_home.png';
@@ -8,17 +10,55 @@ import iconNotification from '../../assets/images/icon_notification.png';
 import iconProfile from '../../assets/images/icon_profile.png';
 import iconRandom from '../../assets/images/icon_random.png';
 
-
 function Home() {
+ 
+  const [userName, setUserName] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+
+  
+  useEffect(() => {
+    
+    const fetchUserData = async () => {
+      try {
+        
+        const response = await axios.get('http://localhost:3000/educators/me');
+
+        
+        setUserName(response.data.name);
+
+      } catch (error) {
+        console.error("Erro ao buscar dados do usuário:", error);
+        
+        alert("Sua sessão expirou. Por favor, faça login novamente.");
+        navigate('/'); 
+      } finally {
+        
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [navigate]); 
+
+  if (isLoading) {
+    return (
+      <div className="dashboard-container">
+        <h1>Carregando...</h1>
+      </div>
+    );
+  }
+
+
   return (
     <div className="dashboard-container">
       <header className="header">
         <img src={logo} alt="Labirinto do Saber" className="logo" />
         <nav className="navbar">
-        <a href="/home" className="nav-link active">Dashboard</a> 
-        <a href="/activitiesMain" className="nav-link">Atividades</a>
-        <a href="/alunos" className="nav-link">Alunos</a> 
-        <a href="#" className="nav-link">Relatórios</a>
+          <Link to="/home" className="nav-link active">Dashboard</Link> 
+          <Link to="/activitiesMain" className="nav-link">Atividades</Link>
+          <Link to="/alunos" className="nav-link">Alunos</Link> 
+          <Link to="#" className="nav-link">Relatórios</Link>
         </nav>
         <div className="user-controls">
           <img src={iconNotification} alt="Notificações" className="icon" />
@@ -29,7 +69,11 @@ function Home() {
       <main className="main-content">
         <div className="content-left">
           <h1>Dashboard</h1>
-          <p className="welcome-message">Bem vindo(a) de volta, Dra Ana!</p>
+          
+  
+          <p className="welcome-message">
+            Bem vindo(a) de volta, {userName || 'Usuário'}!
+          </p>
 
           <h2>Atividades recentes</h2>
           <div className="activity-card">
@@ -38,8 +82,7 @@ function Home() {
               <h3>Sessão de sílabas com Lucas</h3>
               <p>Foco na montagem e reconhecimento das sílabas tônicas.</p>
             </div>
-             <img src={setaIcon} alt="Seta" className="arrow" />
-
+              <img src={setaIcon} alt="Seta" className="arrow" />
           </div>
 
           <div className="activity-card">
@@ -64,7 +107,6 @@ function Home() {
               <span>Última atividade</span>
             </div>
 
-            
             <div className="student-row">
               <div className="student-name-group">
                 <img src={iconRandom} alt="Lucas" className="student-avatar" />
@@ -73,7 +115,6 @@ function Home() {
               <span className="student-activity-tag">Atividade X</span>
             </div>
 
-           
             <div className="student-row">
               <div className="student-name-group">
                 <img src={iconRandom} alt="Maria" className="student-avatar" />
@@ -81,7 +122,6 @@ function Home() {
               </div>
               <span className="student-activity-tag">Atividade X</span>
             </div>
-
         
             <div className="student-row">
               <div className="student-name-group">
@@ -90,7 +130,6 @@ function Home() {
               </div>
               <span className="student-activity-tag">Atividade X</span>
             </div>
-
           </div>
         </div>
       </main>

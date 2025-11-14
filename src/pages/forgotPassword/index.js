@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import './style.css';
 import { Link, useNavigate } from 'react-router-dom';
-
+import axios from 'axios'; 
 
 import Input from '../../components/ui/InputWhite/Input';
-
 
 function ForgotPasswordPage() {
     const navigate = useNavigate();
@@ -12,32 +11,57 @@ function ForgotPasswordPage() {
     const [step, setStep] = useState(1); 
     const [email, setEmail] = useState('');
     const [code, setCode] = useState(''); 
+    const [isLoading, setIsLoading] = useState(false); 
 
-    const handleSendCode = (e) => {
+    const handleSendCode = async (e) => {
         e.preventDefault();
         
+        if (isLoading) return;
+
         if (!email) {
             alert('Por favor, digite seu e-mail.');
             return;
         }
         
-        alert(`Solicitação de código enviada para ${email}.`);
-        setStep(2); 
+        setIsLoading(true); 
+
+        const payload = {
+            educatorEmail: email
+        };
+
+        try {
+            const API_URL = 'http://localhost:3000/educators/generate-token';
+            await axios.put(API_URL, payload);
+
+            alert(`Um código de recuperação foi enviado para ${email}.`);
+            setStep(2); 
+        
+        } catch (error) {
+            console.error('Erro ao solicitar código:', error);
+            if (error.response?.status === 404) {
+                alert('Erro: E-mail não encontrado no sistema.');
+            } else {
+                alert('Erro ao solicitar o código. Tente novamente.');
+            }
+        } finally {
+            setIsLoading(false); 
+        }
     };
 
     const handlePasswordRecovery = (e) => {
         e.preventDefault();
-
         if (!code) {
             alert('Por favor, insira o código recebido.');
             return;
         }
-
         if (code.length >= 6) { 
-            alert('Código verificado! Indo para a tela de nova senha.');
-            
-            navigate('/resetPassword'); 
-
+            alert('Código inserido. Vamos para a tela de nova senha.');
+            navigate('/resetPassword', { 
+                state: { 
+                    email: email, 
+                    code: code 
+                } 
+            }); 
         } else {
             alert('Código inválido. Tente novamente.');
         }
@@ -69,14 +93,19 @@ function ForgotPasswordPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading} 
             />
 
-            <button className="custom-button-forgot" type="submit">
-                Receber código
+            <button 
+                className="custom-button-forgot" 
+                type="submit"
+                disabled={isLoading} 
+            >
+                {isLoading ? 'Enviando...' : 'Receber código'}
             </button>
             
             <div className="separator-line"></div>
-            <Link to="/Register "className="create-account-link">
+            <Link to="/register" className="create-account-link">
                 Criar nova conta
             </Link>
         </>
@@ -120,4 +149,4 @@ function ForgotPasswordPage() {
     );
 }
 
-export default ForgotPasswordPage;
+export default ForgotPasswordPage; 
