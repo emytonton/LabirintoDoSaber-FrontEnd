@@ -22,7 +22,7 @@ function Home() {
     const fetchUserData = async () => {
       try {
         
-        const response = await axios.get('http://localhost:3000/educators/me');
+        const response = await axios.get('https://labirinto-do-saber.vercel.app/educator/me');
 
         
         setUserName(response.data.name);

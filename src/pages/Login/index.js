@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './style.css';
 import { Link, useNavigate} from 'react-router-dom';
-import axios from 'axios'; // 1. Importe o axios
+import axios from 'axios'; 
 
 import Button from '../../components/ui/ButtonYellow/Button';
 import Input from '../../components/ui/InputWhite/Input';
@@ -14,9 +14,9 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  // 2. Transforme a função em assíncrona e receba o evento (e)
+
   const handleLogin = async (e) => {
-    e.preventDefault(); // Impede o recarregamento da página
+    e.preventDefault(); 
 
     if (!email || !password) {
       alert('Por favor, preencha o e-mail e a senha.');
@@ -28,31 +28,26 @@ function LoginPage() {
       password: password
     };
 
-    const API_URL = 'http://localhost:3000/educators/sign-in';
+    const API_URL = 'https://labirinto-do-saber.vercel.app/educator/sign-in';
 
     try {
-      // 3. Faça a chamada POST para a API de login
+     
       const response = await axios.post(API_URL, payload);
 
-      // 4. Pegue o token da resposta (baseado na sua imagem)
+      
       const { token } = response.data;
 
       if (token) {
-        // 5. Salve o token no localStorage
-        // (Isso persiste o login mesmo se fechar o app/navegador)
         localStorage.setItem('authToken', token);
-
-        // [Opcional, mas recomendado] Configure o axios imediatamente
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         
         alert('Login realizado com sucesso!');
-        navigate('/home'); // Navega para a home
+        navigate('/home'); 
       } else {
         alert('Erro: Token não recebido do servidor.');
       }
 
     } catch (error) {
-      // 6. Lide com erros (ex: 401 - Não autorizado)
       console.error('Erro no login:', error);
       alert('Erro no login: E-mail ou senha incorretos.');
     }
@@ -64,8 +59,6 @@ function LoginPage() {
 
       <div className="form-side">
         <div className="login-form-container">
-          
-          {/* 7. Use um <form> e o evento onSubmit */}
           <form onSubmit={handleLogin}>
             <h1 className="login-title">Login</h1>
             <p className="signup-link">
@@ -94,12 +87,12 @@ function LoginPage() {
               <Link to="/forgotPassword" className="forgot-password">Esqueceu a senha?</Link>
             </div>
       
-            {/* 8. Mude o botão para type="submit" */}
+          
             <Button type="submit">
               Entrar
             </Button>
           </form> 
-          {/* Fim do <form> */}
+       
 
           <div className="divider">
             <span>Ou continue com</span>
