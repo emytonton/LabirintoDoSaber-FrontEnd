@@ -15,6 +15,10 @@ import AddNotebook from './pages/addNotebook/index.js';
 import GroupActivitiesPage from './pages/GroupActivities';
 import ManageActivitiesPage from './pages/ManageActivities';
 import ManageGroupPage from './pages/ManageGroup';
+import ManageNotebookPage from './pages/ManageNotebook';
+import NotebookDetailsPage from './pages/NotebookDetails';
+import GroupSelectPage from './pages/GroupSelect';
+import SessionPage from './pages/session';
 
 function App() {
   return (
@@ -35,6 +39,10 @@ function App() {
         <Route path="/GroupActivities" element={<GroupActivitiesPage />} />
         <Route path="/ManageActivities" element={<ManageActivitiesPage />} />
         <Route path="/ManageGroup" element={<ManageGroupPage />} />
+        <Route path="/ManageNotebook" element={<ManageNotebookPage />} />
+        <Route path="/NotebookDetails" element={<NotebookDetailsPage />} />
+        <Route path="/GroupSelect" element={<GroupSelectPage />} />
+        <Route path="/Session" element={<SessionPage />} />
       </Routes>
     </div>
   );
