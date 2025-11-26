@@ -1,0 +1,410 @@
+.manage-notebook-main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 2.5rem;
+    background-color: #fcfcff;
+}
+
+.manage-notebook-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.manage-notebook-container h1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 2.25rem;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: #111;
+}
+
+.manage-notebook-container .subtitle {
+    color: #777;
+    font-size: 1.1rem;
+    margin-top: 0;
+    margin-bottom: 2.5rem;
+}
+
+
+.notebook-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-left: 0;
+    padding: 0 15px;
+}
+
+
+.notebook-list-item-card {
+    padding: 0.8rem 1.5rem;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 24px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    height: 100px;
+    width: 100%;
+    transition: all 0.2s ease-in-out;
+}
+
+.notebook-list-item-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.notebook-card-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 10px;
+}
+
+.notebook-card-info h3 {
+    margin: 0 0 4px 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.notebook-card-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.2;
+}
+
+
+.edit-profile-btn {
+    background-color: #FFF6D8;
+    color: #5c5c5c;
+    padding: 0.75rem 1.5rem;
+    border-radius: 20px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: 'Nunito', sans-serif;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: auto;
+}
+
+.edit-profile-btn:hover {
+    background-color: #f7e9b0;
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3rem;
+    gap: 0.5rem;
+}
+
+.page-arrow,
+.page-number {
+    text-decoration: none;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #999;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.page-arrow {
+    font-size: 1.3rem;
+    color: #aaa;
+}
+
+.page-number:hover {
+    background-color: #f0f0f0;
+    color: #555;
+}
+
+.page-number.active {
+    background-color: #D8F5F3;
+    color: #008D85;
+}
+
+
+
+
+body {
+    margin: 0;
+    font-family: -apple-system, 'Nunito', sans-serif;
+    background-color: #fcfcff;
+    color: #333;
+}
+
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2.5rem;
+    background-color: #fff;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.logo {
+    width: 150px;
+    height: 70px;
+    object-fit: contain;
+}
+
+.navbar {
+    display: flex;
+    gap: 2rem;
+    margin-left: -10%;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #555;
+    font-weight: 600;
+    font-size: 20px;
+    padding-bottom: 4px;
+    margin-left: 10%;
+}
+
+.nav-link.active {
+    color: #63E9E2;
+    border-bottom: 3px solid #63E9E2;
+}
+
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.icon {
+    height: 41px;
+    width: 48px;
+    cursor: pointer;
+    object-fit: contain;
+}
+
+.profile-icon {
+    border-radius: 50%;
+    background-color: #333;
+    height: 59px;
+    width: 59px;
+}
+
+.create-caderno {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 25px;
+    font-weight: 1;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background-color: #D8F5F3;
+    font-family: Nunito;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    width: 200px;
+    margin-right: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.create-caderno span {
+    font-size: 22px;
+    line-height: 1;
+    color: #333;
+}
+
+.top-container {
+    display: flex;
+    align-items: start;
+    margin-bottom: 10px;
+    flex-direction: column;
+}
+
+.seta {
+    width: 20px;
+    height: 20px;
+}
+
+.notebook-bnt-details {
+    padding: 1px 5px;
+    border: none;
+    border-radius: 20px;
+    font-weight: 900;
+    cursor: pointer;
+    font-size: 0.82rem;
+    transition: background-color 0.2s;
+    background-color: #D8F5F3;
+    font-family: Nunito;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    width: 260px;
+    height: auto;
+    white-space: normal;
+    text-align: center;
+    margin-right: 0;
+    margin-top: 3px;
+    align-self: flex-start;
+    color: #000;
+}
+
+.notebook-card-icon {
+    margin-right: 20px;
+    width: 45px;
+    min-width: 50px;
+    height: 50px;
+}
+
+.dropdown-button-container {
+    position: relative;
+    display: inline-block;
+    width: 200px;
+    margin-right: 100px;
+}
+
+.create-caderno.dropdown-toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 10;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 250px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 5px;
+}
+
+.dropdown-menu a {
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s;
+    border-bottom: 1px solid #eee;
+}
+
+.dropdown-menu a:last-child {
+    border-bottom: none;
+}
+
+.dropdown-subtitle {
+    font-size: 0.75rem;
+    color: #666;
+    margin: 5px 0 0 10px;
+    width: 200px;
+    line-height: 1.2;
+    font-family: Nunito;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f0f8ff;
+    color: #008D85;
+}
+
+.dropdown-arrow {
+    width: 32px;
+    height: 12px;
+}
+
+.button-and-subtitle-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.bnts-top {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.notebook-row-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.remove-notebook-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    transition: color 0.2s;
+    line-height: 1;
+    margin-left: 0;
+    align-self: center;
+    flex-shrink: 0;
+}
+
+.remove-notebook-btn:hover {
+    color: #cc0000;
+    background-color: #ffebeb;
+    border-radius: 50%;
+}
+
+.remove-notebook-btn svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+.remove-notebook-activity-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    transition: color 0.2s;
+    line-height: 1;
+    margin-left: 0;
+    align-self: center;
+    flex-shrink: 0;
+}
+
+.remove-notebook-activity-btn:hover {
+    color: #cc0000;
+    background-color: #ffebeb;
+    border-radius: 50%;
+}
+
+.remove-notebook-activity-btn svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+.group-list-item-card {
+    height: 100px;
+    flex: 1;
+    justify-content: space-between;
+}
