@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import "./style.css";
 import logo from "../../assets/images/logo.png";
 import iconNotification from "../../assets/images/icon_notification.png";
 import iconProfile from "../../assets/images/icon_profile.png";
-import iconDoubleCard from "../../assets/images/iconDoublecard.png";
+import iconCard from "../../assets/images/caderneta.png";
 import iconSeta from "../../assets/images/seta_icon.png";
-import iconActivitie from "../../assets/images/iconActivitie.png";
 import { useNavigate } from "react-router-dom";
 
 const TrashIcon = () => (
@@ -21,30 +20,15 @@ const TrashIcon = () => (
 function ManageNotebookPage() {
     const navigate = useNavigate();
     
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const handleNotebookClick = (e) => {
-        setIsModalOpen(true);
+    const handleNotebookClick = (e) => { 
+        navigate("/NotebookDetails");
     };
     
-    const closeModal = () => {
-        setIsModalOpen(false);
-    };
-
     const handleRemoveNotebook = (e) => {
         e.stopPropagation();
         console.log("Remover CADERNO principal acionado.");
     };
     
-    const handleRemoveActivityFromNotebook = (e) => {
-        e.stopPropagation(); 
-        console.log("Remover ATIVIDADE do CADERNO acionado.");
-    };
-    
-    const handleEditActivityInModal = () => {
-        console.log("Editar atividade do modal acionado.");
-    };
-
     return (
         <div className="dashboard-container">
             <header className="header">
@@ -68,122 +52,6 @@ function ManageNotebookPage() {
                     <img src={iconProfile} alt="Perfil" className="icon profile-icon" />
                 </div>
             </header>
-
-            {isModalOpen && (
-                <div className="modal-overlay" onClick={closeModal}>
-                    <div className="modal-content" onClick={e => e.stopPropagation()}>
-                        
-                        <div className="modal-header">
-                            <h2 className="modal-title">Atividades</h2>
-                            <button className="modal-close-btn" onClick={closeModal}>
-                                &times;
-                            </button>
-                        </div>
-                        
-                        <div className="modal-body">
-                            
-                            <div className="activity-card-list">
-                                
-                                <div className="notebook-row-wrapper modal-activity-row">
-                                    <div className="notebook-list-item-card modal-activity-item" onClick={handleEditActivityInModal} style={{ cursor: "pointer" }}>
-                                        <img src={iconActivitie} alt="Icone Atividade" className="activity-card-icon" />
-                                        <div className="notebook-card-info">
-                                            <h3>Atividade de associação e leitura com animais</h3>
-                                            <button className="notebook-bnt-details">Vocabulário & Leitura</button>
-                                        </div>
-                                    </div>
-                                    <button 
-                                        className="remove-notebook-activity-btn"
-                                        onClick={handleRemoveActivityFromNotebook} 
-                                        title="Remover Atividade"
-                                    >
-                                        <TrashIcon />
-                                    </button>
-                                </div>
-
-                                <div className="notebook-row-wrapper modal-activity-row">
-                                    <div className="notebook-list-item-card modal-activity-item" onClick={handleEditActivityInModal} style={{ cursor: "pointer" }}>
-                                        <img src={iconActivitie} alt="Icone Atividade" className="activity-card-icon" />
-                                        <div className="notebook-card-info">
-                                            <h3>Atividade de associação e leitura com animais</h3>
-                                            <button className="notebook-bnt-details">Escrita</button>
-                                        </div>
-                                    </div>
-                                    <button 
-                                        className="remove-notebook-activity-btn"
-                                        onClick={handleRemoveActivityFromNotebook} 
-                                        title="Remover Atividade"
-                                    >
-                                        <TrashIcon />
-                                    </button>
-                                </div>
-                                
-                                <div className="notebook-row-wrapper modal-activity-row">
-                                    <div className="notebook-list-item-card modal-activity-item" onClick={handleEditActivityInModal} style={{ cursor: "pointer" }}>
-                                        <img src={iconActivitie} alt="Icone Atividade" className="activity-card-icon" />
-                                        <div className="notebook-card-info">
-                                            <h3>Atividade de associação e leitura com animais</h3>
-                                            <button className="notebook-bnt-details">Leitura</button>
-                                        </div>
-                                    </div>
-                                    <button 
-                                        className="remove-notebook-activity-btn"
-                                        onClick={handleRemoveActivityFromNotebook} 
-                                        title="Remover Atividade"
-                                    >
-                                        <TrashIcon />
-                                    </button>
-                                </div>
-                                
-                                <div className="notebook-row-wrapper modal-activity-row">
-                                    <div className="notebook-list-item-card modal-activity-item" onClick={handleEditActivityInModal} style={{ cursor: "pointer" }}>
-                                        <img src={iconActivitie} alt="Icone Atividade" className="activity-card-icon" />
-                                        <div className="notebook-card-info">
-                                            <h3>Atividade de associação e leitura com animais</h3>
-                                            <button className="notebook-bnt-details">Leitura</button>
-                                        </div>
-                                    </div>
-                                    <button 
-                                        className="remove-notebook-activity-btn"
-                                        onClick={handleRemoveActivityFromNotebook} 
-                                        title="Remover Atividade"
-                                    >
-                                        <TrashIcon />
-                                    </button>
-                                </div>
-
-                                <div className="notebook-row-wrapper modal-activity-row">
-                                    <div className="notebook-list-item-card modal-activity-item" onClick={handleEditActivityInModal} style={{ cursor: "pointer" }}>
-                                        <img src={iconActivitie} alt="Icone Atividade" className="activity-card-icon" />
-                                        <div className="notebook-card-info">
-                                            <h3>Atividade de associação e leitura com animais</h3>
-                                            <button className="notebook-bnt-details">Leitura</button>
-                                        </div>
-                                    </div>
-                                    <button 
-                                        className="remove-notebook-activity-btn"
-                                        onClick={handleRemoveActivityFromNotebook} 
-                                        title="Remover Atividade"
-                                    >
-                                        <TrashIcon />
-                                    </button>
-                                </div>
-
-                            </div>
-                            
-                            <div className="pagination-controls">
-                                <a href="#" className="page-arrow">&lt;</a>
-                                <a href="#" className="page-number active">1</a>
-                                <a href="#" className="page-number">2</a>
-                                <a href="#" className="page-number">3</a>
-                                <a href="#" className="page-number">4</a>
-                                <a href="#" className="page-arrow">&gt;</a>
-                            </div>
-                        </div>
-                        
-                    </div>
-                </div>
-            )}
             
             <main className="manage-notebook-main-content">
                 
@@ -196,7 +64,7 @@ function ManageNotebookPage() {
                         
                         <div className="notebook-row-wrapper">
                             <div className="notebook-list-item-card" onClick={handleNotebookClick} style={{ cursor: "pointer" }}>
-                                <img src={iconDoubleCard} alt="Avatar" className="notebook-card-icon" />
+                                <img src={iconCard} alt="Avatar" className="notebook-card-icon" />
                                 <div className="notebook-card-info">
                                     <h3>Caderno de associação e leitura com animais </h3>
                                     <button className="notebook-bnt-details">Vocabulárion e Leitura</button>
@@ -210,7 +78,7 @@ function ManageNotebookPage() {
                         
                         <div className="notebook-row-wrapper">
                             <div className="notebook-list-item-card" onClick={handleNotebookClick} style={{ cursor: "pointer" }}>
-                                <img src={iconDoubleCard} alt="Avatar" className="notebook-card-icon" />
+                                <img src={iconCard} alt="Avatar" className="notebook-card-icon" />
                                 <div className="notebook-card-info">
                                     <h3>Caderno de associação e leitura com animais </h3>
                                     <button className="notebook-bnt-details">Vocabulárion e Leitura</button>
@@ -224,7 +92,7 @@ function ManageNotebookPage() {
                         
                         <div className="notebook-row-wrapper">
                             <div className="notebook-list-item-card" onClick={handleNotebookClick} style={{ cursor: "pointer" }}>
-                                <img src={iconDoubleCard} alt="Avatar" className="notebook-card-icon" />
+                                <img src={iconCard} alt="Avatar" className="notebook-card-icon" />
                                 <div className="notebook-card-info">
                                     <h3>Caderno de associação e leitura com animais </h3>
                                     <button className="notebook-bnt-details">Vocabulárion e Leitura</button>
