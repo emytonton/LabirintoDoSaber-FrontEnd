@@ -63,7 +63,7 @@ function NotebookDetailsPage() {
                         <h1>Caderno: Aprendizagem das sílabas</h1>
                         <button 
                         className="add-group-btn" 
-                        onClick={ () => navigate('/AddNewGroup') }
+                        onClick={ () => navigate('/GroupSelect') }
                         >
                         Adicionar novo grupo
                         </button>
