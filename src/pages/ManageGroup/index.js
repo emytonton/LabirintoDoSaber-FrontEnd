@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./style.css";
+import axios from "axios";
 import logo from "../../assets/images/logo.png";
 import iconNotification from "../../assets/images/icon_notification.png";
 import iconProfile from "../../assets/images/icon_profile.png";
 import iconDoubleCard from "../../assets/images/iconDoublecard.png";
 import iconSeta from "../../assets/images/seta_icon.png";
-import iconActivitie from "../../assets/images/iconActivitie.png"; // Adicionado para o ícone no modal
+import iconActivitie from "../../assets/images/iconActivitie.png"; 
 import { useNavigate } from "react-router-dom";
 
-// Componente para o ícone de Lixeira
+
 const TrashIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M5 6H19L18.1245 19.133C18.0544 20.1836 17.1818 21 16.1289 21H7.87111C6.81818 21 5.94558 20.1836 5.87554 19.133L5 6Z" stroke="black" strokeWidth="2"/>
@@ -21,262 +22,223 @@ const TrashIcon = () => (
 
 function ManageGroupPage() {
     const navigate = useNavigate();
-    
-    // ESTADO DO MODAL
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // Lógica para abrir o modal
-    const handleGroupClick = (e) => {
-        // Se a navegação não for desejada ao clicar no card, use e.stopPropagation()
-        // mas aqui focamos em abrir o modal
+    const [groups, setGroups] = useState([]);
+    const [allTasks, setAllTasks] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 4;
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedGroup, setSelectedGroup] = useState(null);
+
+    const categoryMap = {
+        reading: "Leitura",
+        writing: "Escrita",
+        vocabulary: "Vocabulário",
+        comprehension: "Compreensão"
+    };
+
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const token = localStorage.getItem("authToken");
+                if (!token) {
+                    navigate("/");
+                    return;
+                }
+
+                const config = { headers: { Authorization: `Bearer ${token}` } };
+
+                const [groupsResponse, tasksResponse] = await Promise.all([
+                    axios.get("https://labirinto-do-saber.vercel.app/task-group/list-by-educator", config),
+                    axios.get("https://labirinto-do-saber.vercel.app/task/", config)
+                ]);
+
+                if (Array.isArray(groupsResponse.data)) setGroups(groupsResponse.data);
+                if (Array.isArray(tasksResponse.data)) setAllTasks(tasksResponse.data);
+
+                setLoading(false);
+            } catch (error) {
+                console.error("Erro ao buscar dados:", error);
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [navigate]);
+
+    const handleGroupClick = (group) => {
+        setSelectedGroup(group);
         setIsModalOpen(true);
     };
-    
-    // Lógica para fechar o modal
+
     const closeModal = () => {
         setIsModalOpen(false);
+        setSelectedGroup(null);
     };
 
-    // Função separada para remover o grupo (evita abertura do modal)
-    const handleRemoveGroup = (e) => {
-        e.stopPropagation(); // Impede o clique de propagar para o card e abrir o modal
-        console.log("Remover GRUPO principal acionado.");
-        // Coloque aqui a lógica real de remoção do grupo
+    const handleRemoveGroup = (e, id) => {
+        e.stopPropagation();
+        alert("Funcionalidade de excluir grupo será implementada em breve.");
     };
-    
-    // Função para remover uma atividade DENTRO do modal (exemplo)
+
     const handleRemoveActivityFromGroup = (e) => {
-        e.stopPropagation(); 
-        console.log("Remover ATIVIDADE do grupo acionado.");
-        // Coloque aqui a lógica real de remoção da atividade do grupo
+        e.stopPropagation();
+        alert("Remover atividade será implementado.");
     };
-    
-    // Função para editar a atividade DENTRO do modal (que seria o clique no card interno)
+
     const handleEditActivityInModal = () => {
-        console.log("Editar atividade do modal acionado.");
-        // Navegue para a tela de edição da atividade ou abra outro modal
-        // navigate('/editActivityDetails'); 
+        console.log("Editar atividade.");
     };
+
+    const getResolvedTasksForGroup = (group) => {
+        if (!group || !group.tasksIds) return [];
+        return group.tasksIds
+            .map(id => allTasks.find(task => task.id === id))
+            .filter(Boolean);
+    };
+
+    // Paginação
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentGroups = groups.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(groups.length / itemsPerPage);
 
     return (
         <div className="dashboard-container">
             <header className="header">
                 <img src={logo} alt="Labirinto do Saber" className="logo" />
+
                 <nav className="navbar">
-                    <a href="/home" className="nav-link">
-                        Dashboard
-                    </a>
-                    <a href="/activitiesMain" className="nav-link active">
-                        Atividades
-                    </a>
-                    <a href="/alunos" className="nav-link">
-                        Alunos
-                    </a>
-                    <a href="#" className="nav-link">
-                        Relatórios
-                    </a>
+                    <a href="/home" className="nav-link">Dashboard</a>
+                    <a href="/activitiesMain" className="nav-link active">Atividades</a>
+                    <a href="/alunos" className="nav-link">Alunos</a>
+                    <a href="#" className="nav-link">Relatórios</a>
                 </nav>
+
                 <div className="user-controls">
                     <img src={iconNotification} alt="Notificações" className="icon" />
                     <img src={iconProfile} alt="Perfil" className="icon profile-icon" />
                 </div>
             </header>
 
-            {/* ======================================================= */}
-            {/* INÍCIO DO MODAL */}
-            {/* ======================================================= */}
-            {isModalOpen && (
-                <div className="modal-overlay" onClick={closeModal}>
-                    <div className="modal-content" onClick={e => e.stopPropagation()}>
-                        
-                        <div className="modal-header">
-                            <h2 className="modal-title">Atividades</h2>
-                            <button className="modal-close-btn" onClick={closeModal}>
-                                &times;
-                            </button>
-                        </div>
-                        
-                        <div className="modal-body">
-                            
-                            <div className="activity-card-list"> {/* Reutilizamos o nome da classe para estilização */}
-                                {/* Este conteúdo é uma REPETIÇÃO do layout de cards de gerenciamento */}
-                                
-                                {/* ATIVIDADE 1 */}
-                                <div className="group-row-wrapper modal-activity-row">
-                                    <div className="group-list-item-card modal-activity-item" onClick={handleEditActivityInModal} style={{ cursor: "pointer" }}>
-                                        <img src={iconActivitie} alt="Icone Atividade" className="activity-card-icon" />
-                                        <div className="group-card-info">
-                                            <h3>Atividade de associação e leitura com animais</h3>
-                                            <button className="group-bnt-details">Vocabulário & Leitura</button>
-                                        </div>
-                                    </div>
-                                    <button 
-                                        className="remove-group-btn" 
-                                        onClick={handleRemoveActivityFromGroup} 
-                                        title="Remover Atividade"
-                                    >
-                                        <TrashIcon />
-                                    </button>
-                                </div>
-
-                                {/* ATIVIDADE 2 */}
-                                <div className="group-row-wrapper modal-activity-row">
-                                    <div className="group-list-item-card modal-activity-item" onClick={handleEditActivityInModal} style={{ cursor: "pointer" }}>
-                                        <img src={iconActivitie} alt="Icone Atividade" className="activity-card-icon" />
-                                        <div className="group-card-info">
-                                            <h3>Atividade de associação e leitura com animais</h3>
-                                            <button className="group-bnt-details">Escrita</button>
-                                        </div>
-                                    </div>
-                                    <button 
-                                        className="remove-group-btn" 
-                                        onClick={handleRemoveActivityFromGroup} 
-                                        title="Remover Atividade"
-                                    >
-                                        <TrashIcon />
-                                    </button>
-                                </div>
-                                
-                                {/* ATIVIDADE 3 */}
-                                <div className="group-row-wrapper modal-activity-row">
-                                    <div className="group-list-item-card modal-activity-item" onClick={handleEditActivityInModal} style={{ cursor: "pointer" }}>
-                                        <img src={iconActivitie} alt="Icone Atividade" className="activity-card-icon" />
-                                        <div className="group-card-info">
-                                            <h3>Atividade de associação e leitura com animais</h3>
-                                            <button className="group-bnt-details">Leitura</button>
-                                        </div>
-                                    </div>
-                                    <button 
-                                        className="remove-group-btn" 
-                                        onClick={handleRemoveActivityFromGroup} 
-                                        title="Remover Atividade"
-                                    >
-                                        <TrashIcon />
-                                    </button>
-                                </div>
-                                {/* ATIVIDADE 4 */}
-                                <div className="group-row-wrapper modal-activity-row">
-                                    <div className="group-list-item-card modal-activity-item" onClick={handleEditActivityInModal} style={{ cursor: "pointer" }}>
-                                        <img src={iconActivitie} alt="Icone Atividade" className="activity-card-icon" />
-                                        <div className="group-card-info">
-                                            <h3>Atividade de associação e leitura com animais</h3>
-                                            <button className="group-bnt-details">Leitura</button>
-                                        </div>
-                                    </div>
-                                    <button 
-                                        className="remove-group-btn" 
-                                        onClick={handleRemoveActivityFromGroup} 
-                                        title="Remover Atividade"
-                                    >
-                                        <TrashIcon />
-                                    </button>
-                                </div>
-
-                                {/* ATIVIDADE 5 */}
-                                <div className="group-row-wrapper modal-activity-row">
-                                    <div className="group-list-item-card modal-activity-item" onClick={handleEditActivityInModal} style={{ cursor: "pointer" }}>
-                                        <img src={iconActivitie} alt="Icone Atividade" className="activity-card-icon" />
-                                        <div className="group-card-info">
-                                            <h3>Atividade de associação e leitura com animais</h3>
-                                            <button className="group-bnt-details">Leitura</button>
-                                        </div>
-                                    </div>
-                                    <button 
-                                        className="remove-group-btn" 
-                                        onClick={handleRemoveActivityFromGroup} 
-                                        title="Remover Atividade"
-                                    >
-                                        <TrashIcon />
-                                    </button>
-                                </div>
-
-                            </div>
-                            
-                            {/* Rodapé do Modal (Paginação) */}
-                            <div className="pagination-controls">
-                                <a href="#" className="page-arrow">&lt;</a>
-                                <a href="#" className="page-number active">1</a>
-                                <a href="#" className="page-number">2</a>
-                                <a href="#" className="page-number">3</a>
-                                <a href="#" className="page-number">4</a>
-                                <a href="#" className="page-arrow">&gt;</a>
-                            </div>
-                        </div>
-                        
-                    </div>
-                </div>
-            )}
-            {/* ======================================================= */}
-            {/* FIM DO MODAL */}
-            {/* ======================================================= */}
-
-
-            {/* CONTEÚDO DA PÁGINA PRINCIPAL (ManageGroupPage) */}
             <main className="manage-groups-main-content">
-                
                 <div className="manage-groups-container">
                     <div className="top-container">
                         <h1>Grupo de atividades</h1>
-                        <h2>Gerencie os grupos atividades</h2>
+                        <h2>Gerencie os grupos de atividades</h2>
                     </div>
+
+                   
+                    <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "20px" }}>
+                        <button 
+                            className="create-patient-bnt"
+                            onClick={() => navigate('/createTaskGroup')} 
+                        >
+                            Novo Grupo
+                        </button>
+                    </div>
+
                     <div className="group-card-list">
-                        
-                        {/* CARD 1 (Grupo principal) */}
-                        <div className="group-row-wrapper">
-                            <div className="group-list-item-card" onClick={handleGroupClick} style={{ cursor: "pointer" }}>
-                                <img src={iconDoubleCard} alt="Avatar" className="group-card-icon" />
-                                <div className="group-card-info">
-                                    <h3>Atividade de associação e leitura com animais </h3>
-                                    <button className="group-bnt-details">Vocabulárion e Leitura</button>
+                        {loading ? (
+                            <p>Carregando grupos...</p>
+                        ) : groups.length === 0 ? (
+                            <p>Nenhum grupo encontrado.</p>
+                        ) : (
+                            currentGroups.map((group) => (
+                                <div className="group-row-wrapper" key={group.id}>
+                                    <div
+                                        className="group-list-item-card"
+                                        onClick={() => handleGroupClick(group)}
+                                        style={{ cursor: "pointer" }}
+                                    >
+                                        <img src={iconDoubleCard} alt="Icone Grupo" className="group-card-icon" />
+                                        <div className="group-card-info">
+                                            <h3>{group.name}</h3>
+                                            <button className="group-bnt-details">
+                                                {categoryMap[group.category] || group.category}
+                                            </button>
+                                        </div>
+                                        <span className="back-arrow">
+                                            <img src={iconSeta} alt="seta" className="seta" />
+                                        </span>
+                                    </div>
+
+                                    <button
+                                        className="remove-group-btn"
+                                        onClick={(e) => handleRemoveGroup(e, group.id)}
+                                        title="Remover Grupo"
+                                    >
+                                        <TrashIcon />
+                                    </button>
                                 </div>
-                                <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta" /></a>
-                            </div>
-                            <button className="remove-group-btn" onClick={handleRemoveGroup} title="Remover GRUPO">
-                                <TrashIcon />
-                            </button>
+                            ))
+                        )}
+                    </div>
+
+                    {totalPages > 1 && (
+                        <div className="pagination-controls">
+                            <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))}>&lt;</button>
+                            {Array.from({ length: totalPages }, (_, i) => (
+                                <button key={i} onClick={() => setCurrentPage(i + 1)}>
+                                    {i + 1}
+                                </button>
+                            ))}
+                            <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}>&gt;</button>
                         </div>
-                        
-                        {/* CARD 2 (Grupo principal) */}
-                        <div className="group-row-wrapper">
-                            <div className="group-list-item-card" onClick={handleGroupClick} style={{ cursor: "pointer" }}>
-                                <img src={iconDoubleCard} alt="Avatar" className="group-card-icon" />
-                                <div className="group-card-info">
-                                    <h3>Atividade de associação e leitura com animais </h3>
-                                    <button className="group-bnt-details">Vocabulárion e Leitura</button>
-                                </div>
-                                <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta" /></a>
-                            </div>
-                            <button className="remove-group-btn" onClick={handleRemoveGroup} title="Remover GRUPO">
-                                <TrashIcon />
-                            </button>
+                    )}
+                </div>
+            </main>
+
+           
+            {isModalOpen && selectedGroup && (
+                <div className="modal-overlay" onClick={closeModal}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2 className="modal-title">{selectedGroup.name}</h2>
+                            <button className="modal-close-btn" onClick={closeModal}>&times;</button>
                         </div>
-                        
-                        {/* ... (Outros cards) ... */}
-                        <div className="group-row-wrapper">
-                            <div className="group-list-item-card" onClick={handleGroupClick} style={{ cursor: "pointer" }}>
-                                <img src={iconDoubleCard} alt="Avatar" className="group-card-icon" />
-                                <div className="group-card-info">
-                                    <h3>Atividade de associação e leitura com animais </h3>
-                                    <button className="group-bnt-details">Vocabulárion e Leitura</button>
-                                </div>
-                                <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta" /></a>
+
+                        <div className="modal-body">
+                            <p style={{ color: "#666", marginBottom: "15px" }}>
+                                Categoria: {categoryMap[selectedGroup.category] || selectedGroup.category}
+                            </p>
+
+                            <div className="activity-card-list">
+                                {getResolvedTasksForGroup(selectedGroup).length > 0 ? (
+                                    getResolvedTasksForGroup(selectedGroup).map((task) => (
+                                        <div key={task.id} className="group-row-wrapper modal-activity-row">
+                                            <div
+                                                className="group-list-item-card modal-activity-item"
+                                                onClick={handleEditActivityInModal}
+                                                style={{ cursor: "pointer" }}
+                                            >
+                                                <img src={iconActivitie} className="activity-card-icon" />
+                                                <div className="group-card-info">
+                                                    <h3>{task.prompt?.slice(0, 40) + "..."}</h3>
+                                                    <button className="group-bnt-details">
+                                                        {categoryMap[task.category] || task.category}
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <button className="remove-group-btn" onClick={handleRemoveActivityFromGroup}>
+                                                <TrashIcon />
+                                            </button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>Este grupo não possui atividades.</p>
+                                )}
                             </div>
-                            <button className="remove-group-btn" onClick={handleRemoveGroup} title="Remover GRUPO">
-                                <TrashIcon />
-                            </button>
                         </div>
 
                     </div>
-                    <div className="pagination-controls">
-                        <a href="#" className="page-arrow">&lt;</a>
-                        <a href="#" className="page-number active">1</a>
-                        <a href="#" className="page-number">2</a>
-                        <a href="#" className="page-number">3</a>
-                        <a href="#" className="page-number">4</a>
-                        <a href="#" className="page-arrow">&gt;</a>
-                    </div>
                 </div>
-            </main>
+            )}
         </div>
     );
 }

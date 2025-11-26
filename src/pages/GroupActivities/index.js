@@ -1,22 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './style.css'; 
 import logo from '../../assets/images/logo.png';
 import iconNotification from '../../assets/images/icon_notification.png';
 import iconProfile from '../../assets/images/icon_profile.png';
-import iconBack from '../../assets/images/seta_icon_esquerda.png'
+import iconBack from '../../assets/images/seta_icon_esquerda.png';
 import { useNavigate } from 'react-router-dom';
-
 
 const ActivityChip = ({ label, isSelected, onClick }) => (
   <button 
     className={`activity-chip ${isSelected ? 'selected' : ''}`} 
     onClick={onClick}
+    type="button"
   >
     {label}
   </button>
 );
 
-// SVGs como componentes (para organização visual no JSX)
+// SVGs como componentes
 const TrashIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M5 6H19L18.1245 19.133C18.0544 20.1836 17.1818 21 16.1289 21H7.87111C6.81818 21 5.94558 20.1836 5.87554 19.133L5 6Z" stroke="black" strokeWidth="2"/>
@@ -48,79 +49,132 @@ const AddIcon = () => (
         </defs>
     </svg>
 );
-// Fim dos SVGs como componentes
 
-function GroupActivitiesPage() { // Renomeado para GroupActivitiesPage
+function GroupActivitiesPage() {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('Leitura');
-  const [groupName, setGroupName] = useState(''); // Renomeado de activityType
-  const [activitySchema, setActivitySchema] = useState('Atividade 1: Imagem, Áudio, Enunciado e Alternativas');
-
-  // NOVO ESTADO: Lista de Atividades que compõem o grupo
-  const [groupActivities, setGroupActivities] = useState([{ id: Date.now(), name: '' }]); 
+  const [groupName, setGroupName] = useState('');
   
-  // Funções para gerenciar a lista de atividades do grupo
-  const addGroupActivity = () => {
-    setGroupActivities([...groupActivities, { id: Date.now(), name: '' }]);
-  };
-
-  const removeGroupActivity = (id) => {
-    // Apenas remova se houver mais de uma atividade na lista
-    setGroupActivities(groupActivities.filter(ativ => ativ.id !== id));
-  };
-
-  const updateGroupActivity = (id, newName) => {
-    setGroupActivities(groupActivities.map(ativ => 
-      ativ.id === id ? { ...ativ, name: newName } : ativ
-    ));
-  };
-
+  // Estado para armazenar as atividades disponíveis vindas do backend
+  const [availableTasks, setAvailableTasks] = useState([]);
+  
+  // Lista de atividades selecionadas para o grupo (guardamos o ID da atividade)
+  const [groupActivities, setGroupActivities] = useState([{ uniqueId: Date.now(), taskId: '' }]); 
 
   const categories = ['Leitura', 'Escrita', 'Vocabulário', 'Compreensão'];
   
-  const handleSave = () => { // Renomeado de handleNext para handleSave
-    const completedActivities = groupActivities.filter(a => a.name.trim() !== '');
+  const categoryMap = {
+    'Leitura': 'reading',
+    'Escrita': 'writing',
+    'Vocabulário': 'vocabulary',
+    'Compreensão': 'comprehension'
+  };
+
+  // --- 1. BUSCAR ATIVIDADES EXISTENTES NO BACKEND ---
+  useEffect(() => {
+    const fetchTasks = async () => {
+        const token = localStorage.getItem('authToken');
+        if (!token) return;
+
+        try {
+            const response = await axios.get('https://labirinto-do-saber.vercel.app/task/', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            // Filtra se necessário, ou pega tudo
+            if (Array.isArray(response.data)) {
+                setAvailableTasks(response.data);
+            }
+        } catch (error) {
+            console.error("Erro ao carregar atividades:", error);
+        }
+    };
+    fetchTasks();
+  }, []);
+
+  // Funções para gerenciar a lista visual
+  const addGroupActivityRow = () => {
+    setGroupActivities([...groupActivities, { uniqueId: Date.now(), taskId: '' }]);
+  };
+
+  const removeGroupActivityRow = (uniqueId) => {
+    if (groupActivities.length > 1) {
+        setGroupActivities(groupActivities.filter(item => item.uniqueId !== uniqueId));
+    }
+  };
+
+  const updateGroupActivitySelection = (uniqueId, newTaskId) => {
+    setGroupActivities(groupActivities.map(item => 
+        item.uniqueId === uniqueId ? { ...item, taskId: newTaskId } : item
+    ));
+  };
+
+  // --- 2. SALVAR O GRUPO ---
+  const handleSave = async () => {
+    const token = localStorage.getItem('authToken');
     
-    // Validação básica
-    if (groupName.trim() === '' || completedActivities.length === 0) {
-      alert("Por favor, preencha o Nome do Grupo e adicione pelo menos uma atividade válida.");
+    // Filtra apenas os IDs válidos (não vazios)
+    const tasksIds = groupActivities
+        .map(item => item.taskId)
+        .filter(id => id !== '');
+
+    // Validação
+    if (!groupName.trim()) {
+      alert("Por favor, preencha o Nome do Grupo.");
+      return;
+    }
+    if (tasksIds.length === 0) {
+      alert("Adicione pelo menos uma atividade válida ao grupo.");
       return;
     }
 
-    console.log("Grupo a ser Salvo:", {
-      categoria: selectedCategory,
-      nomeGrupo: groupName, 
-      atividades: completedActivities
-    });
-    // Aqui você enviaria os dados para a sua API
+    const payload = {
+      name: groupName,
+      category: categoryMap[selectedCategory] || 'reading',
+      tasksId: tasksIds
+    };
+
+    console.log("Enviando Payload:", payload);
+
+    try {
+        await axios.post('https://labirinto-do-saber.vercel.app/task-group/create', payload, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        alert("Grupo de atividades criado com sucesso!");
+        navigate('/activitiesMain'); // Redireciona para onde fizer sentido
+
+    } catch (error) {
+        console.error("Erro ao criar grupo:", error);
+        alert("Erro ao criar grupo. Verifique se está logado e tente novamente.");
+    }
   };
 
   return (
     <div className="dashboard-container"> 
       
-     
       <header className="header">
         <img src={logo} alt="Labirinto do Saber" className="logo" />
         <nav className="navbar">
           <a href="/home" className="nav-link">Dashboard</a> 
           <a href="/activitiesMain" className="nav-link active">Atividades</a>
           <a href="/alunos" className="nav-link">Alunos</a> 
-          <a href="#" className="nav-link">Relatórios</a>
+          <a href="/relatorios" className="nav-link">Relatórios</a>
         </nav>
         <div className="user-controls">
           <img src={iconNotification} alt="Notificações" className="icon" />
           <img src={iconProfile} alt="Perfil" className="icon profile-icon" />
         </div>
       </header>
-
     
       <main className="main-content">
-        <a href="/activitiesMain" className="back-arrow"><img src={iconBack} alt="seta" className="seta"/></a>
+        <button onClick={() => navigate('/activitiesMain')} className="back-arrow" style={{background: 'none', border: 'none', cursor: 'pointer'}}>
+             <img src={iconBack} alt="seta" className="seta"/>
+        </button>
+        
         <div className="adicionar-atividade-container">
           <h1 className="form-title">Adicionar novo grupo de atividades</h1>
           <hr className="title-separator" />
 
-        
           <div className="form-group">
             <label className="form-label required">Categoria do Grupo</label>
             <div className="chips-container">
@@ -141,7 +195,7 @@ function GroupActivitiesPage() { // Renomeado para GroupActivitiesPage
               type="text" 
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
-              placeholder="Exemplo: Caderno de associação e leitura com animais "
+              placeholder="Exemplo: Caderno de associação e leitura com animais"
               className="text-input" 
             />
           </div>
@@ -151,21 +205,29 @@ function GroupActivitiesPage() { // Renomeado para GroupActivitiesPage
             <div className="form-label required">Adicione as atividades desejadas</div>
 
             <div className="activities-list-container">
-              {groupActivities.map((activity, idx) => (
-                <div key={activity.id} className="activity-row">
+              {groupActivities.map((item, idx) => (
+                <div key={item.uniqueId} className="activity-row">
                   <div className="activity-item">
-                    <input
-                      className="activity-input"
-                      placeholder={`Atividade ${idx + 1}`}
-                      value={activity.name}
-                      onChange={(e) => updateGroupActivity(activity.id, e.target.value)}
-                    />
+                    {/* SUBSTITUIÇÃO: Input de texto virou Select */}
+                    <select
+                      className="activity-input" // Mantendo a classe para estilização
+                      value={item.taskId}
+                      onChange={(e) => updateGroupActivitySelection(item.uniqueId, e.target.value)}
+                      style={{width: '100%', height: '100%', border: 'none', background: 'transparent', outline: 'none'}}
+                    >
+                        <option value="">Selecione uma atividade...</option>
+                        {availableTasks.map(task => (
+                            <option key={task.id} value={task.id}>
+                                {task.prompt ? (task.prompt.length > 50 ? task.prompt.substring(0,50) + '...' : task.prompt) : 'Atividade sem título'}
+                            </option>
+                        ))}
+                    </select>
                   </div>
 
                     <button
                         type="button"
                         className="activity-remove-button"
-                        onClick={() => removeGroupActivity(activity.id)}
+                        onClick={() => removeGroupActivityRow(item.uniqueId)}
                         aria-label="Remover atividade"
                         title="Remover"
                     >
@@ -175,16 +237,15 @@ function GroupActivitiesPage() { // Renomeado para GroupActivitiesPage
               ))}
             </div>
 
-            <button type="button" className="activity-add-button" onClick={addGroupActivity}>
+            <button type="button" className="activity-add-button" onClick={addGroupActivityRow}>
                 <AddIcon />
                 Adicionar mais atividades
             </button>
           </div>
           {/* FIM: SEÇÃO ADICIONAR ATIVIDADES DESEJADAS */}
-
         
           <div className="next-button-container">
-            <button className="button-next" type="submit" onClick={handleSave}>
+            <button className="button-next" type="button" onClick={handleSave}>
               Salvar
             </button>
           </div>
