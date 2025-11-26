@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './style.css'; 
+import axios from 'axios'; 
 import logo from '../../assets/images/logo.png';
 import iconNotification from '../../assets/images/icon_notification.png';
 import iconProfile from '../../assets/images/icon_profile.png';
@@ -8,15 +9,72 @@ import { useNavigate } from 'react-router-dom';
 
 function AlunosPage() {
   const navigate = useNavigate(); 
-  const handleAlunoClick = () => {
-    navigate('/alunosDetails');
+  const [alunos, setAlunos] = useState([]); 
+  const [loading, setLoading] = useState(true); 
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3; 
+
+  const handleAlunoClick = (id) => {
+    navigate(`/alunosDetails`);
   };
 
-  
-  const handleEditClick = (e) => {
+  const handleEditClick = (e, id) => {
     e.stopPropagation();
-    console.log("Clicou em Editar Perfil");
-   
+  };
+
+  useEffect(() => {
+    const fetchAlunos = async () => {
+      try {
+        const educatorId = localStorage.getItem('userId');
+        const token = localStorage.getItem('authToken');
+
+        if (!educatorId || !token) {
+          alert('Sessão inválida. Por favor, faça login novamente.');
+          navigate('/');
+          return;
+        }
+
+        const config = {
+          headers: { Authorization: `Bearer ${token}` }
+        };
+
+        const response = await axios.get('https://labirinto-do-saber.vercel.app/student/', config);
+        
+        let listaCompleta = [];
+        if (Array.isArray(response.data)) {
+            listaCompleta = response.data;
+        } else if (response.data && Array.isArray(response.data.students)) {
+            listaCompleta = response.data.students; 
+        }
+
+        const meusAlunos = listaCompleta.filter(aluno => String(aluno.educatorId) === String(educatorId));
+
+        setAlunos(meusAlunos);
+        setLoading(false);
+
+      } catch (error) {
+        console.error("Erro ao buscar alunos:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchAlunos();
+  }, [navigate]);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentAlunos = alunos.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(alunos.length / itemsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
   return (
@@ -38,72 +96,96 @@ function AlunosPage() {
       <main className="alunos-main-content">
         <div className="alunos-container">
         
-          
           <div className="top-container">
-  
-  
             <div>
               <h1>Alunos</h1>
               <p className="subtitle">Visualize e gerencie informações e progresso de cada aluno.</p>
             </div>
 
-          
             <button 
               className="create-patient-bnt" 
-              onClick={ () => navigate('/CreatePacient ') }
+              onClick={ () => navigate('/CreatePacient') } 
             >
               Cadastrar novo aluno
             </button>
           </div>
 
           <div className="student-card-list">
-        
-           
-            <div className="student-list-item-card" onClick={handleAlunoClick} style={{cursor: 'pointer'}}>
-              <img src={iconRandom} alt="Avatar" className="student-card-avatar" />
-              <div className="student-card-info">
-                <h3>Lucas Silva</h3>
-                <p>7 anos</p>
-                <p>Alfabetização inicial</p>
-              </div>
-           
-              <button className="edit-profile-btn" onClick={handleEditClick}>Editar perfil</button>
-            </div>
-
-           
-            <div className="student-list-item-card" onClick={handleAlunoClick} style={{cursor: 'pointer'}}>
-              <img src={iconRandom} alt="Avatar" className="student-card-avatar" />
-              <div className="student-card-info">
-                <h3>Maria Santos</h3>
-                <p>14 anos</p>
-                <p>Desenvolvimento da fala</p>
-              </div>
-              
-              <button className="edit-profile-btn" onClick={handleEditClick}>Editar perfil</button>
-            </div>
-
-           
-            <div className="student-list-item-card" onClick={handleAlunoClick} style={{cursor: 'pointer'}}>
-              <img src={iconRandom} alt="Avatar" className="student-card-avatar" />
-              <div className="student-card-info">
-                <h3>João Pedro</h3>
-                <p>8 anos</p>
-                <p>Alfabetização inicial</p>
-              </div>
-           
-              <button className="edit-profile-btn" onClick={handleEditClick}>Editar perfil</button>
-            </div>
+            
+            {loading ? (
+                <p>Carregando alunos...</p>
+            ) : alunos.length === 0 ? (
+                <div style={{textAlign: 'center', width: '100%', padding: '20px'}}>
+                    <p>Nenhum aluno encontrado.</p>
+                </div>
+            ) : (
+                currentAlunos.map((aluno) => (
+                    <div 
+                        key={aluno.id} 
+                        className="student-list-item-card" 
+                        onClick={() => handleAlunoClick(aluno.id)} 
+                        style={{cursor: 'pointer'}}
+                    >
+                        <img src={iconRandom} alt="Avatar" className="student-card-avatar" />
+                        <div className="student-card-info">
+                            <h3>{aluno.name}</h3>
+                            <p>{aluno.age} anos</p>
+                            <p className="student-topic">
+                                {aluno.learningTopics && aluno.learningTopics.length > 0 
+                                    ? aluno.learningTopics[0] 
+                                    : "Sem objetivo definido"}
+                            </p>
+                        </div>
+                    
+                        <button 
+                            className="edit-profile-btn" 
+                            onClick={(e) => handleEditClick(e, aluno.id)}
+                        >
+                            Editar perfil
+                        </button>
+                    </div>
+                ))
+            )}
 
           </div>
 
-          <div className="pagination-controls">
-            <a href="#" className="page-arrow">&lt;</a>
-            <a href="#" className="page-number">1</a>
-            <a href="#" className="page-number active">2</a>
-            <a href="#" className="page-number">3</a>
-            <a href="#" className="page-number">4</a>
-            <a href="#" className="page-arrow">&gt;</a>
-          </div>
+          {totalPages > 1 && (
+            <div className="pagination-controls">
+                <button 
+                    className="page-arrow" 
+                    onClick={prevPage} 
+                    disabled={currentPage === 1}
+                    style={{ background: 'none', border: 'none', cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
+                >
+                    &lt;
+                </button>
+                
+                {Array.from({ length: totalPages }, (_, i) => (
+                    <button
+                        key={i + 1}
+                        className={`page-number ${currentPage === i + 1 ? 'active' : ''}`}
+                        onClick={() => paginate(i + 1)}
+                        style={{ 
+                            background: 'none', 
+                            border: 'none', 
+                            cursor: 'pointer',
+                            fontWeight: currentPage === i + 1 ? 'bold' : 'normal'
+                        }}
+                    >
+                        {i + 1}
+                    </button>
+                ))}
+
+                <button 
+                    className="page-arrow" 
+                    onClick={nextPage} 
+                    disabled={currentPage === totalPages}
+                    style={{ background: 'none', border: 'none', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}
+                >
+                    &gt;
+                </button>
+            </div>
+          )}
 
         </div>
       </main>

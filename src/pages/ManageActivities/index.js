@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./style.css";
+import axios from "axios";
 import logo from "../../assets/images/logo.png";
 import iconNotification from "../../assets/images/icon_notification.png";
 import iconProfile from "../../assets/images/icon_profile.png";
@@ -7,11 +8,47 @@ import iconActivitie from "../../assets/images/iconActivitie.png";
 import iconSeta from "../../assets/images/seta_icon.png";
 import { useNavigate } from "react-router-dom";
 
+// Componente simples para o Modal de Confirmação
+const DeleteModal = ({ isOpen, onClose, onConfirm }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <h3>Excluir Atividade</h3>
+        <p>Tem certeza que deseja excluir esta atividade? Esta ação não pode ser desfeita.</p>
+        <div className="modal-actions">
+          <button className="modal-btn cancel" onClick={onClose}>Cancelar</button>
+          <button className="modal-btn confirm" onClick={onConfirm}>Excluir</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function ManageActivitiesPage() {
   const navigate = useNavigate();
-  const handleActivityClick = () => {
-    navigate("/activityDetails");
+  
+  // Estados de Dados
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Estados de Paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 4; // Ajuste conforme necessário
+
+  // Estados do Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activityToDelete, setActivityToDelete] = useState(null);
+
+  // Mapa de tradução para as categorias
+  const categoryMap = {
+    'reading': 'Leitura',
+    'writing': 'Escrita',
+    'vocabulary': 'Vocabulário',
+    'comprehension': 'Compreensão'
   };
+
   const TrashIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M5 6H19L18.1245 19.133C18.0544 20.1836 17.1818 21 16.1289 21H7.87111C6.81818 21 5.94558 20.1836 5.87554 19.133L5 6Z" stroke="black" strokeWidth="2"/>
@@ -20,25 +57,104 @@ function ManageActivitiesPage() {
         <path d="M10 10V17" stroke="black" strokeWidth="2" strokeLinecap="round"/>
         <path d="M14 10V17" stroke="black" strokeWidth="2" strokeLinecap="round"/>
     </svg>
-    );
+  );
+
+  // --- BUSCAR ATIVIDADES ---
+  useEffect(() => {
+    fetchActivities();
+  }, []);
+
+  const fetchActivities = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        navigate('/'); // Redireciona se não tiver token
+        return;
+      }
+
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
+
+      const response = await axios.get('https://labirinto-do-saber.vercel.app/task/', config);
+      
+      // O back devolve um array direto
+      if (Array.isArray(response.data)) {
+        setActivities(response.data);
+      } else {
+        console.error("Formato inesperado:", response.data);
+      }
+      setLoading(false);
+
+    } catch (error) {
+      console.error("Erro ao buscar atividades:", error);
+      setLoading(false);
+    }
+  };
+
+  // --- LÓGICA DE DELEÇÃO ---
+  const handleDeleteClick = (e, id) => {
+    e.stopPropagation();
+    setActivityToDelete(id);
+    setIsModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!activityToDelete) return;
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
+
+      await axios.delete(`https://labirinto-do-saber.vercel.app/task/delete/${activityToDelete}`, config);
+      
+      // Remove da lista localmente para não precisar recarregar tudo
+      setActivities(activities.filter(act => act.id !== activityToDelete));
+      setIsModalOpen(false);
+      setActivityToDelete(null);
+      alert("Atividade excluída com sucesso!");
+
+    } catch (error) {
+      console.error("Erro ao excluir:", error);
+      alert("Erro ao excluir atividade.");
+      setIsModalOpen(false);
+    }
+  };
+
+  const handleActivityClick = (id) => {
+    // Passando o ID se necessário para detalhes
+    navigate(`/activityDetails`, { state: { activityId: id } });
+  };
+
+  // --- LÓGICA DE PAGINAÇÃO ---
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentActivities = activities.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(activities.length / itemsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const nextPage = () => currentPage < totalPages && setCurrentPage(currentPage + 1);
+  const prevPage = () => currentPage > 1 && setCurrentPage(currentPage - 1);
 
   return (
     <div className="dashboard-container">
+      
+      {/* Modal Overlay */}
+      <DeleteModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onConfirm={confirmDelete} 
+      />
+
       <header className="header">
         <img src={logo} alt="Labirinto do Saber" className="logo" />
         <nav className="navbar">
-          <a href="/home" className="nav-link">
-            Dashboard
-          </a>
-          <a href="/activitiesMain" className="nav-link active">
-            Atividades
-          </a>
-          <a href="/alunos" className="nav-link">
-            Alunos
-          </a>
-          <a href="#" className="nav-link">
-            Relatórios
-          </a>
+          <a href="/home" className="nav-link">Dashboard</a>
+          <a href="/activitiesMain" className="nav-link active">Atividades</a>
+          <a href="/alunos" className="nav-link">Alunos</a>
+          <a href="#" className="nav-link">Relatórios</a>
         </nav>
         <div className="user-controls">
           <img src={iconNotification} alt="Notificações" className="icon" />
@@ -50,221 +166,153 @@ function ManageActivitiesPage() {
         
         <div className="manage-activities-container">
           
-
           <div className="top-container">
-            <h1>Atividades</h1>
-            <h2>Gerencie as atividades</h2>
+            <div>
+                <h1>Atividades</h1>
+                <h2>Gerencie as atividades</h2>
+            </div>
+            {/* Botão de criar nova atividade poderia ficar aqui também */}
+            <button 
+                className="create-patient-bnt" // Reutilizando classe de estilo existente
+                onClick={() => navigate('/activities')}
+                style={{marginLeft: 'auto'}}
+            >
+                Nova Atividade
+            </button>
           </div>
+
           <div className="activity-card-list">
             
-        <div className="activity-row-wrapper">
-            <div
-              className="activity-list-item-card"
-              onClick={handleActivityClick}
-              style={{ cursor: "pointer" }}
-            >
-              
-    
-              <img
-                src={iconActivitie}
-                alt="Avatar"
-                className="activity-card-icon"
-              />
-    
-              <div className="activity-card-info">
-                
-    
-                <h3>Atividade de associação e leitura com animais </h3>
-                <button className="activity-bnt-details">
-                  
-                  Vocabulárion e Leitura
-                </button>
-    
-              </div>
-              <a href="/alunos" className="back-arrow">
-                <img src={iconSeta} alt="seta" className="seta" />
-              </a>
-
-            </div>
-                <button 
-                className="remove-activity-btn" 
-                onClick={(e) => { e.stopPropagation(); console.log("Remover Atividade"); }} 
-                title="Remover Atividade"
-            >
-                <TrashIcon />
-            </button>
-        </div>
-        <div className="activity-row-wrapper">
-            <div
-              className="activity-list-item-card"
-              onClick={handleActivityClick}
-              style={{ cursor: "pointer" }}
-            >
-              
-    
-              <img
-                src={iconActivitie}
-                alt="Avatar"
-                className="activity-card-icon"
-              />
-    
-              <div className="activity-card-info">
-                
-    
-                <h3>Atividade de associação e leitura com animais </h3>
-                <button className="activity-bnt-details">
-                  
-                  Vocabulárion e Leitura
-                </button>
-    
-              </div>
-              <a href="/alunos" className="back-arrow">
-                <img src={iconSeta} alt="seta" className="seta" />
-              </a>
-
-            </div>
-                <button 
-                className="remove-activity-btn" 
-                onClick={(e) => { e.stopPropagation(); console.log("Remover Atividade"); }} 
-                title="Remover Atividade"
-            >
-                <TrashIcon />
-            </button>
-        </div>
-        <div className="activity-row-wrapper">
-            <div
-              className="activity-list-item-card"
-              onClick={handleActivityClick}
-              style={{ cursor: "pointer" }}
-            >
-              
-    
-              <img
-                src={iconActivitie}
-                alt="Avatar"
-                className="activity-card-icon"
-              />
-    
-              <div className="activity-card-info">
-                
-    
-                <h3>Atividade de associação e leitura com animais </h3>
-                <button className="activity-bnt-details">
-                  
-                  Vocabulárion e Leitura
-                </button>
-    
-              </div>
-              <a href="/alunos" className="back-arrow">
-                <img src={iconSeta} alt="seta" className="seta" />
-              </a>
-
-            </div>
-                <button 
-                className="remove-activity-btn" 
-                onClick={(e) => { e.stopPropagation(); console.log("Remover Atividade"); }} 
-                title="Remover Atividade"
-            >
-                <TrashIcon />
-            </button>
-        </div>
-                <div className="activity-row-wrapper">
-            <div
-              className="activity-list-item-card"
-              onClick={handleActivityClick}
-              style={{ cursor: "pointer" }}
-            >
-              
-    
-              <img
-                src={iconActivitie}
-                alt="Avatar"
-                className="activity-card-icon"
-              />
-    
-              <div className="activity-card-info">
-                
-    
-                <h3>Atividade de associação e leitura com animais </h3>
-                <button className="activity-bnt-details">
-                  
-                  Vocabulárion e Leitura
-                </button>
-    
-              </div>
-              <a href="/alunos" className="back-arrow">
-                <img src={iconSeta} alt="seta" className="seta" />
-              </a>
-
-            </div>
-                <button 
-                className="remove-activity-btn" 
-                onClick={(e) => { e.stopPropagation(); console.log("Remover Atividade"); }} 
-                title="Remover Atividade"
-            >
-                <TrashIcon />
-            </button>
-        </div>
-                <div className="activity-row-wrapper">
-            <div
-              className="activity-list-item-card"
-              onClick={handleActivityClick}
-              style={{ cursor: "pointer" }}
-            >
-              
-    
-              <img
-                src={iconActivitie}
-                alt="Avatar"
-                className="activity-card-icon"
-              />
-    
-              <div className="activity-card-info">
-                
-    
-                <h3>Atividade de associação e leitura com animais </h3>
-                <button className="activity-bnt-details">
-                  
-                  Vocabulárion e Leitura
-                </button>
-    
-              </div>
-              <a href="/alunos" className="back-arrow">
-                <img src={iconSeta} alt="seta" className="seta" />
-              </a>
-
-            </div>
-                <button 
-                className="remove-activity-btn" 
-                onClick={(e) => { e.stopPropagation(); console.log("Remover Atividade"); }} 
-                title="Remover Atividade"
-            >
-                <TrashIcon />
-            </button>
-        </div>
+            {loading ? (
+                <p>Carregando atividades...</p>
+            ) : activities.length === 0 ? (
+                <p>Nenhuma atividade encontrada.</p>
+            ) : (
+                currentActivities.map((activity) => (
+                    <div className="activity-row-wrapper" key={activity.id}>
+                        <div
+                            className="activity-list-item-card"
+                            onClick={() => handleActivityClick(activity.id)}
+                            style={{ cursor: "pointer" }}
+                        >
+                            <img
+                                src={iconActivitie}
+                                alt="Icone"
+                                className="activity-card-icon"
+                            />
+            
+                            <div className="activity-card-info">
+                                <h3>{activity.prompt}</h3>
+                                <button className="activity-bnt-details">
+                                    {/* Traduz a categoria ou mostra o original se não tiver tradução */}
+                                    {categoryMap[activity.category] || activity.category}
+                                </button>
+                            </div>
+                            
+                            <span className="back-arrow"> {/* Trocado 'a' por span para evitar navegação aninhada */}
+                                <img src={iconSeta} alt="seta" className="seta" />
+                            </span>
+                        </div>
+                        
+                        <button 
+                            className="remove-activity-btn" 
+                            onClick={(e) => handleDeleteClick(e, activity.id)} 
+                            title="Remover Atividade"
+                        >
+                            <TrashIcon />
+                        </button>
+                    </div>
+                ))
+            )}
           </div>
-          <div className="pagination-controls">
-            <a href="#" className="page-arrow">
-              &lt;
-            </a>
-            <a href="#" className="page-number">
-              1
-            </a>
-            <a href="#" className="page-number active">
-              2
-            </a>
-            <a href="#" className="page-number">
-              3
-            </a>
-            <a href="#" className="page-number">
-              4
-            </a>
-            <a href="#" className="page-arrow">
-              &gt;
-            </a>
-          </div>
+
+          {/* Paginação */}
+          {totalPages > 1 && (
+              <div className="pagination-controls">
+                <button 
+                    className="page-arrow" 
+                    onClick={prevPage} 
+                    disabled={currentPage === 1}
+                    style={{ background: 'none', border: 'none', cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
+                >
+                    &lt;
+                </button>
+                
+                {Array.from({ length: totalPages }, (_, i) => (
+                    <button
+                        key={i + 1}
+                        className={`page-number ${currentPage === i + 1 ? 'active' : ''}`}
+                        onClick={() => paginate(i + 1)}
+                        style={{ 
+                            background: 'none', 
+                            border: 'none', 
+                            cursor: 'pointer',
+                            fontWeight: currentPage === i + 1 ? 'bold' : 'normal'
+                        }}
+                    >
+                        {i + 1}
+                    </button>
+                ))}
+
+                <button 
+                    className="page-arrow" 
+                    onClick={nextPage} 
+                    disabled={currentPage === totalPages}
+                    style={{ background: 'none', border: 'none', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}
+                >
+                    &gt;
+                </button>
+            </div>
+          )}
+
         </div>
       </main>
+
+      {/* Estilos inline para o Modal (ou adicione ao CSS) */}
+      <style>{`
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .modal-btn {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .modal-btn.cancel {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+        .modal-btn.confirm {
+            background-color: #008D85;
+            color: white;
+        }
+      `}</style>
     </div>
   );
 }
