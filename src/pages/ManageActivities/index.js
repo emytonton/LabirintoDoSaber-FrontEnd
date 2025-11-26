@@ -8,7 +8,7 @@ import iconActivitie from "../../assets/images/iconActivitie.png";
 import iconSeta from "../../assets/images/seta_icon.png";
 import { useNavigate } from "react-router-dom";
 
-// Componente simples para o Modal de Confirmação
+
 const DeleteModal = ({ isOpen, onClose, onConfirm }) => {
   if (!isOpen) return null;
 
@@ -29,19 +29,19 @@ const DeleteModal = ({ isOpen, onClose, onConfirm }) => {
 function ManageActivitiesPage() {
   const navigate = useNavigate();
   
-  // Estados de Dados
+
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Estados de Paginação
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4; // Ajuste conforme necessário
 
-  // Estados do Modal
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 4;
+
+ 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activityToDelete, setActivityToDelete] = useState(null);
 
-  // Mapa de tradução para as categorias
+
   const categoryMap = {
     'reading': 'Leitura',
     'writing': 'Escrita',
@@ -59,7 +59,7 @@ function ManageActivitiesPage() {
     </svg>
   );
 
-  // --- BUSCAR ATIVIDADES ---
+  
   useEffect(() => {
     fetchActivities();
   }, []);
@@ -68,7 +68,7 @@ function ManageActivitiesPage() {
     try {
       const token = localStorage.getItem('authToken');
       if (!token) {
-        navigate('/'); // Redireciona se não tiver token
+        navigate('/'); 
         return;
       }
 
@@ -78,7 +78,7 @@ function ManageActivitiesPage() {
 
       const response = await axios.get('https://labirinto-do-saber.vercel.app/task/', config);
       
-      // O back devolve um array direto
+      
       if (Array.isArray(response.data)) {
         setActivities(response.data);
       } else {
@@ -92,7 +92,7 @@ function ManageActivitiesPage() {
     }
   };
 
-  // --- LÓGICA DE DELEÇÃO ---
+  
   const handleDeleteClick = (e, id) => {
     e.stopPropagation();
     setActivityToDelete(id);
@@ -110,7 +110,7 @@ function ManageActivitiesPage() {
 
       await axios.delete(`https://labirinto-do-saber.vercel.app/task/delete/${activityToDelete}`, config);
       
-      // Remove da lista localmente para não precisar recarregar tudo
+     
       setActivities(activities.filter(act => act.id !== activityToDelete));
       setIsModalOpen(false);
       setActivityToDelete(null);
@@ -124,11 +124,9 @@ function ManageActivitiesPage() {
   };
 
   const handleActivityClick = (id) => {
-    // Passando o ID se necessário para detalhes
     navigate(`/activityDetails`, { state: { activityId: id } });
   };
 
-  // --- LÓGICA DE PAGINAÇÃO ---
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentActivities = activities.slice(indexOfFirstItem, indexOfLastItem);
@@ -141,7 +139,7 @@ function ManageActivitiesPage() {
   return (
     <div className="dashboard-container">
       
-      {/* Modal Overlay */}
+   
       <DeleteModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
@@ -171,9 +169,8 @@ function ManageActivitiesPage() {
                 <h1>Atividades</h1>
                 <h2>Gerencie as atividades</h2>
             </div>
-            {/* Botão de criar nova atividade poderia ficar aqui também */}
             <button 
-                className="create-patient-bnt" // Reutilizando classe de estilo existente
+                className="create-patient-bnt" 
                 onClick={() => navigate('/activities')}
                 style={{marginLeft: 'auto'}}
             >
@@ -204,12 +201,11 @@ function ManageActivitiesPage() {
                             <div className="activity-card-info">
                                 <h3>{activity.prompt}</h3>
                                 <button className="activity-bnt-details">
-                                    {/* Traduz a categoria ou mostra o original se não tiver tradução */}
                                     {categoryMap[activity.category] || activity.category}
                                 </button>
                             </div>
                             
-                            <span className="back-arrow"> {/* Trocado 'a' por span para evitar navegação aninhada */}
+                            <span className="back-arrow"> 
                                 <img src={iconSeta} alt="seta" className="seta" />
                             </span>
                         </div>
@@ -226,7 +222,7 @@ function ManageActivitiesPage() {
             )}
           </div>
 
-          {/* Paginação */}
+          
           {totalPages > 1 && (
               <div className="pagination-controls">
                 <button 
@@ -268,7 +264,7 @@ function ManageActivitiesPage() {
         </div>
       </main>
 
-      {/* Estilos inline para o Modal (ou adicione ao CSS) */}
+    
       <style>{`
         .modal-overlay {
             position: fixed;

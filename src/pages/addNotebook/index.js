@@ -7,9 +7,10 @@ import iconProfile from '../../assets/images/icon_profile.png';
 import iconBack from '../../assets/images/seta_icon_esquerda.png';
 import { useNavigate } from 'react-router-dom';
 
+
 const ActivityChip = ({ label, isSelected, onClick }) => (
-  <button 
-    className={`activity-chip ${isSelected ? 'selected' : ''}`} 
+  <button
+    className={`activity-chip ${isSelected ? 'selected' : ''}`}
     onClick={onClick}
     type="button"
   >
@@ -17,7 +18,6 @@ const ActivityChip = ({ label, isSelected, onClick }) => (
   </button>
 );
 
-// SVGs como componentes
 const TrashIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M5 6H19L18.1245 19.133C18.0544 20.1836 17.1818 21 16.1289 21H7.87111C6.81818 21 5.94558 20.1836 5.87554 19.133L5 6Z" stroke="black" strokeWidth="2"/>
@@ -50,16 +50,16 @@ const AddIcon = () => (
     </svg>
 );
 
-function GroupActivitiesPage() {
+function AdicionarAtividade() {
   const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState('Leitura');
-  const [groupName, setGroupName] = useState('');
   
-  // Estado para controlar se está enviando
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [availableTasks, setAvailableTasks] = useState([]);
-  const [groupActivities, setGroupActivities] = useState([{ uniqueId: Date.now(), taskId: '' }]); 
+  const [selectedCategory, setSelectedCategory] = useState('Leitura');
+  const [description, setDescription] = useState(''); 
+  
+
+  const [availableTaskGroups, setAvailableTaskGroups] = useState([]); 
+  const [notebookGroups, setNotebookGroups] = useState([{ uniqueId: Date.now(), groupId: '' }]); 
 
   const categories = ['Leitura', 'Escrita', 'Vocabulário', 'Compreensão'];
   
@@ -70,111 +70,110 @@ function GroupActivitiesPage() {
     'Compreensão': 'comprehension'
   };
 
+
   useEffect(() => {
-    const fetchTasks = async () => {
+    const fetchGroups = async () => {
         const token = localStorage.getItem('authToken');
         if (!token) return;
 
         try {
-            console.log("--- Buscando atividades disponíveis... ---");
-            const response = await axios.get('https://labirinto-do-saber.vercel.app/task/', {
+            
+            const response = await axios.get('https://labirinto-do-saber.vercel.app/task-group/list-by-educator', {
                 headers: { Authorization: `Bearer ${token}` }
             });
+            
+            console.log("Grupos carregados:", response.data); 
+
             if (Array.isArray(response.data)) {
-                setAvailableTasks(response.data);
-                console.log(`--- ${response.data.length} atividades carregadas com sucesso. ---`);
+                setAvailableTaskGroups(response.data);
             }
         } catch (error) {
-            console.error("Erro ao carregar atividades:", error);
+            console.error("Erro ao carregar grupos de atividades:", error);
         }
     };
-    fetchTasks();
+    fetchGroups();
   }, []);
 
-  const addGroupActivityRow = () => {
-    setGroupActivities([...groupActivities, { uniqueId: Date.now(), taskId: '' }]);
+
+  const addGroupRow = () => {
+    setNotebookGroups([...notebookGroups, { uniqueId: Date.now(), groupId: '' }]);
   };
 
-  const removeGroupActivityRow = (uniqueId) => {
-    if (groupActivities.length > 1) {
-        setGroupActivities(groupActivities.filter(item => item.uniqueId !== uniqueId));
+  const removeGroupRow = (uniqueId) => {
+    if (notebookGroups.length > 1) {
+        setNotebookGroups(notebookGroups.filter(item => item.uniqueId !== uniqueId));
     }
   };
 
-  const updateGroupActivitySelection = (uniqueId, newTaskId) => {
-    setGroupActivities(groupActivities.map(item => 
-        item.uniqueId === uniqueId ? { ...item, taskId: newTaskId } : item
+  const updateGroupSelection = (uniqueId, newGroupId) => {
+    setNotebookGroups(notebookGroups.map(item => 
+        item.uniqueId === uniqueId ? { ...item, groupId: newGroupId } : item
     ));
   };
 
-  // --- 2. SALVAR O GRUPO ---
+
   const handleSave = async () => {
-    // 1. Bloqueio inicial: Se já estiver enviando, não faz nada
-    if (isSubmitting) {
-        console.warn("Tentativa de duplo clique bloqueada.");
+    const token = localStorage.getItem('authToken');
+    
+    const validGroupIds = notebookGroups
+        .map(item => item.groupId)
+        .filter(id => id !== '');
+
+  
+    if (!description.trim()) {
+        alert("Por favor, preencha a descrição do caderno.");
+        return;
+    }
+    if (validGroupIds.length === 0) {
+        alert("Selecione pelo menos um grupo de atividades.");
         return;
     }
 
-    const token = localStorage.getItem('authToken');
     
-    const tasksIds = groupActivities
-        .map(item => item.taskId)
-        .filter(id => id !== '');
+    let aggregatedTaskIds = [];
 
-    if (!groupName.trim()) {
-      alert("Por favor, preencha o Nome do Grupo.");
-      return;
-    }
-    if (tasksIds.length === 0) {
-      alert("Adicione pelo menos uma atividade válida ao grupo.");
-      return;
-    }
+    validGroupIds.forEach(groupId => {
+        const groupObj = availableTaskGroups.find(g => g.id === groupId);
+        if (groupObj && groupObj.tasksIds && Array.isArray(groupObj.tasksIds)) {
+            aggregatedTaskIds = [...aggregatedTaskIds, ...groupObj.tasksIds];
+        }
+    });
+
+    const uniqueTaskIds = [...new Set(aggregatedTaskIds)];
 
     const payload = {
-      name: groupName,
-      category: categoryMap[selectedCategory] || 'reading',
-      tasksId: tasksIds
+        tasks: uniqueTaskIds, 
+        category: categoryMap[selectedCategory] || 'vocabulary',
+        description: description,
+        taskGroupsIds: validGroupIds
     };
 
-    // 2. Inicia o bloqueio
-    setIsSubmitting(true);
-    console.log("=== INICIANDO REQUISIÇÃO DE CRIAÇÃO DE GRUPO ===");
-    console.log("Payload preparado:", payload);
+    console.log("Enviando Payload:", payload);
 
     try {
-        const response = await axios.post('https://labirinto-do-saber.vercel.app/task-group/create', payload, {
+        const response = await axios.post('https://labirinto-do-saber.vercel.app/task-notebook/create', payload, {
             headers: { Authorization: `Bearer ${token}` }
         });
-        
-        console.log("✅ Sucesso! Resposta do servidor:", response.data);
-        alert("Grupo de atividades criado com sucesso!");
+
+        console.log("Resposta da API:", response.data);
+        alert("Caderno criado com sucesso!");
         navigate('/activitiesMain'); 
 
     } catch (error) {
-        console.error("❌ Erro na requisição:", error);
-        
-        if (error.response && error.response.status === 404) {
-            alert(`Erro 404: Rota não encontrada.`);
-        } else {
-            const msg = error.response?.data?.message || "Erro desconhecido";
-            alert(`Erro ao criar grupo: ${msg}`);
-        }
-    } finally {
-        // 3. Libera o bloqueio (mesmo se der erro)
-        setIsSubmitting(false);
-        console.log("=== REQUISIÇÃO FINALIZADA (Finally) ===");
+        console.error("Erro ao criar caderno:", error);
+        alert("Erro ao criar o caderno. Verifique os dados e tente novamente.");
     }
   };
 
   return (
-    <div className="dashboard-container"> 
+    <div className="dashboard-container">
       
       <header className="header">
         <img src={logo} alt="Labirinto do Saber" className="logo" />
         <nav className="navbar">
-          <a href="/home" className="nav-link">Dashboard</a> 
+          <a href="/home" className="nav-link">Dashboard</a>
           <a href="/activitiesMain" className="nav-link active">Atividades</a>
-          <a href="/alunos" className="nav-link">Alunos</a> 
+          <a href="/alunos" className="nav-link">Alunos</a>
           <a href="/relatorios" className="nav-link">Relatórios</a>
         </nav>
         <div className="user-controls">
@@ -182,21 +181,22 @@ function GroupActivitiesPage() {
           <img src={iconProfile} alt="Perfil" className="icon profile-icon" />
         </div>
       </header>
-    
+
       <main className="main-content">
         <button onClick={() => navigate('/activitiesMain')} className="back-arrow" style={{background: 'none', border: 'none', cursor: 'pointer'}}>
-             <img src={iconBack} alt="seta" className="seta"/>
+            <img src={iconBack} alt="seta" className="seta"/>
         </button>
         
         <div className="adicionar-atividade-container">
-          <h1 className="form-title">Adicionar novo grupo de atividades</h1>
+          <h1 className="form-title">Adicionar novo caderno</h1>
           <hr className="title-separator" />
 
+          {/* Categoria */}
           <div className="form-group">
-            <label className="form-label required">Categoria do Grupo</label>
+            <label className="form-label required">Categoria do caderno</label>
             <div className="chips-container">
               {categories.map((cat) => (
-                <ActivityChip 
+                <ActivityChip
                   key={cat}
                   label={cat}
                   isSelected={selectedCategory === cat}
@@ -206,68 +206,63 @@ function GroupActivitiesPage() {
             </div>
           </div>
 
+      
           <div className="form-group">
-            <label className="form-label required">Nome do novo grupo</label>
-            <input 
-              type="text" 
-              value={groupName}
-              onChange={(e) => setGroupName(e.target.value)}
+            <label className="form-label required">Descrição do caderno</label>
+            <input
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               placeholder="Exemplo: Caderno de associação e leitura com animais"
-              className="text-input" 
+              className="text-input"
             />
           </div>
 
-          {/* SEÇÃO ADICIONAR ATIVIDADES */}
+          
           <div className="form-group">
-            <div className="form-label required">Adicione as atividades desejadas</div>
-
+            <label className="form-label required">Adicione os grupos de atividades</label>
+            
             <div className="activities-list-container">
-              {groupActivities.map((item, idx) => (
-                <div key={item.uniqueId} className="activity-row">
-                  <div className="activity-item">
-                    <select
-                      className="activity-input" 
-                      value={item.taskId}
-                      onChange={(e) => updateGroupActivitySelection(item.uniqueId, e.target.value)}
-                      style={{width: '100%', height: '100%', border: 'none', background: 'transparent', outline: 'none'}}
-                    >
-                        <option value="">Selecione uma atividade...</option>
-                        {availableTasks.map(task => (
-                            <option key={task.id} value={task.id}>
-                                {task.prompt ? (task.prompt.length > 50 ? task.prompt.substring(0,50) + '...' : task.prompt) : 'Atividade sem título'}
-                            </option>
-                        ))}
-                    </select>
-                  </div>
+                {notebookGroups.map((item) => (
+                    <div key={item.uniqueId} className="activity-row">
+                        <div className="activity-item">
+                            <select
+                                className="activity-input"
+                                value={item.groupId}
+                                onChange={(e) => updateGroupSelection(item.uniqueId, e.target.value)}
+                                style={{width: '100%', height: '100%', border: 'none', background: 'transparent', outline: 'none'}}
+                            >
+                                <option value="">Selecione um grupo...</option>
+                               
+                                {availableTaskGroups.map(group => (
+                                    <option key={group.id} value={group.id}>
+                                        {group.name ? group.name : `Grupo - ${group.category}`}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
 
-                    <button
-                        type="button"
-                        className="activity-remove-button"
-                        onClick={() => removeGroupActivityRow(item.uniqueId)}
-                        aria-label="Remover atividade"
-                        title="Remover"
-                    >
-                        <TrashIcon />
-                    </button>
-                </div>
-              ))}
+                        <button
+                            type="button"
+                            className="activity-remove-button"
+                            onClick={() => removeGroupRow(item.uniqueId)}
+                            title="Remover grupo"
+                        >
+                            <TrashIcon />
+                        </button>
+                    </div>
+                ))}
             </div>
 
-            <button type="button" className="activity-add-button" onClick={addGroupActivityRow}>
+            <button type="button" className="activity-add-button" onClick={addGroupRow}>
                 <AddIcon />
-                Adicionar mais atividades
+                Adicionar mais grupos
             </button>
           </div>
-        
+
           <div className="next-button-container">
-            <button 
-                className="button-next" 
-                type="button" 
-                onClick={handleSave}
-                disabled={isSubmitting} // Desabilita visualmente
-                style={{ opacity: isSubmitting ? 0.6 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
-            >
-              {isSubmitting ? "Salvando..." : "Salvar"}
+            <button className="button-next" type="button" onClick={handleSave}>
+              Salvar Caderno
             </button>
           </div>
         </div>
@@ -276,4 +271,4 @@ function GroupActivitiesPage() {
   );
 }
 
-export default GroupActivitiesPage;
+export default AdicionarAtividade;

@@ -9,7 +9,7 @@ import iconSeta from "../../assets/images/seta_icon.png";
 import iconActivitie from "../../assets/images/iconActivitie.png"; 
 import { useNavigate } from "react-router-dom";
 
-// Ícone de Lixeira
+
 const TrashIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M5 6H19L18.1245 19.133C18.0544 20.1836 17.1818 21 16.1289 21H7.87111C6.81818 21 5.94558 20.1836 5.87554 19.133L5 6Z" stroke="black" strokeWidth="2"/>
@@ -23,12 +23,6 @@ const TrashIcon = () => (
 function ManageGroupPage() {
     const navigate = useNavigate();
 
-    // Função adicionada para navegação do dropdown
-    const handleNavigate = (path) => {
-        navigate(path);
-    };
-
-    // --- ESTADOS ---
     const [groups, setGroups] = useState([]);
     const [allTasks, setAllTasks] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -46,7 +40,7 @@ function ManageGroupPage() {
         comprehension: "Compreensão"
     };
 
-    // Buscar dados
+    
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -138,17 +132,11 @@ function ManageGroupPage() {
                         <h2>Gerencie os grupos de atividades</h2>
                     </div>
 
-                    {/* === DROPDOWN ADICIONADO AQUI === */}
-                    <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "20px", position: "relative" }}>
-                        <div className="dropdown-menu">
-                            <a onClick={() => handleNavigate('/addNotebook')}>Criar caderno</a>
-                            <a onClick={() => handleNavigate('/GroupActivities')}>Criar grupo de atividades</a>
-                            <a onClick={() => handleNavigate('/CreateNewActivitie')}>Criar atividade</a>
-                        </div>
-
+                   
+                    <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "20px" }}>
                         <button 
                             className="create-patient-bnt"
-                            onClick={() => navigate('/createTaskGroup')}
+                            onClick={() => navigate('/createTaskGroup')} 
                         >
                             Novo Grupo
                         </button>
@@ -205,7 +193,7 @@ function ManageGroupPage() {
                 </div>
             </main>
 
-            {/* === MODAL === */}
+           
             {isModalOpen && selectedGroup && (
                 <div className="modal-overlay" onClick={closeModal}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
