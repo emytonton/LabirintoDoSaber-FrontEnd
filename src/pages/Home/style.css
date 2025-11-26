@@ -162,7 +162,7 @@ body {
   margin-bottom: 2.5rem;
 }
 
-.btn {
+.btn-primary-session {
   padding: 0.8rem 1.5rem;
   border: none;
   border-radius: 30px;
@@ -178,7 +178,7 @@ body {
   margin-left: 120px;
 }
 
-.btn:hover {
+.btn-primary-session:hover {
   background-color: #66c0d4;
 }
 

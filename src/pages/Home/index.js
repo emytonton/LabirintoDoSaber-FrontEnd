@@ -16,7 +16,11 @@ function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  
+  const handleStartSession = () => {
+        // Navega para a página de seleção de sessão/paciente
+        navigate('/session'); // Substitua por sua rota real, se for diferente
+    };
+
   useEffect(() => {
     
     const fetchUserData = async () => {
@@ -97,7 +101,12 @@ function Home() {
 
         <div className="content-right">
           <div className="action-buttons">
-            <button className="btn btn-secondary">Iniciar Sessão</button>
+            <button 
+                className="btn-primary-session" /* Nova classe para destacar */
+                onClick={handleStartSession}
+             >
+                Iniciar Sessão
+            </button>
           </div>
 
           <h2>Meus alunos</h2>
