@@ -24,6 +24,7 @@ import SessionTypePage from './pages/sessionType';
 import SessionGroupPage from './pages/sessionGroup';
 import SessionNotebookPage from './pages/sessionNotebook';
 import SessionActivitiesPage from './pages/sessionActivities';
+import SessionInitPage from './pages/sessionInit';
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
         <Route path="/SessionGroup" element={<SessionGroupPage />} />
         <Route path="/SessionNotebook" element={<SessionNotebookPage />} />
         <Route path="/SessionActivities" element={<SessionActivitiesPage />} />
+        <Route path="/SessionInit" element={<SessionInitPage />} />
       </Routes>
     </div>
   );
