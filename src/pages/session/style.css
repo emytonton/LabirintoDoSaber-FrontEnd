@@ -178,7 +178,9 @@
 /* ... etc. (Seus estilos de logo, navbar, etc.) */
 
 .select-patient {
-    background-color: #D8F5F3;
+    background-color: #F3FBFB;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #D8F5F3;
     border-radius: 50px;
     padding: 15px;
     display: flex;

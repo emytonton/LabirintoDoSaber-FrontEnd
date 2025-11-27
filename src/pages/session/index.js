@@ -27,7 +27,8 @@ function SessionPage() {
     // Função para lidar com o clique no paciente (iniciar sessão ou ir para detalhes)
     const handlePatientClick = (patientId) => {
         console.log(`Iniciando sessão para o paciente ID: ${patientId}`);
-        // Ex: navigate(`/session/${patientId}`);
+        const nextScreenPath = `/sessionTitle`;
+        navigate(nextScreenPath, { state: { patientId: patientId } });
     };
 
     return (
