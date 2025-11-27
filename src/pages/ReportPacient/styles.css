@@ -1,0 +1,373 @@
+/* --- IMPORTAÇÃO DE FONTE E RESET BÁSICO --- */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Nunito', sans-serif;
+    background-color: #fcfcff;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* --- ESTRUTURA GERAL (LAYOUT) --- */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* --- HEADER / NAVBAR (Mantido para consistência) --- */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2.5rem;
+    background-color: #fff;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.logo {
+    height: 50px; /* Ajuste conforme tamanho real da sua logo */
+}
+
+.navbar {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #666;
+    font-weight: 600;
+    font-size: 1rem;
+    padding-bottom: 5px;
+}
+
+.nav-link.active {
+    color: #63E9E2;
+    border-bottom: 3px solid #63E9E2;
+}
+
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.profile-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+/* --- ÁREA PRINCIPAL DA SESSÃO --- */
+.session-main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 2.5rem;
+    background-color: #fcfcff;
+}
+
+.session-container {
+    width: 100%;
+    max-width: 1200px; /* Largura máxima do conteúdo central */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Botão de Voltar (Seta) */
+.top-nav-row {
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+}
+
+.back-arrow-link {
+    display: inline-block;
+    transition: transform 0.2s;
+}
+
+.back-arrow-link:hover {
+    transform: translateX(-5px);
+}
+
+.back-arrow-icon {
+    width: 40px;
+    height: 40px;
+}
+
+/* --- CARTÃO PRINCIPAL (FUNDO AZUL CLARO) --- */
+.student-report-card {
+    background-color: #F3FBFB; /* Cor base do card grande */
+    border: 1px solid #E0F2F1;
+    border-radius: 40px;
+    padding: 2rem 3rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* --- 1. CABEÇALHO DO ALUNO --- */
+.student-header-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.student-profile-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.big-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #fff;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.student-text h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.student-text p {
+    margin: 2px 0;
+    color: #666;
+    font-size: 1rem;
+}
+
+.student-level {
+    color: #999 !important; /* Cor cinza mais clara para o nível */
+    font-size: 0.95rem;
+}
+
+.student-search-area {
+    width: 320px; /* Largura fixa para a barra de pesquisa */
+}
+
+/* --- 2. ÁREA BRANCA DAS SESSÕES --- */
+.sessions-white-box {
+    background-color: #fff;
+    border-radius: 30px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #000;
+}
+
+.sessions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Card Individual da Sessão */
+.session-item {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1.2rem;
+    border: 1px solid #f0f0f0;
+    border-radius: 50px; /* Arredondamento "Pílula" */
+    background-color: #fff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.session-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    border-color: #63E9E2;
+}
+
+.session-icon-box {
+    width: 48px;
+    height: 48px;
+    background-color: #FFF8E1; /* Fundo amarelo claro do ícone */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1.5rem;
+    flex-shrink: 0;
+}
+
+.session-icon-img {
+    width: 24px;
+    height: 24px;
+    opacity: 0.8;
+}
+
+.session-info {
+    flex-grow: 1;
+}
+
+.session-info h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.session-info p {
+    margin: 2px 0 0 0;
+    font-size: 0.9rem;
+    color: #aaa; /* Cinza claro para subtítulo */
+    font-weight: 600;
+}
+
+.arrow-right {
+    width: 20px;
+    height: 20px;
+    opacity: 0.4;
+    margin-left: 10px;
+}
+
+/* Paginação Simples */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.pagination-controls button {
+    background: none;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    color: #999;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 8px;
+    transition: color 0.2s;
+}
+
+.pagination-controls .page-arrow {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.pagination-controls .active {
+    color: #63E9E2; /* Cor de destaque (Ciano) */
+    font-weight: 700;
+}
+
+.pagination-controls button:hover:not(.active) {
+    color: #666;
+    background-color: #f5f5f5;
+}
+
+/* --- 3. DASHBOARD METRICS (RODAPÉ) --- */
+.dashboard-metrics-section {
+    padding: 0 1rem;
+}
+
+/* Ajuste do título para alinhar com o design */
+.dashboard-metrics-section .section-title {
+    margin-bottom: 2rem;
+}
+
+.metrics-grid {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start; /* Alinha no topo para caso tenham alturas diferentes */
+}
+
+.metric-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    flex: 1;
+}
+
+.metric-label {
+    font-weight: 700;
+    color: #bbb; /* Cinza bem claro para os títulos das métricas */
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.metric-pill {
+    background-color: #D8F5F3; /* Verde água bem claro */
+    color: #000;
+    font-weight: 700;
+    padding: 0.6rem 3rem;
+    border-radius: 25px; /* Arredondamento forte */
+    font-size: 1.1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    white-space: nowrap;
+}
+
+.metric-sub {
+    font-size: 0.75rem;
+    color: #bbb;
+    font-weight: 600;
+}
+
+.vertical-divider {
+    width: 1px;
+    height: 70px;
+    background-color: #000;
+    opacity: 0.1; /* Linha divisória bem sutil */
+    align-self: center;
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 900px) {
+    .student-report-card {
+        padding: 1.5rem;
+    }
+    
+    .student-header-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+
+    .student-search-area {
+        width: 100%;
+    }
+
+    .metrics-grid {
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .vertical-divider {
+        display: none; /* Esconde divisores verticais no mobile */
+    }
+
+    .metric-pill {
+        width: 100%;
+        text-align: center;
+        max-width: 250px;
+    }
+}

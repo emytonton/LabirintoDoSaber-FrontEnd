@@ -62,7 +62,7 @@ function Home() {
           <Link to="/home" className="nav-link active">Dashboard</Link> 
           <Link to="/activitiesMain" className="nav-link">Atividades</Link>
           <Link to="/alunos" className="nav-link">Alunos</Link> 
-          <Link to="#" className="nav-link">Relatórios</Link>
+          <Link to="/MainReport" className="nav-link">Relatórios</Link>
         </nav>
         <div className="user-controls">
           <img src={iconNotification} alt="Notificações" className="icon" />

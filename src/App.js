@@ -24,8 +24,10 @@ import SessionTypePage from './pages/sessionType';
 import SessionGroupPage from './pages/sessionGroup';
 import SessionNotebookPage from './pages/sessionNotebook';
 import SessionActivitiesPage from './pages/sessionActivities';
+import MainReport from './pages/mainReport'
+import ReportPacient from './pages/ReportPacient/index.js'
+import ReportSession from './pages/ReportSession/index.js'
 import SessionInitPage from './pages/sessionInit';
-
 function App() {
   return (
     <div className="App">
@@ -54,6 +56,9 @@ function App() {
         <Route path="/SessionGroup" element={<SessionGroupPage />} />
         <Route path="/SessionNotebook" element={<SessionNotebookPage />} />
         <Route path="/SessionActivities" element={<SessionActivitiesPage />} />
+        <Route path="/MainReport" element={<MainReport/>} />
+        <Route path="/ReportPacient" element={<ReportPacient/>} />
+        <Route path="/ReportSession" element={<ReportSession/>} />
         <Route path="/SessionInit" element={<SessionInitPage />} />
       </Routes>
     </div>

@@ -1,0 +1,200 @@
+import React, { useState, useEffect } from "react";
+import "./style.css";
+import logo from "../../assets/images/logo.png";
+import iconNotification from "../../assets/images/icon_notification.png";
+import iconProfile from "../../assets/images/icon_profile.png";
+import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png";
+import patientAvatar from "../../assets/images/icon_random.png";
+import iconSeta from "../../assets/images/seta_icon.png";
+import SearchBar from "../../components/ui/SearchBar/Search";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+function MainReport() {
+    const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState("");
+    const [patients, setPatients] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const patientsPerPage = 3;
+
+    useEffect(() => {
+        const fetchStudents = async () => {
+            try {
+                const educatorId = localStorage.getItem("userId");
+                const token = localStorage.getItem("authToken");
+
+                if (!educatorId || !token) {
+                    navigate("/");
+                    return;
+                }
+
+                const config = {
+                    headers: { Authorization: `Bearer ${token}` }
+                };
+
+                const response = await axios.get(
+                    "https://labirinto-do-saber.vercel.app/student/",
+                    config
+                );
+
+                let allStudents = [];
+
+                if (Array.isArray(response.data)) {
+                    allStudents = response.data;
+                } else if (response.data && Array.isArray(response.data.students)) {
+                    allStudents = response.data.students;
+                }
+
+                const myStudents = allStudents.filter(
+                    (s) => String(s.educatorId) === String(educatorId)
+                );
+
+                const mappedPatients = myStudents.map((s) => ({
+                    id: s.id,
+                    name: s.name,
+                    age: s.age,
+                    status: s.learningTopics?.[0] || "Sem tópico definido"
+                }));
+
+                setPatients(mappedPatients);
+                setLoading(false);
+            } catch (error) {
+                console.error("Erro ao buscar estudantes:", error);
+                setLoading(false);
+            }
+        };
+
+        fetchStudents();
+    }, [navigate]);
+
+    const handlePatientClick = (patientId) => {
+        navigate("/ReportPacient", { state: { patientId } });
+    };
+
+    const filteredPatients = patients.filter((p) =>
+        p.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const totalPages = Math.ceil(filteredPatients.length / patientsPerPage);
+    const startIndex = (currentPage - 1) * patientsPerPage;
+    const currentPatients = filteredPatients.slice(
+        startIndex,
+        startIndex + patientsPerPage
+    );
+
+    const changePage = (page) => {
+        if (page >= 1 && page <= totalPages) {
+            setCurrentPage(page);
+        }
+    };
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
+    return (
+        <div className="dashboard-container">
+            <header className="header">
+                <img src={logo} alt="Labirinto do Saber" className="logo" />
+                <nav className="navbar">
+                    <a href="/home" className="nav-link">Dashboard</a>
+                    <a href="/activitiesMain" className="nav-link">Atividades</a>
+                    <a href="/alunos" className="nav-link">Alunos</a>
+                    <a href="/MainReport" className="nav-link active">Relatórios</a>
+                </nav>
+                <div className="user-controls">
+                    <img src={iconNotification} alt="Notificações" className="icon" />
+                    <img src={iconProfile} alt="Perfil" className="icon profile-icon" />
+                </div>
+            </header>
+
+            <main className="session-main-content">
+                <div className="session-container">
+                    <a href="/Home" className="back-arrow-link">
+                        <img src={iconArrowLeft} alt="Voltar" className="back-arrow-icon" />
+                    </a>
+
+                    <div className="session-header-top">
+                        <h1>Relatórios</h1>
+
+                        <div className="search-filter-group">
+                            <SearchBar
+                                searchTerm={searchTerm}
+                                setSearchTerm={setSearchTerm}
+                                placeholder="Selecione o paciente..."
+                            />
+                        </div>
+                    </div>
+
+                    <div className="select-patient">
+                        <h2 className="session-subtitle">Pacientes</h2>
+
+                        {loading ? (
+                            <p>Carregando...</p>
+                        ) : (
+                            <div className="patient-card-list">
+                                {currentPatients.map((patient) => (
+                                    <div
+                                        key={patient.id}
+                                        className="patient-list-item-card"
+                                        onClick={() => handlePatientClick(patient.id)}
+                                        style={{ cursor: "pointer" }}
+                                    >
+                                        <img
+                                            src={patientAvatar}
+                                            alt={`Avatar de ${patient.name}`}
+                                            className="patient-avatar"
+                                        />
+                                        <div className="patient-card-info">
+                                            <h3>{patient.name}</h3>
+                                            <p>{patient.age} anos</p>
+                                            <p className="patient-status">{patient.status}</p>
+                                        </div>
+
+                                        <div className="patient-card-action">
+                                            <img src={iconSeta} alt="Avançar" className="seta" />
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {currentPatients.length === 0 && (
+                                    <p>Nenhum paciente encontrado.</p>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="pagination-controls">
+                            <button
+                                className="page-arrow"
+                                onClick={() => changePage(currentPage - 1)}
+                            >
+                                &lt;
+                            </button>
+
+                            {Array.from({ length: totalPages }, (_, i) => (
+                                <button
+                                    key={i}
+                                    className={`page-number ${currentPage === i + 1 ? "active" : ""}`}
+                                    onClick={() => changePage(i + 1)}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+
+                            <button
+                                className="page-arrow"
+                                onClick={() => changePage(currentPage + 1)}
+                            >
+                                &gt;
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    );
+}
+
+export default MainReport;
