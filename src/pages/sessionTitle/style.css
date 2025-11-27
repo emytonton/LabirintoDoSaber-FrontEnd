@@ -1,0 +1,192 @@
+/* Estilos Específicos para StartSessionDetailsPage */
+.start-session-main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 2.5rem;
+    background-color: #fcfcff;
+}
+
+.start-session-container {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.start-session-header-top {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-left: 2rem;
+}
+
+.start-session-header-top h1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin: 0 0 0 20px; /* Ajuste o margin-left para o h1 */
+}
+
+.back-arrow-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 24px; /* Ajuste para centralizar o ícone */
+    width: 24px;
+}
+
+.back-arrow-icon {
+    width: 44px;
+    height: 44px;
+}
+
+
+/* Card Centralizado para Nome da Sessão */
+.session-name-card {
+    background-color: #F3FBFB;
+    border-radius: 50px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 100%;
+    max-width: 600px; /* Largura máxima do card */
+    margin: 3rem auto 0 auto; /* Centraliza o card na tela */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card-instruction {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.6rem;
+    color: #333;
+    margin-bottom: 25px;
+    margin-top: 10px;
+    font-weight: 200;
+}
+
+.required-asterisk {
+    color: #FF6B6B; /* Cor vermelha para indicar campo obrigatório */
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.input-with-icon {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border: 1px solid #D8F5F3;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 25px;
+    padding: 10px 20px;
+    margin-bottom: 30px;
+    width: 100%;
+    max-width: 400px; /* Largura máxima do input */
+}
+
+.input-with-icon svg {
+    width: 22px; /* Ajuste o tamanho do SVG da caneta */
+    height: 22px;
+    flex-shrink: 0; /* Previne que o ícone encolha */
+}
+
+.session-name-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    flex-grow: 1; /* Faz o input ocupar o espaço restante */
+    font-family: 'Nunito', sans-serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: #000;
+    padding: 5px 0;
+}
+
+.session-name-input::placeholder {
+    color: #000;
+}
+
+.next-button {
+    background-color: #FFFFFF; /* Cor de destaque */
+    color: #000;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 200;
+    padding: 8px 40px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.next-button:hover {
+    background-color: #008D85;
+    transform: translateY(-2px);
+}
+
+/* --- ESTILOS GLOBAIS REUTILIZADOS (Você deve ter estes em um arquivo separado) --- */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2.5rem;
+    background-color: #fff;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.logo {
+    width: 150px;
+    height: 70px;
+    object-fit: contain;
+}
+
+.navbar {
+    display: flex;
+    gap: 2rem;
+    margin-left: -10%;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #555;
+    font-weight: 600;
+    font-size: 20px;
+    padding-bottom: 4px;
+    margin-left: 10%;
+}
+
+.nav-link.active {
+    color: #63E9E2;
+    border-bottom: 3px solid #63E9E2;
+}
+
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.icon {
+    height: 41px;
+    width: 48px;
+    cursor: pointer;
+    object-fit: contain;
+}
+
+.profile-icon {
+    border-radius: 50%;
+    background-color: #333;
+    height: 59px;
+    width: 59px;
+}
