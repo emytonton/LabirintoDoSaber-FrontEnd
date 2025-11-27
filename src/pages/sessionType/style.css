@@ -1,0 +1,141 @@
+.session-options-main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 2.5rem;
+    background-color: #fcfcff;
+}
+
+.session-options-container {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.session-options-header-top {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-left: 2rem;
+}
+
+.session-options-header-top h1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin: 0 0 0 20px;
+}
+
+.back-arrow-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 24px;
+    width: 24px;
+}
+
+.back-arrow-icon {
+    width: 44px;
+    height: 44px;
+}
+
+/* Card Centralizado de Opções */
+.selection-card {
+    background-color: #F3FBFB;
+    border-radius: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    width: 100%;
+    max-width: 550px; /* Largura do card */
+    margin: 3px auto 0 auto; /* Centraliza o card na tela */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card-title-instruction {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.3rem;
+    color: #333;
+    margin-bottom: 40px;
+    font-weight: 200;
+}
+
+.options-list {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.session-option-button {
+    width: 100%;
+    height: 100px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 30px;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.session-option-button:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.option-icon-text {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.option-icon {
+    width: 55px;
+    height: 55px;
+}
+
+.option-icon-text span {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.seta-next {
+    width: 20px;
+    height: 20px;
+    opacity: 0.5;
+}
+
+
+/* ESTILOS GLOBAIS (Header, etc. - Devem ser mantidos em seu arquivo global) */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2.5rem;
+    background-color: #fff;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.nav-link.active {
+    color: #63E9E2;
+    border-bottom: 3px solid #63E9E2;
+}
+/* ... (Seus estilos de logo, icon, profile-icon, etc.) */

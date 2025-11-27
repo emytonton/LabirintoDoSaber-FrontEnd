@@ -1,0 +1,190 @@
+.session-activity-select-main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 2.5rem;
+    background-color: #fcfcff;
+}
+
+.session-activity-select-container {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-left: 2rem;
+    gap: 30px;
+}
+
+.top-container h1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.back-arrow-link {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin-right: 20px;
+}
+
+.back-arrow-icon {
+    width: 44px;
+    height: 44px;
+}
+
+.session-activity-select-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-left: 0;
+    padding: 0 15px;
+}
+
+.activity-select-row-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.activity-select-list-item-card {
+    padding: 0.8rem 1.5rem;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 54px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    height: auto;
+    min-height: 70px;
+    transition: all 0.2s ease-in-out;
+    flex: 1;
+}
+
+.activity-select-list-item-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.activity-select-card-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 10px;
+}
+
+.activity-select-card-info h3 {
+    margin: 0 0 4px 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.activity-select-bnt-details {
+    padding: 4px 8px;
+    border: none;
+    border-radius: 20px;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background-color 0.2s;
+    background-color: #D8F5F3;
+    font-family: Nunito;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+    max-width: fit-content;
+    height: auto;
+    white-space: normal;
+    text-align: center;
+    margin-top: 3px;
+    align-self: flex-start;
+    color: #000;
+}
+
+.activity-select-card-icon {
+    margin-right: 20px;
+    width: 40px; /* Ícone de Atividade Individual (documento único) pode ser menor */
+    min-width: 40px;
+    height: 45px;
+}
+
+.select-plus-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    transition: transform 0.2s;
+    line-height: 1;
+    align-self: center;
+    flex-shrink: 0;
+}
+
+.select-plus-btn:hover {
+    transform: scale(1.1);
+}
+
+.select-plus-btn svg {
+    width: 25px;
+    height: 25px;
+    display: block;
+}
+
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2.5rem;
+    background-color: #fff;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.nav-link.active {
+    color: #63E9E2;
+    border-bottom: 3px solid #63E9E2;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3rem;
+    gap: 0.5rem;
+}
+
+.page-arrow, .page-number {
+    text-decoration: none;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #999;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.page-number.active {
+    background-color: #D8F5F3;
+    color: #008D85;
+}
+/* ... (Seus estilos de body, logo, icon, etc.) ... */
