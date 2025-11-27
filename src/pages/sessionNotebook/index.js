@@ -55,7 +55,8 @@ function SessionNotebookPage() {
 
     const handleNotebookSelection = (notebook) => {
         console.log("Caderno Selecionado para sessão:", notebook.id);
-        // Implementar lógica de adicionar este caderno à sessão em andamento
+        const initScreenPath = `/sessionInit`;
+        navigate(initScreenPath, { state: { selectedItem: notebook, itemType: 'notebook' } });
     };
 
     const handleFilterAction = () => {
