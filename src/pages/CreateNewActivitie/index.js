@@ -137,7 +137,7 @@ function AdicionarAtividade() {
                     <a href="/home" className={`nav-link ${currentPath === '/home' ? 'active' : ''}`}>Dashboard</a> 
                     <a href="/activitiesMain" className={`nav-link active`}>Atividades</a>
                     <a href="/alunos" className={`nav-link ${currentPath === '/alunos' ? 'active' : ''}`}>Alunos</a> 
-                    <a href="/relatorios" className={`nav-link ${currentPath === '/relatorios' ? 'active' : ''}`}>Relatórios</a>
+                    <a href="/MainReport" className={`nav-link ${currentPath === '/relatorios' ? 'active' : ''}`}>Relatórios</a>
                 </nav>
                 <div className="user-controls">
                     <img src={iconNotification} alt="Notificações" className="icon" />

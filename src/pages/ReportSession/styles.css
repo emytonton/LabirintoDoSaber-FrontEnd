@@ -1,0 +1,173 @@
+/* --- CONTAINER E FUNDO AZUL --- */
+.session-report-card {
+    background-color: #F3FBFB;
+    border: 1px solid #E0F2F1;
+    border-radius: 40px;
+    padding: 2rem 3rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.session-page-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #000;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    padding-left: 10px;
+}
+
+/* --- BOX BRANCO INTERNO --- */
+.metrics-white-box-large {
+    background-color: #fff;
+    border-radius: 35px;
+    padding: 2.5rem 4rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.box-subtitle {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 400; 
+    color: #666;
+    margin-top: 0;
+    margin-bottom: 3rem;
+}
+
+
+.metrics-split-layout {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch; 
+    gap: 2rem;
+}
+
+.metrics-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.left-column {
+    margin-top: 20px;
+    align-items: center; 
+    gap: 2rem;
+}
+
+.metric-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.metric-label-text {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #AAA; 
+}
+
+
+.metric-pill-large {
+    background-color: #F0F8F8; 
+    color: #000;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.8rem 0;
+    width: 220px; 
+    text-align: center;
+    border-radius: 50px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1); 
+    border: 1px solid #EAF6F6;
+}
+
+
+.vertical-separator {
+    width: 1px;
+    background-color: #ccc;
+    margin: 0 2rem;
+}
+
+
+.right-column {
+    gap: 3rem; 
+    align-items: center;
+}
+
+.rates-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.group-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #AAA;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+
+.rates-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 2rem;
+    row-gap: 1.5rem;
+    width: 100%;
+    max-width: 500px; 
+}
+
+.rate-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rate-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    color: #888;
+    font-weight: 400;
+}
+
+
+.metric-pill-medium {
+    background-color: #F0F8F8;
+    color: #000;
+    font-weight: 800; 
+    font-size: 1.1rem;
+    padding: 0.6rem 0;
+    width: 100%; 
+    min-width: 140px;
+    text-align: center;
+    border-radius: 50px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    border: 1px solid #EAF6F6;
+}
+
+
+@media (max-width: 968px) {
+    .metrics-split-layout {
+        flex-direction: column;
+    }
+
+    .vertical-separator {
+        width: 100%;
+        height: 1px;
+        margin: 2rem 0;
+    }
+
+    .metrics-white-box-large {
+        padding: 2rem;
+    }
+}
