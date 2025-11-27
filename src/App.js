@@ -19,6 +19,11 @@ import ManageNotebookPage from './pages/ManageNotebook';
 import NotebookDetailsPage from './pages/NotebookDetails';
 import GroupSelectPage from './pages/GroupSelect';
 import SessionPage from './pages/session';
+import SessionTitlePage from './pages/sessionTitle';
+import SessionTypePage from './pages/sessionType';
+import SessionGroupPage from './pages/sessionGroup';
+import SessionNotebookPage from './pages/sessionNotebook';
+import SessionActivitiesPage from './pages/sessionActivities';
 
 function App() {
   return (
@@ -43,6 +48,11 @@ function App() {
         <Route path="/NotebookDetails" element={<NotebookDetailsPage />} />
         <Route path="/GroupSelect" element={<GroupSelectPage />} />
         <Route path="/Session" element={<SessionPage />} />
+        <Route path="/SessionTitle" element={<SessionTitlePage />} />
+        <Route path="/SessionType" element={<SessionTypePage />} />
+        <Route path="/SessionGroup" element={<SessionGroupPage />} />
+        <Route path="/SessionNotebook" element={<SessionNotebookPage />} />
+        <Route path="/SessionActivities" element={<SessionActivitiesPage />} />
       </Routes>
     </div>
   );
