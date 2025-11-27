@@ -17,7 +17,7 @@ const ActivityChip = ({ label, isSelected, onClick }) => (
   </button>
 );
 
-// SVGs como componentes
+
 const TrashIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M5 6H19L18.1245 19.133C18.0544 20.1836 17.1818 21 16.1289 21H7.87111C6.81818 21 5.94558 20.1836 5.87554 19.133L5 6Z" stroke="black" strokeWidth="2"/>
@@ -55,10 +55,10 @@ function GroupActivitiesPage() {
   const [selectedCategory, setSelectedCategory] = useState('Leitura');
   const [groupName, setGroupName] = useState('');
   
-  // Estado para armazenar as atividades disponíveis vindas do backend
+
   const [availableTasks, setAvailableTasks] = useState([]);
   
-  // Lista de atividades selecionadas para o grupo (guardamos o ID da atividade)
+
   const [groupActivities, setGroupActivities] = useState([{ uniqueId: Date.now(), taskId: '' }]); 
 
   const categories = ['Leitura', 'Escrita', 'Vocabulário', 'Compreensão'];
@@ -70,7 +70,7 @@ function GroupActivitiesPage() {
     'Compreensão': 'comprehension'
   };
 
-  // --- 1. BUSCAR ATIVIDADES EXISTENTES NO BACKEND ---
+ 
   useEffect(() => {
     const fetchTasks = async () => {
         const token = localStorage.getItem('authToken');
@@ -80,7 +80,7 @@ function GroupActivitiesPage() {
             const response = await axios.get('https://labirinto-do-saber.vercel.app/task/', {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            // Filtra se necessário, ou pega tudo
+            
             if (Array.isArray(response.data)) {
                 setAvailableTasks(response.data);
             }
@@ -91,7 +91,6 @@ function GroupActivitiesPage() {
     fetchTasks();
   }, []);
 
-  // Funções para gerenciar a lista visual
   const addGroupActivityRow = () => {
     setGroupActivities([...groupActivities, { uniqueId: Date.now(), taskId: '' }]);
   };
@@ -108,16 +107,16 @@ function GroupActivitiesPage() {
     ));
   };
 
-  // --- 2. SALVAR O GRUPO ---
+
   const handleSave = async () => {
     const token = localStorage.getItem('authToken');
     
-    // Filtra apenas os IDs válidos (não vazios)
+    
     const tasksIds = groupActivities
         .map(item => item.taskId)
         .filter(id => id !== '');
 
-    // Validação
+   
     if (!groupName.trim()) {
       alert("Por favor, preencha o Nome do Grupo.");
       return;
@@ -141,7 +140,7 @@ function GroupActivitiesPage() {
         });
         
         alert("Grupo de atividades criado com sucesso!");
-        navigate('/activitiesMain'); // Redireciona para onde fizer sentido
+        navigate('/activitiesMain'); 
 
     } catch (error) {
         console.error("Erro ao criar grupo:", error);
@@ -158,7 +157,7 @@ function GroupActivitiesPage() {
           <a href="/home" className="nav-link">Dashboard</a> 
           <a href="/activitiesMain" className="nav-link active">Atividades</a>
           <a href="/alunos" className="nav-link">Alunos</a> 
-          <a href="/relatorios" className="nav-link">Relatórios</a>
+          <a href="/MainReport" className="nav-link">Relatórios</a>
         </nav>
         <div className="user-controls">
           <img src={iconNotification} alt="Notificações" className="icon" />
@@ -200,7 +199,7 @@ function GroupActivitiesPage() {
             />
           </div>
 
-          {/* INÍCIO: SEÇÃO ADICIONAR ATIVIDADES DESEJADAS */}
+          
           <div className="form-group">
             <div className="form-label required">Adicione as atividades desejadas</div>
 
@@ -208,9 +207,9 @@ function GroupActivitiesPage() {
               {groupActivities.map((item, idx) => (
                 <div key={item.uniqueId} className="activity-row">
                   <div className="activity-item">
-                    {/* SUBSTITUIÇÃO: Input de texto virou Select */}
+                    
                     <select
-                      className="activity-input" // Mantendo a classe para estilização
+                      className="activity-input" 
                       value={item.taskId}
                       onChange={(e) => updateGroupActivitySelection(item.uniqueId, e.target.value)}
                       style={{width: '100%', height: '100%', border: 'none', background: 'transparent', outline: 'none'}}
@@ -242,7 +241,7 @@ function GroupActivitiesPage() {
                 Adicionar mais atividades
             </button>
           </div>
-          {/* FIM: SEÇÃO ADICIONAR ATIVIDADES DESEJADAS */}
+         
         
           <div className="next-button-container">
             <button className="button-next" type="button" onClick={handleSave}>

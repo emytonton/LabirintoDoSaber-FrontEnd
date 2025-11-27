@@ -11,51 +11,41 @@ import iconProfile from '../../assets/images/icon_profile.png';
 import iconRandom from '../../assets/images/icon_random.png';
 
 function Home() {
- 
   const [userName, setUserName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   const handleStartSession = () => {
-        // Navega para a página de seleção de sessão/paciente
-        navigate('/session'); // Substitua por sua rota real, se for diferente
-    };
+    navigate('/session');
+  };
 
   useEffect(() => {
-    
     const fetchUserData = async () => {
       try {
-        
         const response = await axios.get('https://labirinto-do-saber.vercel.app/educator/me');
-
-        
         setUserName(response.data.name);
-
       } catch (error) {
         console.error("Erro ao buscar dados do usuário:", error);
-        
         alert("Sua sessão expirou. Por favor, faça login novamente.");
         navigate('/'); 
       } finally {
-        
         setIsLoading(false);
       }
     };
 
     fetchUserData();
-  }, [navigate]); 
+  }, [navigate]);
 
   if (isLoading) {
     return (
-      <div className="dashboard-container">
+      <div className="home-dashboard-container">
         <h1>Carregando...</h1>
       </div>
     );
   }
 
-
   return (
-    <div className="dashboard-container">
+    <div className="home-dashboard-container">
       <header className="header">
         <img src={logo} alt="Labirinto do Saber" className="logo" />
         <nav className="navbar">
@@ -64,82 +54,91 @@ function Home() {
           <Link to="/alunos" className="nav-link">Alunos</Link> 
           <Link to="/MainReport" className="nav-link">Relatórios</Link>
         </nav>
-        <div className="user-controls">
+
+        <div className="home-user-controls">
           <img src={iconNotification} alt="Notificações" className="icon" />
-          <img src={iconProfile} alt="Perfil" className="icon profile-icon" />
+          <img 
+            src={iconProfile} 
+            alt="Perfil" 
+            className="profile-icon" 
+            onClick={() => navigate('/Profile')}
+            style={{ cursor: 'pointer' }}
+          />
         </div>
       </header>
 
-      <main className="main-content">
-        <div className="content-left">
+      <main className="home-main-content">
+        <div className="home-content-left">
           <h1>Dashboard</h1>
-          
   
-          <p className="welcome-message">
+          <p className="home-welcome-message">
             Bem vindo(a) de volta, {userName || 'Usuário'}!
           </p>
 
           <h2>Atividades recentes</h2>
-          <div className="activity-card">
-            <img src={boyHome} alt="Menino lendo" className="activity-image" />
-            <div className="activity-info">
+
+          <div className="home-activity-card">
+            <img src={boyHome} alt="Menino lendo" className="home-activity-image" />
+            <div className="home-activity-info">
               <h3>Sessão de sílabas com Lucas</h3>
               <p>Foco na montagem e reconhecimento das sílabas tônicas.</p>
             </div>
-              <img src={setaIcon} alt="Seta" className="arrow" />
+            <img src={setaIcon} alt="Seta" className="home-arrow" />
           </div>
 
-          <div className="activity-card">
-            <img src={girlHome} alt="Menina lendo" className="activity-image" />
-            <div className="activity-info">
+          <div className="home-activity-card">
+            <img src={girlHome} alt="Menina lendo" className="home-activity-image" />
+            <div className="home-activity-info">
               <h3>Sessão de sílabas com Ana</h3>
               <p>Foco na montagem e reconhecimento das sílabas tônicas.</p>
             </div>
-            <img src={setaIcon} alt="Seta" className="arrow" />
+            <img src={setaIcon} alt="Seta" className="home-arrow" />
           </div>
         </div>
 
-        <div className="content-right">
-          <div className="action-buttons">
+        <div className="home-content-right">
+          <div className="home-action-buttons">
             <button 
-                className="btn-primary-session" /* Nova classe para destacar */
-                onClick={handleStartSession}
-             >
-                Iniciar Sessão
+              className="home-btn-primary-session"
+              onClick={handleStartSession}
+            >
+              Iniciar Sessão
             </button>
           </div>
 
           <h2>Meus alunos</h2>
-          <div className="student-list-card">
-            <div className="student-list-header">
+
+          <div className="home-student-list-card">
+            <div className="home-student-list-header">
               <span>Nome</span>
               <span>Última atividade</span>
             </div>
 
-            <div className="student-row">
-              <div className="student-name-group">
-                <img src={iconRandom} alt="Lucas" className="student-avatar" />
+            <div className="home-student-row">
+              <div className="home-student-name-group">
+                <img src={iconRandom} alt="Lucas" className="home-student-avatar" />
                 <span>Lucas</span>
               </div>
-              <span className="student-activity-tag">Atividade X</span>
+              <span className="home-student-activity-tag">Atividade X</span>
             </div>
 
-            <div className="student-row">
-              <div className="student-name-group">
-                <img src={iconRandom} alt="Maria" className="student-avatar" />
+            <div className="home-student-row">
+              <div className="home-student-name-group">
+                <img src={iconRandom} alt="Maria" className="home-student-avatar" />
                 <span>Maria</span>
               </div>
-              <span className="student-activity-tag">Atividade X</span>
+              <span className="home-student-activity-tag">Atividade X</span>
             </div>
         
-            <div className="student-row">
-              <div className="student-name-group">
-                <img src={iconRandom} alt="João" className="student-avatar" />
+            <div className="home-student-row">
+              <div className="home-student-name-group">
+                <img src={iconRandom} alt="João" className="home-student-avatar" />
                 <span>João</span>
               </div>
-              <span className="student-activity-tag">Atividade X</span>
+              <span className="home-student-activity-tag">Atividade X</span>
             </div>
           </div>
+
         </div>
       </main>
     </div>

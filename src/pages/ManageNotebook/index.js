@@ -106,7 +106,7 @@ function ManageNotebookPage() {
                     <a href="/alunos" className="nav-link">
                         Alunos
                     </a>
-                    <a href="#" className="nav-link">
+                    <a href="/MainReport" className="nav-link">
                         Relatórios
                     </a>
                 </nav>

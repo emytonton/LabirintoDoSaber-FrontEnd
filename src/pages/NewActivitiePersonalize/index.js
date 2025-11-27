@@ -89,7 +89,7 @@ export default function AdicionarAtividade() {
           <NavLink to="/home" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>Dashboard</NavLink>
           <NavLink to="/activities" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>Atividades</NavLink>
           <NavLink to="/alunos" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>Alunos</NavLink>
-          <NavLink to="/relatorios" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>Relatórios</NavLink>
+          <NavLink to="/MainReport" className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}>Relatórios</NavLink>
         </nav>
 
         <div className="user-controls">

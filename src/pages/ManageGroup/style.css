@@ -236,7 +236,7 @@ body {
     color: #333; 
 }
 
-.top-container{
+.top-container-grup{
     display: flex;
     align-items: start;     
     margin-bottom: 10px; 
@@ -482,7 +482,7 @@ body {
     box-shadow: none;
 }
 
-.modal-activity-item {
+.modal-group-task-card {
     height: 45px;
     border-radius: 50px;
 }

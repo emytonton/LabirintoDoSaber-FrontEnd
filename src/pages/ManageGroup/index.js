@@ -116,7 +116,7 @@ function ManageGroupPage() {
                     <a href="/home" className="nav-link">Dashboard</a>
                     <a href="/activitiesMain" className="nav-link active">Atividades</a>
                     <a href="/alunos" className="nav-link">Alunos</a>
-                    <a href="#" className="nav-link">Relatórios</a>
+                    <a href="/MainReport" className="nav-link">Relatórios</a>
                 </nav>
 
                 <div className="user-controls">
@@ -127,7 +127,7 @@ function ManageGroupPage() {
 
             <main className="manage-groups-main-content">
                 <div className="manage-groups-container">
-                    <div className="top-container">
+                    <div className="top-container-grup">
                         <h1>Grupo de atividades</h1>
                         <h2>Gerencie os grupos de atividades</h2>
                     </div>
@@ -212,7 +212,7 @@ function ManageGroupPage() {
                                     getResolvedTasksForGroup(selectedGroup).map((task) => (
                                         <div key={task.id} className="group-row-wrapper modal-activity-row">
                                             <div
-                                                className="group-list-item-card modal-activity-item"
+                                                className="group-list-item-card modal-group-task-card"
                                                 onClick={handleEditActivityInModal}
                                                 style={{ cursor: "pointer" }}
                                             >

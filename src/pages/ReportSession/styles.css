@@ -1,4 +1,104 @@
-/* --- CONTAINER E FUNDO AZUL --- */
+/* ==========================================================================
+   ESTILOS GLOBAIS DE HEADER E NAV (IDÊNTICOS À HOME)
+   ========================================================================== */
+
+/* Mantendo exatamente o que você me mandou da Home para não ter diferença */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2.5rem;
+    background-color: #fff;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.logo {
+    width: 150px;
+    height: 70px;
+    object-fit: contain;
+}
+
+.navbar {
+    display: flex;
+    gap: 2rem;
+    /* margin-left: -10%; -> Removi margem negativa aqui p/ não quebrar layout centralizado, 
+       mas mantive o tamanho da fonte e gap iguais */
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #555;
+    font-weight: 600;
+    font-size: 20px; /* Tamanho GRANDE original */
+    padding-bottom: 4px;
+}
+
+.nav-link.active {
+    color: #63E9E2;
+    border-bottom: 3px solid #63E9E2;
+}
+
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.icon {
+    height: 41px; /* Tamanho GRANDE original */
+    width: 48px;
+    cursor: pointer;
+    object-fit: contain;
+}
+
+.profile-icon {
+    border-radius: 50%;
+    background-color: #333;
+    height: 59px; /* Tamanho GRANDE original */
+    width: 59px;
+}
+
+/* ==========================================================================
+   ESTILOS ESPECÍFICOS DA TELA DE RELATÓRIO (SESSION)
+   ========================================================================== */
+
+/* --- CONTAINER E FUNDO --- */
+.session-main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 2.5rem;
+    background-color: #fcfcff;
+}
+
+.session-container {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Botão Voltar (Seta) */
+.top-nav-row {
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+}
+
+.back-arrow-link {
+    display: inline-block;
+    transition: transform 0.2s;
+}
+
+.back-arrow-link:hover {
+    transform: translateX(-5px);
+}
+
+.back-arrow-icon {
+    width: 44px; /* Ajuste visual leve para a seta de voltar */
+    height: 44px;
+}
+
+/* --- CARD AZUL PRINCIPAL --- */
 .session-report-card {
     background-color: #F3FBFB;
     border: 1px solid #E0F2F1;
@@ -31,17 +131,17 @@
 .box-subtitle {
     font-family: 'Nunito', sans-serif;
     font-size: 1.3rem;
-    font-weight: 400; 
+    font-weight: 400;
     color: #666;
     margin-top: 0;
     margin-bottom: 3rem;
 }
 
-
+/* --- LAYOUT DIVIDIDO --- */
 .metrics-split-layout {
     display: flex;
     justify-content: space-between;
-    align-items: stretch; 
+    align-items: stretch;
     gap: 2rem;
 }
 
@@ -51,10 +151,11 @@
     flex-direction: column;
 }
 
-
+/* --- LADO ESQUERDO: TEMPOS --- */
 .left-column {
-    margin-top: 20px;
-    align-items: center; 
+    /* AQUI ESTÁ O AJUSTE DE ALINHAMENTO QUE VOCÊ PEDIU */
+    padding-top: 3.5rem; 
+    align-items: center;
     gap: 2rem;
 }
 
@@ -70,33 +171,32 @@
     font-family: 'Nunito', sans-serif;
     font-size: 1.1rem;
     font-weight: 700;
-    color: #AAA; 
+    color: #AAA;
 }
 
-
 .metric-pill-large {
-    background-color: #F0F8F8; 
+    background-color: #F0F8F8;
     color: #000;
     font-weight: 700;
     font-size: 1rem;
     padding: 0.8rem 0;
-    width: 220px; 
+    width: 220px;
     text-align: center;
     border-radius: 50px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1); 
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
     border: 1px solid #EAF6F6;
 }
 
-
+/* --- SEPARADOR VERTICAL --- */
 .vertical-separator {
     width: 1px;
     background-color: #ccc;
     margin: 0 2rem;
 }
 
-
+/* --- LADO DIREITO: TAXAS --- */
 .right-column {
-    gap: 3rem; 
+    gap: 3rem;
     align-items: center;
 }
 
@@ -116,14 +216,13 @@
     text-align: center;
 }
 
-
 .rates-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: 2rem;
     row-gap: 1.5rem;
     width: 100%;
-    max-width: 500px; 
+    max-width: 500px;
 }
 
 .rate-item {
@@ -140,14 +239,13 @@
     font-weight: 400;
 }
 
-
 .metric-pill-medium {
     background-color: #F0F8F8;
     color: #000;
-    font-weight: 800; 
+    font-weight: 800;
     font-size: 1.1rem;
     padding: 0.6rem 0;
-    width: 100%; 
+    width: 100%;
     min-width: 140px;
     text-align: center;
     border-radius: 50px;
@@ -155,10 +253,15 @@
     border: 1px solid #EAF6F6;
 }
 
-
+/* --- RESPONSIVIDADE --- */
 @media (max-width: 968px) {
     .metrics-split-layout {
         flex-direction: column;
+    }
+
+    /* Remove o espaçamento de compensação no mobile */
+    .left-column {
+        padding-top: 0;
     }
 
     .vertical-separator {

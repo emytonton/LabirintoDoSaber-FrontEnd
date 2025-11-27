@@ -1,0 +1,271 @@
+
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2.5rem;
+    background-color: #fff;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.logo {
+    width: 150px;
+    height: 70px;
+    object-fit: contain;
+}
+
+.navbar {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #555;
+    font-weight: 600;
+    font-size: 20px; /* Tamanho GRANDE original */
+    padding-bottom: 4px;
+}
+
+.nav-link.active {
+    color: #63E9E2;
+    border-bottom: 3px solid #63E9E2;
+}
+
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.icon {
+    height: 41px;
+    width: 48px;
+    cursor: pointer;
+    object-fit: contain;
+}
+
+.profile-icon {
+    border-radius: 50%;
+    background-color: #333;
+    height: 59px;
+    width: 59px;
+}
+
+/* ==========================================================================
+   ESTILOS DA TELA DE PERFIL (PROFILE EDIT)
+   ========================================================================== */
+
+/* Container da página */
+.profile-main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 2.5rem;
+    background-color: #fcfcff;
+}
+
+.profile-container {
+    width: 100%;
+    max-width: 1000px; /* Largura um pouco menor que o relatório */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Botão Voltar (Seta) */
+.top-nav-row {
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+}
+
+.back-arrow-link {
+    display: inline-block;
+    transition: transform 0.2s;
+}
+
+.back-arrow-link:hover {
+    transform: translateX(-5px);
+}
+
+.back-arrow-icon {
+    width: 44px;
+    height: 44px;
+}
+
+/* --- CARD BRANCO PRINCIPAL --- */
+.profile-edit-card {
+    background-color: #fff;
+    border-radius: 40px;
+    padding: 3rem 4rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+}
+
+/* --- SEÇÃO DE UPLOAD DE FOTO --- */
+.avatar-upload-section {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Avatar circular preto/padrão */
+.avatar-placeholder-large {
+    width: 100px;
+    height: 100px;
+    background-color: #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+/* Simulando o ícone de boneco branco dentro do circulo preto */
+.default-user-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.user-head {
+    width: 35px;
+    height: 35px;
+    background-color: #fff;
+    border-radius: 50%;
+    margin-bottom: 5px;
+}
+.user-body {
+    width: 60px;
+    height: 30px;
+    background-color: #fff;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+}
+
+.upload-controls {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* O container que parece um input mas tem um botão dentro */
+.custom-file-wrapper {
+    display: flex;
+    align-items: center;
+    border: 1px solid #777; /* Borda cinza escuro como na imagem */
+    border-radius: 50px; /* Borda bem redonda */
+    padding: 5px;
+    width: 100%;
+    max-width: 500px;
+    background-color: #fff;
+}
+
+.btn-select-file {
+    background-color: #F3FBFB;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    padding: 8px 20px;
+    font-family: 'Nunito', sans-serif;
+    color: #555;
+    cursor: pointer;
+    font-weight: 600;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.file-status-text {
+    font-family: 'Nunito', sans-serif;
+    color: #888;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+.upload-hint {
+    font-size: 0.75rem;
+    color: #666;
+    margin: 0;
+    margin-top: 5px;
+}
+
+/* --- FORMULÁRIO --- */
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.field-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-input {
+    width: 100%;
+    max-width: 500px; /* Alinhado com o input de arquivo */
+    padding: 12px 20px;
+    border: 1px solid #777;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    color: #333;
+    background-color: #fff;
+    outline: none;
+}
+
+.form-input::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+.form-input:focus {
+    border-color: #63E9E2;
+}
+
+/* --- BOTÃO SALVAR --- */
+.form-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.btn-save-profile {
+    background-color: #FFF8E1; /* Amarelo bem claro/bege */
+    border: 1px solid #EEDEA8; /* Borda sutil */
+    color: #444;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    padding: 12px 60px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: all 0.2s;
+}
+
+.btn-save-profile:hover {
+    background-color: #FFF0C0;
+    transform: translateY(-2px);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .profile-edit-card {
+        padding: 2rem;
+    }
+    .avatar-upload-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .custom-file-wrapper, .form-input {
+        max-width: 100%;
+    }
+}

@@ -152,7 +152,7 @@ function ManageActivitiesPage() {
           <a href="/home" className="nav-link">Dashboard</a>
           <a href="/activitiesMain" className="nav-link active">Atividades</a>
           <a href="/alunos" className="nav-link">Alunos</a>
-          <a href="#" className="nav-link">Relatórios</a>
+          <a href="/MainReport" className="nav-link">Relatórios</a>
         </nav>
         <div className="user-controls">
           <img src={iconNotification} alt="Notificações" className="icon" />

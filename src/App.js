@@ -27,6 +27,7 @@ import SessionActivitiesPage from './pages/sessionActivities';
 import MainReport from './pages/mainReport'
 import ReportPacient from './pages/ReportPacient/index.js'
 import ReportSession from './pages/ReportSession/index.js'
+import Profile from './pages/Profile'
 
 function App() {
   return (
@@ -59,6 +60,7 @@ function App() {
         <Route path="/MainReport" element={<MainReport/>} />
         <Route path="/ReportPacient" element={<ReportPacient/>} />
         <Route path="/ReportSession" element={<ReportSession/>} />
+        <Route path="/Profile" element={<Profile/>} />
       </Routes>
     </div>
   );

@@ -13,11 +13,11 @@ function AlunosPage() {
     navigate('/alunosDetails');
   };
   
-  // Estados para controlar a visibilidade dos menus dropdown
+ 
   const [isCriarOpen, setIsCriarOpen] = useState(false);
   const [isGerenciarOpen, setIsGerenciarOpen] = useState(false);
 
-  // Função para fechar qualquer menu aberto ao navegar
+  
   const handleNavigate = (path) => {
       setIsCriarOpen(false);
       setIsGerenciarOpen(false);
@@ -45,7 +45,7 @@ function AlunosPage() {
           <a href="/home" className="nav-link">Dashboard</a> 
           <a href="/activitiesMain" className="nav-link active">Atividades</a>
           <a href="/alunos" className="nav-link">Alunos</a> 
-          <a href="#" className="nav-link">Relatórios</a>
+          <a href="/MainReport" className="nav-link">Relatórios</a>
         </nav>
         <div className="user-controls">
           <img src={iconNotification} alt="Notificações" className="icon" />
