@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom"; // Importe useLocation
+import { useNavigate, useLocation } from "react-router-dom";
 import "./style.css";
 import logo from "../../assets/images/logo.png";
 import iconNotification from "../../assets/images/icon_notification.png";
@@ -15,29 +15,52 @@ const PenIcon = () => (
 
 function SessionTitlePage() {
     const navigate = useNavigate();
-    const location = useLocation(); // Hook para acessar o estado da navegação
+    const location = useLocation();
+    
     const [sessionName, setSessionName] = useState("");
-    const [patientId, setPatientId] = useState(null); // Estado para armazenar o ID do paciente
+    // Vamos chamar de studentId para alinhar com a API, mesmo que venha como patientId
+    const [studentId, setStudentId] = useState(null); 
 
     useEffect(() => {
-        // Pega o patientId que pode ter sido passado via state da navegação
+        // Verifica se recebemos o ID da tela de seleção de alunos
         if (location.state && location.state.patientId) {
-            setPatientId(location.state.patientId);
-            console.log("ID do Paciente recebido:", location.state.patientId);
+            setStudentId(location.state.patientId);
+            console.log("Fluxo - ID do Aluno recebido:", location.state.patientId);
+        } else {
+            console.warn("Nenhum ID de aluno encontrado. O fluxo pode estar quebrado.");
+            // Opcional: Redirecionar para a lista de alunos se não tiver ID
+            // navigate('/session'); 
         }
-    }, [location]);
+    }, [location, navigate]);
 
     const handleNext = () => {
+        // Validação do nome
         if (sessionName.trim() === "") {
             alert("Por favor, dê um nome à sessão.");
             return;
         }
-        console.log(`Nome da sessão: ${sessionName}, para o paciente ID: ${patientId}`);
-        navigate('/sessionType', { state: { sessionName, patientId } });
+
+        // Validação do ID
+        if (!studentId) {
+            alert("Erro: Aluno não identificado. Volte e selecione o aluno novamente.");
+            return;
+        }
+
+        console.log(`Avançando para Tipo de Sessão.`);
+        console.log(`Dados: StudentID: ${studentId}, Nome: ${sessionName}`);
+        
+        // PASSANDO OS DADOS PARA A PRÓXIMA TELA (/sessionType)
+        // A tela SessionType deve receber isso e repassar para SessionNotebookPage/Group/Activity
+        navigate('/sessionType', { 
+            state: { 
+                studentId: studentId, 
+                sessionName: sessionName 
+            } 
+        });
     };
 
     const handleBack = () => {
-        navigate('/session');
+        navigate('/session'); // Volta para a seleção de alunos
     };
 
     return (
@@ -45,18 +68,10 @@ function SessionTitlePage() {
             <header className="header">
                 <img src={logo} alt="Labirinto do Saber" className="logo" />
                 <nav className="navbar">
-                    <a href="/home" className="nav-link">
-                        Dashboard
-                    </a>
-                    <a href="/activitiesMain" className="nav-link active">
-                        Atividades
-                    </a>
-                    <a href="/alunos" className="nav-link">
-                        Alunos
-                    </a>
-                    <a href="/MainReport" className="nav-link">
-                        Relatórios
-                    </a>
+                    <a href="/home" className="nav-link">Dashboard</a>
+                    <a href="/activitiesMain" className="nav-link active">Atividades</a>
+                    <a href="/alunos" className="nav-link">Alunos</a>
+                    <a href="/MainReport" className="nav-link">Relatórios</a>
                 </nav>
                 <div className="user-controls">
                     <img src={iconNotification} alt="Notificações" className="icon" />
@@ -66,7 +81,7 @@ function SessionTitlePage() {
 
             <main className="start-session-main-content">
                 <div className="start-session-container">
-                        <button onClick={handleBack} className="back-arrow-button">
+                        <button onClick={handleBack} className="back-arrow-button" style={{background: 'none', border: 'none', cursor: 'pointer'}}>
                             <img src={iconArrowLeft} alt="Voltar" className="back-arrow-icon"/>
                         </button>
                     <div className="start-session-header-top">

@@ -136,7 +136,7 @@ function ManageGroupPage() {
                     <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "20px" }}>
                         <button 
                             className="create-patient-bnt"
-                            onClick={() => navigate('/createTaskGroup')} 
+                            onClick={() => navigate('/GroupActivities')} 
                         >
                             Novo Grupo
                         </button>

@@ -127,7 +127,7 @@ function ManageNotebookPage() {
                         {/* Botão opcional para criar novo caderno, se desejar */}
                         <button 
                             className="create-patient-bnt" 
-                            onClick={() => navigate('/createNotebook')} // Ajuste a rota se necessário
+                            onClick={() => navigate('/addNotebook')} // Ajuste a rota se necessário
                             style={{marginLeft: 'auto'}}
                         >
                             Novo Caderno

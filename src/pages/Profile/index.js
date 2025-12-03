@@ -1,28 +1,72 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./style.css"; 
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-// Imports de imagens (ajuste conforme seu projeto)
+// Imports de imagens
 import logo from "../../assets/images/logo.png";
 import iconNotification from "../../assets/images/icon_notification.png";
-import iconProfile from "../../assets/images/icon_profile.png"; // Seu avatar atual
+import iconProfile from "../../assets/images/icon_profile.png"; 
 import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png";
-import iconUpload from "../../assets/images/icon_profile.png"; // Use um ícone de nuvem se tiver, ou o profile temporariamente
 
 function ProfileEdit() {
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
 
     // Estados do formulário
     const [formData, setFormData] = useState({
-        name: "Dra. Aline Pereira",
-        profession: "",
-        email: "draalina@gmail.com",
-        contact: ""
+        name: "",
+        profession: "", // A API não retorna isso ainda, iniciará vazio
+        email: "",
+        contact: ""     // A API não retorna isso ainda, iniciará vazio
     });
 
     const [fileName, setFileName] = useState("Nenhum arquivo foi selecionado");
 
-    // Função para simular o clique no input de arquivo
+    // --- INTEGRANDO A API (GET DADOS DO USUÁRIO) ---
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const token = localStorage.getItem('authToken');
+
+                if (!token) {
+                    navigate('/'); // Redireciona se não tiver login
+                    return;
+                }
+
+                const config = {
+                    headers: { Authorization: `Bearer ${token}` }
+                };
+
+                // Usando a rota de produção para consistência, altere para localhost se precisar
+                const response = await axios.get("https://labirinto-do-saber.vercel.app/educator/me", config);
+                
+                const userData = response.data;
+
+                setFormData({
+                    name: userData.name || "",
+                    email: userData.email || "",
+                    profession: "", // Mantém vazio ou valor padrão pois API não fornece
+                    contact: ""     // Mantém vazio ou valor padrão pois API não fornece
+                });
+
+                setLoading(false);
+
+            } catch (error) {
+                console.error("Erro ao buscar perfil:", error);
+                if (error.response && error.response.status === 401) {
+                    alert("Sessão expirada.");
+                    navigate('/');
+                }
+                setLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, [navigate]);
+
+    // --- MANIPULADORES DE FORMULÁRIO ---
+
     const handleFileClick = (e) => {
         e.preventDefault();
         document.getElementById("fileInputHidden").click();
@@ -38,6 +82,41 @@ function ProfileEdit() {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
+
+    // Função para salvar (PUT/PATCH) - Estrutura pronta para quando tiver o endpoint
+    const handleSave = async () => {
+        try {
+            const token = localStorage.getItem('authToken');
+            const config = { headers: { Authorization: `Bearer ${token}` } };
+            
+            console.log("Salvando dados:", formData);
+            
+            // Exemplo de chamada para atualizar (Descomente e ajuste a URL quando tiver a rota)
+            /*
+            await axios.patch("https://labirinto-do-saber.vercel.app/educator/me", {
+                name: formData.name,
+                // outros campos se a API suportar
+            }, config);
+            */
+
+            alert("Perfil atualizado com sucesso! (Simulação)");
+            // navigate('/home'); // Opcional: voltar para home
+
+        } catch (error) {
+            console.error("Erro ao salvar:", error);
+            alert("Erro ao atualizar perfil.");
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="dashboard-container">
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                    <h2>Carregando perfil...</h2>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="dashboard-container">
@@ -73,7 +152,6 @@ function ProfileEdit() {
                         {/* Seção da Foto */}
                         <div className="avatar-upload-section">
                             <div className="avatar-placeholder-large">
-                                {/* Ícone de usuário padrão (preto na imagem) */}
                                 <div className="default-user-icon">
                                     <div className="user-head"></div>
                                     <div className="user-body"></div>
@@ -110,6 +188,7 @@ function ProfileEdit() {
                                     value={formData.name}
                                     onChange={handleChange}
                                     className="form-input"
+                                    placeholder="Nome completo"
                                 />
                             </div>
 
@@ -133,6 +212,8 @@ function ProfileEdit() {
                                     value={formData.email}
                                     onChange={handleChange}
                                     className="form-input"
+                                    disabled // Geralmente email não se altera facilmente, ou remova o disabled se puder
+                                    style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
                                 />
                             </div>
 
@@ -149,7 +230,7 @@ function ProfileEdit() {
                             </div>
 
                             <div className="form-actions">
-                                <button type="button" className="btn-save-profile">
+                                <button type="button" className="btn-save-profile" onClick={handleSave}>
                                     Salvar perfil
                                 </button>
                             </div>

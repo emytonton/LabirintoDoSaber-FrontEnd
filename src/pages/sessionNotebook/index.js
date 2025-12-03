@@ -7,10 +7,10 @@ import iconProfile from "../../assets/images/icon_profile.png";
 import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png";
 import iconCard from "../../assets/images/caderneta.png";
 import SearchBar from "../../components/ui/SearchBar/Search";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"; // Importe useLocation
 
+// --- ÍCONES (Mantidos iguais) ---
 
-// SVG do Ícone de Adicionar (+)
 const PlusIcon = () => (
     <svg width="25" height="25" viewBox="0 0 65 69" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g filter="url(#filter0_d_398_2393)">
@@ -33,51 +33,180 @@ const PlusIcon = () => (
     </svg>
 );
 
+const CheckIcon = () => (
+    <svg width="25" height="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+);
 
 function SessionNotebookPage() {
     const navigate = useNavigate();
+    const location = useLocation();
 
-    const [notebooks, setNotebooks] = useState([
-        { id: 1, name: "Caderno de associação e leitura com animais", category: "reading", tasksIds: [1] },
-        { id: 2, name: "Caderno de associação e leitura com animais", category: "reading", tasksIds: [2] },
-        { id: 3, name: "Caderno de associação e leitura com animais", category: "reading", tasksIds: [3] },
-        { id: 4, name: "Caderno de associação e leitura com animais", category: "reading", tasksIds: [4] }
-    ]);
+    // 1. RECUPERANDO DADOS DO FLUXO
+    const { studentId, sessionName } = location.state || {};
+
+    // Estados
+    const [notebooks, setNotebooks] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [isStarting, setIsStarting] = useState(false); // Estado de loading do botão iniciar
+    
+    // ESTADO DA SELEÇÃO (Apenas um por vez)
+    const [selectedNotebook, setSelectedNotebook] = useState(null);
+
+    // Estados de Paginação
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 4;
 
     const categoryMap = {
         reading: "Vocabulário & Leitura",
         writing: "Escrita",
         vocabulary: "Vocabulário",
-        comprehension: "Compreensão, Leitura & Vocabulário"
+        comprehension: "Compreensão, Leitura & Vocabulário",
+        general: "Geral"
     };
 
+    // --- VERIFICAÇÃO DE SEGURANÇA ---
+    useEffect(() => {
+        if (!studentId || !sessionName) {
+            console.warn("Dados da sessão perdidos (studentId/sessionName).");
+            // navigate('/home'); // Opcional
+        }
+    }, [studentId, sessionName, navigate]);
+
+    // --- INTEGRANDO A API DE BUSCA (GET) ---
+    useEffect(() => {
+        const fetchNotebooks = async () => {
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    navigate('/'); 
+                    return;
+                }
+                const config = {
+                    headers: { Authorization: `Bearer ${token}` }
+                };
+
+                const response = await axios.get("https://labirinto-do-saber.vercel.app/task-notebook/", config);
+                
+                const formattedData = response.data.map(item => {
+                    const coreData = item.notebook ? item.notebook : item;
+                    return {
+                        id: coreData.id,
+                        name: coreData.description || coreData.name || "Caderno sem nome",
+                        category: coreData.category || "general",
+                        originalData: item 
+                    };
+                });
+
+                setNotebooks(formattedData);
+                setLoading(false);
+
+            } catch (error) {
+                console.error("Erro ao buscar cadernos:", error);
+                if (error.response && error.response.status === 401) {
+                    navigate('/');
+                }
+                setLoading(false);
+            }
+        };
+
+        fetchNotebooks();
+    }, [navigate]);
+
+    // Função de Seleção (Alterna seleção)
     const handleNotebookSelection = (notebook) => {
-        console.log("Caderno Selecionado para sessão:", notebook.id);
-        const initScreenPath = `/sessionInit`;
-        navigate(initScreenPath, { state: { selectedItem: notebook, itemType: 'notebook' } });
+        if (selectedNotebook && selectedNotebook.id === notebook.id) {
+            setSelectedNotebook(null);
+        } else {
+            setSelectedNotebook(notebook);
+        }
+    };
+
+    // --- INTEGRANDO A API DE START (POST) ---
+    const handleStartSession = async () => {
+        if (!selectedNotebook) {
+            alert("Por favor, selecione um caderno.");
+            return;
+        }
+
+        if (!studentId || !sessionName) {
+            alert("Erro: Dados do aluno não encontrados. Reinicie o fluxo.");
+            return;
+        }
+        
+        setIsStarting(true);
+
+        try {
+            const token = localStorage.getItem('authToken');
+            const config = {
+                headers: { Authorization: `Bearer ${token}` }
+            };
+
+            // Payload para iniciar com CADERNO
+            const payload = {
+                studentId: studentId,
+                name: sessionName,
+                notebookId: selectedNotebook.id // ID do caderno
+            };
+
+            console.log("Iniciando sessão de CADERNO com payload:", payload);
+
+            const response = await axios.post(
+                "https://labirinto-do-saber.vercel.app/task-notebook-session/start", 
+                payload, 
+                config
+            );
+
+            console.log("Sessão criada:", response.data);
+            const sessionId = response.data.sessionId;
+
+            // Navega para a tela de execução
+            navigate(`/sessionInit`, { 
+                state: { 
+                    sessionId: sessionId,
+                    itemType: 'notebook',
+                    notebook: selectedNotebook 
+                } 
+            });
+
+        } catch (error) {
+            console.error("Erro ao iniciar sessão:", error);
+            alert("Não foi possível iniciar a sessão. Tente novamente.");
+        } finally {
+            setIsStarting(false);
+        }
     };
 
     const handleFilterAction = () => {
         console.log("Abrir Filtro do Caderno");
     };
 
-    const currentPage = 1;
-    const totalPages = 4;
+    // --- PAGINAÇÃO ---
+    const filteredNotebooks = notebooks.filter((notebook) => 
+        notebook.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredNotebooks.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredNotebooks.length / itemsPerPage);
+
+    const paginate = (e, pageNumber) => {
+        e.preventDefault();
+        setCurrentPage(pageNumber);
+    };
 
     return (
         <div className="dashboard-container">
             <header className="header">
                 <img src={logo} alt="Labirinto do Saber" className="logo" />
-
                 <nav className="navbar">
                     <a href="/home" className="nav-link">Dashboard</a>
                     <a href="/activitiesMain" className="nav-link active">Atividades</a>
                     <a href="/alunos" className="nav-link">Alunos</a>
                     <a href="/MainReport" className="nav-link">Relatórios</a>
                 </nav>
-
                 <div className="user-controls">
                     <img src={iconNotification} alt="Notificações" className="icon" />
                     <img src={iconProfile} alt="Perfil" className="icon profile-icon" />
@@ -92,56 +221,123 @@ function SessionNotebookPage() {
                     <div className="top-container">
                         <h1>Selecione o caderno desejado</h1>
                         
-                        <div className="search-filter-group">
+                        {/* Container Flex para alinhar SearchBar e Botão */}
+                        <div className="search-filter-group" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                             <SearchBar 
                                 searchTerm={searchTerm}
-                                setSearchTerm={setSearchTerm}
+                                setSearchTerm={(value) => {
+                                    setSearchTerm(value);
+                                    setCurrentPage(1);
+                                }}
                                 placeholder="Buscar caderno..." 
                                 onFilterClick={handleFilterAction}
                             />
+
+                            {/* --- BOTÃO DE AÇÃO (INICIAR SESSÃO) --- */}
+                            <button 
+                                onClick={handleStartSession}
+                                disabled={!selectedNotebook || isStarting}
+                                style={{
+                                    backgroundColor: selectedNotebook ? '#81C784' : '#E0E0E0', 
+                                    color: selectedNotebook ? '#FFF' : '#9E9E9E',
+                                    border: 'none',
+                                    padding: '0 25px',
+                                    height: '52px', 
+                                    borderRadius: '30px',
+                                    fontWeight: 'bold',
+                                    fontSize: '1rem',
+                                    cursor: (selectedNotebook && !isStarting) ? 'pointer' : 'not-allowed',
+                                    boxShadow: selectedNotebook ? '0px 4px 6px rgba(0,0,0,0.1)' : 'none',
+                                    transition: 'all 0.3s ease',
+                                    whiteSpace: 'nowrap'
+                                }}
+                            >
+                                {isStarting ? "Iniciando..." : "Iniciar Sessão"}
+                            </button>
                         </div>
                     </div>
-
                     
                     <div className="session-notebook-select-card-list">
                         {loading ? (
-                            <p>Carregando cadernos...</p>
+                            <p style={{ textAlign: "center", color: "#666" }}>Carregando cadernos...</p>
                         ) : (
-                            notebooks.slice(0, 4).map((notebook) => (
-                                <div className="notebook-select-row-wrapper" key={notebook.id}>
-                                    <div
-                                        className="notebook-select-list-item-card"
-                                        style={{ cursor: "pointer" }}
-                                    >
-                                        <img src={iconCard} alt="Icone Caderno" className="notebook-select-card-icon" />
-                                        <div className="notebook-select-card-info">
-                                            <h3>{notebook.name}</h3>
-                                            <button className="notebook-select-bnt-details">
-                                                {categoryMap[notebook.category] || notebook.category}
-                                            </button>
-                                        </div>
+                            currentItems.length > 0 ? (
+                                currentItems.map((notebook) => {
+                                    const isSelected = selectedNotebook && selectedNotebook.id === notebook.id;
 
-                                        <button
-                                            className="select-plus-btn"
-                                            onClick={() => handleNotebookSelection(notebook)}
-                                            title="Adicionar à Sessão"
-                                        >
-                                            <PlusIcon />
-                                        </button>
-                                    </div>
-                                </div>
-                            ))
+                                    return (
+                                        <div className="notebook-select-row-wrapper" key={notebook.id}>
+                                            <div
+                                                className="notebook-select-list-item-card"
+                                                style={{ 
+                                                    cursor: "pointer",
+                                                    border: isSelected ? "2px solid #81C784" : "2px solid transparent",
+                                                    backgroundColor: isSelected ? "#F1F8E9" : "#FFF",
+                                                    transition: "all 0.2s ease"
+                                                }}
+                                                onClick={() => handleNotebookSelection(notebook)} 
+                                            >
+                                                <img src={iconCard} alt="Icone Caderno" className="notebook-select-card-icon" />
+                                                <div className="notebook-select-card-info">
+                                                    <h3>{notebook.name}</h3>
+                                                    <button className="notebook-select-bnt-details">
+                                                        {categoryMap[notebook.category] || notebook.category}
+                                                    </button>
+                                                </div>
+
+                                                <button
+                                                    className="select-plus-btn"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleNotebookSelection(notebook);
+                                                    }}
+                                                    title={isSelected ? "Desmarcar" : "Selecionar"}
+                                                    style={{
+                                                        backgroundColor: isSelected ? '#81C784' : 'transparent',
+                                                        borderRadius: '50%',
+                                                        width: '40px',
+                                                        height: '40px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        border: isSelected ? 'none' : 'none',
+                                                        transition: 'background-color 0.3s ease'
+                                                    }}
+                                                >
+                                                    {isSelected ? <CheckIcon /> : <PlusIcon />}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <p style={{ textAlign: "center", marginTop: "20px" }}>
+                                    {searchTerm ? "Nenhum caderno encontrado." : "Nenhum caderno disponível."}
+                                </p>
+                            )
                         )}
                     </div>
 
-                    {totalPages > 1 && (
+                    {!loading && filteredNotebooks.length > 0 && (
                         <div className="pagination-controls">
-                            <a href="#" className="page-arrow">&lt;</a>
-                            <a href="#" className="page-number active">1</a>
-                            <a href="#" className="page-number">2</a>
-                            <a href="#" className="page-number">3</a>
-                            <a href="#" className="page-number">4</a>
-                            <a href="#" className="page-arrow">&gt;</a>
+                            <a 
+                                href="#" 
+                                className={`page-arrow ${currentPage === 1 ? 'disabled' : ''}`}
+                                onClick={(e) => { e.preventDefault(); if(currentPage > 1) setCurrentPage(currentPage - 1); }}
+                            > &lt; </a>
+                            {Array.from({ length: totalPages }, (_, index) => (
+                                <a 
+                                    key={index + 1}
+                                    href="#" 
+                                    className={`page-number ${currentPage === index + 1 ? 'active' : ''}`}
+                                    onClick={(e) => paginate(e, index + 1)}
+                                > {index + 1} </a>
+                            ))}
+                            <a 
+                                href="#" 
+                                className={`page-arrow ${currentPage === totalPages ? 'disabled' : ''}`}
+                                onClick={(e) => { e.preventDefault(); if(currentPage < totalPages) setCurrentPage(currentPage + 1); }}
+                            > &gt; </a>
                         </div>
                     )}
                 </div>

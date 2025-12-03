@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./style.css";
+import axios from "axios";
 import logo from "../../assets/images/logo.png";
 import iconNotification from "../../assets/images/icon_notification.png";
 import iconProfile from "../../assets/images/icon_profile.png";
 import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png";
-import iconActivity from "../../assets/images/iconActivitie.png"; // Ícone de Atividade Individual (assumindo que iconActivitie é o ícone de documento único)
+import iconActivity from "../../assets/images/iconActivitie.png"; 
 import SearchBar from "../../components/ui/SearchBar/Search";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"; 
 
+// --- ÍCONES (Mantidos iguais) ---
 
-// SVG do Ícone de Adicionar (+)
 const PlusIcon = () => (
     <svg width="25" height="25" viewBox="0 0 65 69" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g filter="url(#filter0_d_398_2393)">
@@ -32,39 +33,137 @@ const PlusIcon = () => (
     </svg>
 );
 
+const CheckIcon = () => (
+    <svg width="25" height="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+);
 
 function SessionActivitiesPage() {
     const navigate = useNavigate();
+    const location = useLocation();
 
-    // Dados de exemplo para simular as atividades
-    const [activities, setActivities] = useState([
-        { id: 1, name: "Atividade de associação e leitura com animais", category: "reading" },
-        { id: 2, name: "Atividade de associação e leitura com animais", category: "reading" },
-        { id: 3, name: "Atividade de associação e leitura com animais", category: "reading" },
-        { id: 4, name: "Atividade de associação e leitura com animais", category: "reading" },
-        { id: 5, name: "Atividade de associação e leitura com animais", category: "reading" },
-        { id: 6, name: "Atividade de associação e leitura com animais", category: "reading" }
-    ]);
+    // 1. RECUPERANDO DADOS DO FLUXO (Student e SessionName)
+    const { studentId, sessionName } = location.state || {};
+
+    // Estados
+    const [activities, setActivities] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [loading, setLoading] = useState(false); 
+    const [loading, setLoading] = useState(true); 
+    const [isStarting, setIsStarting] = useState(false);
+    
+    // ESTADO DE SELEÇÃO ÚNICA
+    const [selectedActivity, setSelectedActivity] = useState(null);
+
+    // Paginação
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 4;
 
     const categoryMap = {
         reading: "Vocabulário & Leitura",
         writing: "Escrita",
         vocabulary: "Vocabulário",
-        comprehension: "Compreensão, Leitura & Vocabulário"
+        comprehension: "Compreensão, Leitura & Vocabulário",
+        general: "Geral"
     };
 
+    // --- VERIFICAÇÃO DE SEGURANÇA DO FLUXO ---
+    useEffect(() => {
+        // AVISO: Mantive o aviso, mas não redireciono forçado para facilitar seus testes
+        if (!studentId || !sessionName) {
+            console.warn("Dados da sessão ausentes (Modo Teste).");
+        }
+    }, [studentId, sessionName]);
+
+    // --- INTEGRANDO A API (LISTAR ATIVIDADES) ---
+    useEffect(() => {
+        const fetchActivities = async () => {
+            try {
+                const token = localStorage.getItem('authToken');
+                // Se estiver apenas testando visualmente e não tiver token, pode comentar a verificação abaixo
+                if (!token) {
+                    // navigate('/'); 
+                    // return;
+                }
+                const config = {
+                    headers: { Authorization: `Bearer ${token}` }
+                };
+
+                const response = await axios.get("https://labirinto-do-saber.vercel.app/task", config);
+                
+                const formattedData = response.data.map(task => ({
+                    id: task.id,
+                    name: task.prompt || "Atividade sem título",
+                    category: task.category || "general",
+                    originalData: task
+                }));
+
+                setActivities(formattedData);
+                setLoading(false);
+
+            } catch (error) {
+                console.error("Erro ao buscar atividades:", error);
+                setLoading(false);
+            }
+        };
+
+        fetchActivities();
+    }, [navigate]);
+
+
+    // Lógica de Seleção Única
     const handleActivitySelection = (activity) => {
-        console.log("Atividade Selecionada para sessão:", activity.id);
+        if (selectedActivity && selectedActivity.id === activity.id) {
+            setSelectedActivity(null);
+        } else {
+            setSelectedActivity(activity);
+        }
+    };
+
+    // --- MODO OFFLINE/TESTE: NAVEGAÇÃO DIRETA ---
+    const handleStartSession = () => {
+        if (!selectedActivity) {
+            alert("Selecione uma atividade.");
+            return;
+        }
+
+        setIsStarting(true);
+
+        // Simulando um delay pequeno apenas para feedback visual do botão
+        setTimeout(() => {
+            console.log("Iniciando sessão (MODO TESTE/SEM API)...");
+            
+            // Navega para a tela de execução com dados Mockados
+            navigate(`/sessionInit`, { 
+                state: { 
+                    sessionId: "sessao-mock-123", // ID Fictício para teste
+                    itemType: 'activity',
+                    task: selectedActivity.originalData 
+                } 
+            });
+            
+            setIsStarting(false);
+        }, 500);
     };
 
     const handleFilterAction = () => {
         console.log("Abrir Filtro de Atividades");
     };
 
-    const currentPage = 1;
-    const totalPages = 4;
+    // --- FILTRO E PAGINAÇÃO ---
+    const filteredActivities = activities.filter((activity) => 
+        activity.name && activity.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredActivities.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredActivities.length / itemsPerPage);
+
+    const paginate = (e, pageNumber) => {
+        e.preventDefault();
+        setCurrentPage(pageNumber);
+    };
 
     return (
         <div className="dashboard-container">
@@ -92,56 +191,122 @@ function SessionActivitiesPage() {
                     <div className="top-container">
                         <h1>Selecione a atividade desejada</h1>
                         
-                        <div className="search-filter-group">
+                        <div className="search-filter-group" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                             <SearchBar 
                                 searchTerm={searchTerm}
-                                setSearchTerm={setSearchTerm}
+                                setSearchTerm={(value) => {
+                                    setSearchTerm(value);
+                                    setCurrentPage(1);
+                                }}
                                 placeholder="Buscar atividade..." 
                                 onFilterClick={handleFilterAction}
                             />
+
+                            {/* --- BOTÃO DE INICIAR SESSÃO --- */}
+                            <button 
+                                onClick={handleStartSession}
+                                disabled={!selectedActivity || isStarting}
+                                style={{
+                                    backgroundColor: selectedActivity ? '#81C784' : '#E0E0E0',
+                                    color: selectedActivity ? '#FFF' : '#9E9E9E',
+                                    border: 'none',
+                                    padding: '0 25px',
+                                    height: '52px',
+                                    borderRadius: '30px',
+                                    fontWeight: 'bold',
+                                    fontSize: '1rem',
+                                    cursor: (selectedActivity && !isStarting) ? 'pointer' : 'not-allowed',
+                                    boxShadow: selectedActivity ? '0px 4px 6px rgba(0,0,0,0.1)' : 'none',
+                                    transition: 'all 0.3s ease',
+                                    whiteSpace: 'nowrap'
+                                }}
+                            >
+                                {isStarting ? "Iniciando..." : "Iniciar Sessão"}
+                            </button>
                         </div>
                     </div>
-
                     
                     <div className="session-activity-select-card-list">
                         {loading ? (
-                            <p>Carregando atividades...</p>
+                            <p style={{ textAlign: "center", color: "#666" }}>Carregando atividades...</p>
                         ) : (
-                            activities.map((activity) => (
-                                <div className="activity-select-row-wrapper" key={activity.id}>
-                                    <div
-                                        className="activity-select-list-item-card"
-                                        style={{ cursor: "pointer" }}
-                                    >
-                                        <img src={iconActivity} alt="Icone Atividade" className="activity-select-card-icon" />
-                                        <div className="activity-select-card-info">
-                                            <h3>{activity.name}</h3>
-                                            <button className="activity-select-bnt-details">
-                                                {categoryMap[activity.category] || activity.category}
-                                            </button>
-                                        </div>
+                            currentItems.length > 0 ? (
+                                currentItems.map((activity) => {
+                                    const isSelected = selectedActivity && selectedActivity.id === activity.id;
 
-                                        <button
-                                            className="select-plus-btn"
-                                            onClick={() => handleActivitySelection(activity)}
-                                            title="Adicionar à Sessão"
-                                        >
-                                            <PlusIcon />
-                                        </button>
-                                    </div>
-                                </div>
-                            ))
+                                    return (
+                                        <div className="activity-select-row-wrapper" key={activity.id}>
+                                            <div
+                                                className="activity-select-list-item-card"
+                                                style={{ 
+                                                    cursor: "pointer",
+                                                    border: isSelected ? "2px solid #81C784" : "2px solid transparent",
+                                                    backgroundColor: isSelected ? "#F1F8E9" : "#FFF",
+                                                    transition: "all 0.2s ease"
+                                                }}
+                                                onClick={() => handleActivitySelection(activity)}
+                                            >
+                                                <img src={iconActivity} alt="Icone Atividade" className="activity-select-card-icon" />
+                                                <div className="activity-select-card-info">
+                                                    <h3>{activity.name}</h3>
+                                                    <button className="activity-select-bnt-details">
+                                                        {categoryMap[activity.category] || activity.category}
+                                                    </button>
+                                                </div>
+
+                                                <button
+                                                    className="select-plus-btn"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleActivitySelection(activity);
+                                                    }}
+                                                    title={isSelected ? "Desmarcar" : "Selecionar"}
+                                                    style={{
+                                                        backgroundColor: isSelected ? '#81C784' : 'transparent',
+                                                        borderRadius: '50%',
+                                                        width: '40px',
+                                                        height: '40px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        border: 'none',
+                                                        transition: 'background-color 0.3s ease'
+                                                    }}
+                                                >
+                                                    {isSelected ? <CheckIcon /> : <PlusIcon />}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <p style={{ textAlign: "center", marginTop: "20px" }}>
+                                    {searchTerm ? "Nenhuma atividade encontrada." : "Nenhuma atividade disponível."}
+                                </p>
+                            )
                         )}
                     </div>
 
-                    {totalPages > 1 && (
+                    {!loading && filteredActivities.length > 0 && (
                         <div className="pagination-controls">
-                            <a href="#" className="page-arrow">&lt;</a>
-                            <a href="#" className="page-number active">1</a>
-                            <a href="#" className="page-number">2</a>
-                            <a href="#" className="page-number">3</a>
-                            <a href="#" className="page-number">4</a>
-                            <a href="#" className="page-arrow">&gt;</a>
+                            <a 
+                                href="#" 
+                                className={`page-arrow ${currentPage === 1 ? 'disabled' : ''}`}
+                                onClick={(e) => { e.preventDefault(); if(currentPage > 1) setCurrentPage(currentPage - 1); }}
+                            > &lt; </a>
+                            {Array.from({ length: totalPages }, (_, index) => (
+                                <a 
+                                    key={index + 1}
+                                    href="#" 
+                                    className={`page-number ${currentPage === index + 1 ? 'active' : ''}`}
+                                    onClick={(e) => paginate(e, index + 1)}
+                                > {index + 1} </a>
+                            ))}
+                            <a 
+                                href="#" 
+                                className={`page-arrow ${currentPage === totalPages ? 'disabled' : ''}`}
+                                onClick={(e) => { e.preventDefault(); if(currentPage < totalPages) setCurrentPage(currentPage + 1); }}
+                            > &gt; </a>
                         </div>
                     )}
                 </div>

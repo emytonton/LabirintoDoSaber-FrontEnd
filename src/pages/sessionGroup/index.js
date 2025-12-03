@@ -6,11 +6,11 @@ import iconNotification from "../../assets/images/icon_notification.png";
 import iconProfile from "../../assets/images/icon_profile.png";
 import iconDoubleCard from "../../assets/images/iconDoublecard.png";
 import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png";
-import SearchBar from "../../components/ui/SearchBar/Search"; // Presumindo o caminho corrigido
-import { useNavigate } from "react-router-dom";
+import SearchBar from "../../components/ui/SearchBar/Search";
+import { useNavigate, useLocation } from "react-router-dom"; // Importe useLocation
 
+// --- ÍCONES (Mantidos iguais) ---
 
-// SVG do Ícone de Adicionar (+)
 const PlusIcon = () => (
     <svg width="25" height="25" viewBox="0 0 65 69" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g filter="url(#filter0_d_398_2393)">
@@ -33,48 +33,167 @@ const PlusIcon = () => (
     </svg>
 );
 
+const CheckIcon = () => (
+    <svg width="25" height="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+);
 
 function SessionGroupPage() {
     const navigate = useNavigate();
+    const location = useLocation();
 
-    const [groups, setGroups] = useState([
-        { id: 1, name: "Atividades de associação e leitura com animais", category: "reading", tasksIds: [1] },
-        { id: 2, name: "Atividades de associação e leitura com animais", category: "comprehension", tasksIds: [2] },
-        { id: 3, name: "Atividades de associação e leitura com animais", category: "vocabulary", tasksIds: [3] },
-        { id: 4, name: "Atividades de associação e leitura com animais", category: "vocabulary", tasksIds: [4] }
-    ]);
+    // 1. RECUPERANDO DADOS DO FLUXO
+    const { studentId, sessionName } = location.state || {};
+
+    // Estados
+    const [groups, setGroups] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [loading, setLoading] = useState(false); // Simplificado para este exemplo
+    const [loading, setLoading] = useState(true);
+    const [isStarting, setIsStarting] = useState(false); // Loading do botão iniciar
+    
+    // ESTADO DE SELEÇÃO ÚNICA
+    const [selectedGroup, setSelectedGroup] = useState(null);
+
+    // Estados de Paginação
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 4;
 
     const categoryMap = {
         reading: "Vocabulário & Leitura",
         writing: "Escrita",
         vocabulary: "Vocabulário",
-        comprehension: "Compreensão, Leitura & Vocabulário"
+        comprehension: "Compreensão, Leitura & Vocabulário",
+        general: "Geral"
     };
 
+    // --- VERIFICAÇÃO DE FLUXO ---
+    useEffect(() => {
+        if (!studentId || !sessionName) {
+            console.warn("Dados de sessão perdidos (studentId/sessionName).");
+            // navigate('/home'); // Opcional: Redirecionar
+        }
+    }, [studentId, sessionName, navigate]);
+
+    // --- INTEGRANDO A API (LISTAR GRUPOS) ---
+    useEffect(() => {
+        const fetchGroups = async () => {
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    navigate('/'); 
+                    return;
+                }
+                const config = {
+                    headers: { Authorization: `Bearer ${token}` }
+                };
+
+                const response = await axios.get("https://labirinto-do-saber.vercel.app/task-group/list-by-educator", config);
+                
+                setGroups(response.data);
+                setLoading(false);
+
+            } catch (error) {
+                console.error("Erro ao buscar grupos:", error);
+                if (error.response && error.response.status === 401) {
+                    navigate('/');
+                }
+                setLoading(false);
+            }
+        };
+
+        fetchGroups();
+    }, [navigate]);
+
+    // Lógica de Seleção ÚNICA
     const handleGroupSelection = (group) => {
-        console.log("Grupo Selecionado para sessão:", group.id);
-        // Implementar lógica de adicionar este grupo à sessão em andamento
+        if (selectedGroup && selectedGroup.id === group.id) {
+            setSelectedGroup(null);
+        } else {
+            setSelectedGroup(group);
+        }
     };
 
-    // Paginação simplificada para o template
-    const currentPage = 1;
-    const itemsPerPage = 4;
-    const totalPages = 4;
+    // --- INTEGRANDO A API DE START (POST) ---
+    const handleStartSession = async () => {
+        if (!selectedGroup) {
+            alert("Selecione um grupo.");
+            return;
+        }
+
+        if (!studentId || !sessionName) {
+            alert("Erro: Dados do aluno não encontrados. Reinicie o fluxo.");
+            return;
+        }
+
+        setIsStarting(true);
+
+        try {
+            const token = localStorage.getItem('authToken');
+            const config = {
+                headers: { Authorization: `Bearer ${token}` }
+            };
+
+            // Payload para iniciar sessão com GRUPO
+            const payload = {
+                studentId: studentId,
+                name: sessionName,
+                taskGroupId: selectedGroup.id // ID do grupo selecionado
+            };
+
+            console.log("Iniciando sessão de GRUPO com payload:", payload);
+
+            const response = await axios.post(
+                "https://labirinto-do-saber.vercel.app/task-notebook-session/start", 
+                payload, 
+                config
+            );
+
+            console.log("Sessão criada:", response.data);
+            const sessionId = response.data.sessionId;
+
+            // Navega para a tela de execução
+            navigate(`/sessionInit`, { 
+                state: { 
+                    sessionId: sessionId,
+                    itemType: 'group',
+                    group: selectedGroup // Passando dados do grupo se precisar mostrar nome, etc.
+                } 
+            });
+
+        } catch (error) {
+            console.error("Erro ao iniciar sessão:", error);
+            alert("Não foi possível iniciar a sessão. Tente novamente.");
+        } finally {
+            setIsStarting(false);
+        }
+    };
+
+    // --- PAGINAÇÃO E FILTROS ---
+    const filteredGroups = groups.filter((group) => 
+        group.name && group.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredGroups.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredGroups.length / itemsPerPage);
+
+    const paginate = (e, pageNumber) => {
+        e.preventDefault();
+        setCurrentPage(pageNumber);
+    };
 
     return (
         <div className="dashboard-container">
             <header className="header">
                 <img src={logo} alt="Labirinto do Saber" className="logo" />
-
                 <nav className="navbar">
                     <a href="/home" className="nav-link">Dashboard</a>
                     <a href="/activitiesMain" className="nav-link active">Atividades</a>
                     <a href="/alunos" className="nav-link">Alunos</a>
                     <a href="/MainReport" className="nav-link">Relatórios</a>
                 </nav>
-
                 <div className="user-controls">
                     <img src={iconNotification} alt="Notificações" className="icon" />
                     <img src={iconProfile} alt="Perfil" className="icon profile-icon" />
@@ -89,56 +208,141 @@ function SessionGroupPage() {
                     <div className="top-container">
                         <h1>Selecione o grupo de atividade desejado</h1>
                         
-                        <div className="search-filter-group">
+                        {/* Flex Container para Search e Botão */}
+                        <div className="search-filter-group" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                             <SearchBar 
                                 searchTerm={searchTerm}
-                                setSearchTerm={setSearchTerm}
+                                setSearchTerm={(value) => {
+                                    setSearchTerm(value);
+                                    setCurrentPage(1);
+                                }}
                                 placeholder="Buscar grupo..." 
                                 onFilterClick={() => console.log("Abrir Filtro")}
                             />
+
+                            {/* --- BOTÃO DE AÇÃO (INICIAR SESSÃO) --- */}
+                            <button 
+                                onClick={handleStartSession}
+                                disabled={!selectedGroup || isStarting}
+                                style={{
+                                    backgroundColor: selectedGroup ? '#81C784' : '#E0E0E0',
+                                    color: selectedGroup ? '#FFF' : '#9E9E9E',
+                                    border: 'none',
+                                    padding: '0 25px',
+                                    height: '52px',
+                                    borderRadius: '30px',
+                                    fontWeight: 'bold',
+                                    fontSize: '1rem',
+                                    cursor: (selectedGroup && !isStarting) ? 'pointer' : 'not-allowed',
+                                    boxShadow: selectedGroup ? '0px 4px 6px rgba(0,0,0,0.1)' : 'none',
+                                    transition: 'all 0.3s ease',
+                                    whiteSpace: 'nowrap'
+                                }}
+                            >
+                                {isStarting ? "Iniciando..." : "Iniciar Sessão"}
+                            </button>
                         </div>
                     </div>
-
                     
                     <div className="session-group-select-card-list">
                         {loading ? (
-                            <p>Carregando grupos...</p>
+                            <p style={{ textAlign: "center", color: "#666" }}>Carregando grupos...</p>
                         ) : (
-                            groups.slice(0, 4).map((group) => (
-                                <div className="group-select-row-wrapper" key={group.id}>
-                                    <div
-                                        className="group-select-list-item-card"
-                                        style={{ cursor: "pointer" }}
-                                    >
-                                        <img src={iconDoubleCard} alt="Icone Grupo" className="group-select-card-icon" />
-                                        <div className="group-select-card-info">
-                                            <h3>{group.name}</h3>
-                                            <button className="group-select-bnt-details">
-                                                {categoryMap[group.category] || group.category}
-                                            </button>
-                                        </div>
+                            currentItems.length > 0 ? (
+                                currentItems.map((group) => {
+                                    // Verifica se ESTE é o grupo selecionado
+                                    const isSelected = selectedGroup && selectedGroup.id === group.id;
 
-                                        <button
-                                            className="select-plus-btn"
-                                            onClick={() => handleGroupSelection(group)}
-                                            title="Adicionar à Sessão"
-                                        >
-                                            <PlusIcon />
-                                        </button>
-                                    </div>
-                                </div>
-                            ))
+                                    return (
+                                        <div className="group-select-row-wrapper" key={group.id}>
+                                            <div
+                                                className="group-select-list-item-card"
+                                                style={{ 
+                                                    cursor: "pointer",
+                                                    border: isSelected ? "2px solid #81C784" : "2px solid transparent",
+                                                    backgroundColor: isSelected ? "#F1F8E9" : "#FFF",
+                                                    transition: "all 0.2s ease"
+                                                }}
+                                                onClick={() => handleGroupSelection(group)} 
+                                            >
+                                                <img src={iconDoubleCard} alt="Icone Grupo" className="group-select-card-icon" />
+                                                <div className="group-select-card-info">
+                                                    <h3>{group.name}</h3>
+                                                    <button className="group-select-bnt-details">
+                                                        {categoryMap[group.category] || group.category}
+                                                    </button>
+                                                </div>
+
+                                                <button
+                                                    className="select-plus-btn"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleGroupSelection(group);
+                                                    }}
+                                                    title={isSelected ? "Desmarcar" : "Selecionar"}
+                                                    style={{
+                                                        backgroundColor: isSelected ? '#81C784' : 'transparent',
+                                                        borderRadius: '50%',
+                                                        width: '40px',
+                                                        height: '40px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        border: 'none',
+                                                        transition: 'background-color 0.3s ease'
+                                                    }}
+                                                >
+                                                    {isSelected ? <CheckIcon /> : <PlusIcon />}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <p style={{ textAlign: "center", marginTop: "20px" }}>
+                                    {searchTerm ? "Nenhum grupo encontrado." : "Nenhum grupo disponível."}
+                                </p>
+                            )
                         )}
                     </div>
 
-                    {totalPages > 1 && (
+                    {/* Controles de Paginação */}
+                    {!loading && filteredGroups.length > 0 && (
                         <div className="pagination-controls">
-                            <a href="#" className="page-arrow">&lt;</a>
-                            <a href="#" className="page-number active">1</a>
-                            <a href="#" className="page-number">2</a>
-                            <a href="#" className="page-number">3</a>
-                            <a href="#" className="page-number">4</a>
-                            <a href="#" className="page-arrow">&gt;</a>
+                            <a 
+                                href="#" 
+                                className={`page-arrow ${currentPage === 1 ? 'disabled' : ''}`}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    if(currentPage > 1) setCurrentPage(currentPage - 1);
+                                }}
+                                style={{ pointerEvents: currentPage === 1 ? 'none' : 'auto', opacity: currentPage === 1 ? 0.5 : 1 }}
+                            >
+                                &lt;
+                            </a>
+
+                            {Array.from({ length: totalPages }, (_, index) => (
+                                <a 
+                                    key={index + 1}
+                                    href="#" 
+                                    className={`page-number ${currentPage === index + 1 ? 'active' : ''}`}
+                                    onClick={(e) => paginate(e, index + 1)}
+                                >
+                                    {index + 1}
+                                </a>
+                            ))}
+
+                            <a 
+                                href="#" 
+                                className={`page-arrow ${currentPage === totalPages ? 'disabled' : ''}`}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    if(currentPage < totalPages) setCurrentPage(currentPage + 1);
+                                }}
+                                style={{ pointerEvents: currentPage === totalPages ? 'none' : 'auto', opacity: currentPage === totalPages ? 0.5 : 1 }}
+                            >
+                                &gt;
+                            </a>
                         </div>
                     )}
                 </div>

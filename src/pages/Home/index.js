@@ -12,6 +12,7 @@ import iconRandom from '../../assets/images/icon_random.png';
 
 function Home() {
   const [userName, setUserName] = useState('');
+  const [students, setStudents] = useState([]); // Estado para os alunos
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -20,20 +21,42 @@ function Home() {
   };
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get('https://labirinto-do-saber.vercel.app/educator/me');
-        setUserName(response.data.name);
+        const token = localStorage.getItem('authToken');
+        
+        // Configuração do Header com Token (necessário para ambas as rotas geralmente)
+        const config = {
+            headers: { Authorization: `Bearer ${token}` }
+        };
+
+        // 1. Busca dados do Educador
+        const userResponse = await axios.get('https://labirinto-do-saber.vercel.app/educator/me', config);
+        setUserName(userResponse.data.name);
+
+        // 2. Busca lista de Alunos
+        const studentsResponse = await axios.get('https://labirinto-do-saber.vercel.app/student/', config);
+        
+        // Ordena por data de criação (mais recente primeiro) e pega os 3 primeiros
+        const sortedStudents = studentsResponse.data.sort((a, b) => {
+            return new Date(b.createdAt) - new Date(a.createdAt);
+        }).slice(0, 3);
+
+        setStudents(sortedStudents);
+
       } catch (error) {
-        console.error("Erro ao buscar dados do usuário:", error);
-        alert("Sua sessão expirou. Por favor, faça login novamente.");
-        navigate('/'); 
+        console.error("Erro ao buscar dados:", error);
+        // Se der erro de autenticação, redireciona
+        if (error.response && error.response.status === 401) {
+            alert("Sua sessão expirou. Por favor, faça login novamente.");
+            navigate('/'); 
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchUserData();
+    fetchData();
   }, [navigate]);
 
   if (isLoading) {
@@ -114,29 +137,25 @@ function Home() {
               <span>Última atividade</span>
             </div>
 
-            <div className="home-student-row">
-              <div className="home-student-name-group">
-                <img src={iconRandom} alt="Lucas" className="home-student-avatar" />
-                <span>Lucas</span>
-              </div>
-              <span className="home-student-activity-tag">Atividade X</span>
-            </div>
-
-            <div className="home-student-row">
-              <div className="home-student-name-group">
-                <img src={iconRandom} alt="Maria" className="home-student-avatar" />
-                <span>Maria</span>
-              </div>
-              <span className="home-student-activity-tag">Atividade X</span>
-            </div>
-        
-            <div className="home-student-row">
-              <div className="home-student-name-group">
-                <img src={iconRandom} alt="João" className="home-student-avatar" />
-                <span>João</span>
-              </div>
-              <span className="home-student-activity-tag">Atividade X</span>
-            </div>
+            {/* Mapeamento dos alunos vindos da API */}
+            {students.length > 0 ? (
+                students.map((student) => (
+                    <div className="home-student-row" key={student.id}>
+                        <div className="home-student-name-group">
+                            <img src={iconRandom} alt={student.name} className="home-student-avatar" />
+                            {/* Mostrando apenas o primeiro nome para caber melhor no layout, ou o nome completo se preferir */}
+                            <span title={student.name}>
+                                {student.name.split(' ')[0]} 
+                            </span>
+                        </div>
+                        <span className="home-student-activity-tag">Atividade X</span>
+                    </div>
+                ))
+            ) : (
+                <div className="home-student-row">
+                    <span>Nenhum aluno recente.</span>
+                </div>
+            )}
           </div>
 
         </div>

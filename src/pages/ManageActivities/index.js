@@ -171,7 +171,7 @@ function ManageActivitiesPage() {
             </div>
             <button 
                 className="create-patient-bnt" 
-                onClick={() => navigate('/activities')}
+                onClick={() => navigate('/CreateNewActivitie')}
                 style={{marginLeft: 'auto'}}
             >
                 Nova Atividade

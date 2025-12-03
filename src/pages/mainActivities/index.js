@@ -1,22 +1,83 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Certifique-se de ter instalado: npm install axios
 import './style.css'; 
 import logo from '../../assets/images/logo.png';
 import iconNotification from '../../assets/images/icon_notification.png';
 import iconProfile from '../../assets/images/icon_profile.png';
 import iconCaderno from '../../assets/images/caderneta.png';
-import iconSeta from '../../assets/images/seta_icon.png'
+import iconSeta from '../../assets/images/seta_icon.png';
 import { useNavigate } from 'react-router-dom'; 
 
 function AlunosPage() {
   const navigate = useNavigate(); 
-  const handleAlunoClick = () => {
-    navigate('/alunosDetails');
-  };
   
- 
+  // Estados para dados e paginação
+  const [notebooks, setNotebooks] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
+
+  // Estados dos menus dropdown
   const [isCriarOpen, setIsCriarOpen] = useState(false);
   const [isGerenciarOpen, setIsGerenciarOpen] = useState(false);
 
+  // --- INTEGRAÇÃO COM BACKEND ---
+  useEffect(() => {
+    const fetchNotebooks = async () => {
+      const token = localStorage.getItem('authToken');
+      
+      if (!token) {
+        navigate('/');
+        return;
+      }
+
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
+
+      try {
+        const response = await axios.get('https://labirinto-do-saber.vercel.app/task-notebook/', config);
+        // O backend retorna um array de objetos { notebook: {...}, taskGroups: [...] }
+        setNotebooks(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar cadernos:", error);
+        // Opcional: Tratar erro 401 (token expirado) redirecionando para login
+        if (error.response && error.response.status === 401) {
+            navigate('/');
+        }
+      }
+    };
+
+    fetchNotebooks();
+  }, [navigate]);
+
+  // --- LÓGICA DE PAGINAÇÃO ---
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentNotebooks = notebooks.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(notebooks.length / itemsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const handlePrevPage = (e) => {
+    e.preventDefault();
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const handleNextPage = (e) => {
+    e.preventDefault();
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  // --- NAVEGAÇÃO E MENUS ---
+  const handleAlunoClick = (notebookId) => {
+    // É recomendável passar o ID para a próxima página saber o que carregar
+    // Opção A: Passar via state do router
+    navigate('/alunosDetails', { state: { id: notebookId } });
+    
+    // Opção B: Se preferir salvar no localstorage (descomente se usar)
+    // localStorage.setItem('selectedNotebookId', notebookId);
+    // navigate('/alunosDetails');
+  };
   
   const handleNavigate = (path) => {
       setIsCriarOpen(false);
@@ -24,17 +85,14 @@ function AlunosPage() {
       navigate(path);
   };
   
-
-  // Função para alternar o estado de 'Criar' (e fechar o 'Gerenciar')
   const toggleCriar = () => {
       setIsCriarOpen(!isCriarOpen);
-      setIsGerenciarOpen(false); // Garante que apenas um esteja aberto
+      setIsGerenciarOpen(false); 
   };
 
-  // Função para alternar o estado de 'Gerenciar' (e fechar o 'Criar')
   const toggleGerenciar = () => {
       setIsGerenciarOpen(!isGerenciarOpen);
-      setIsCriarOpen(false); // Garante que apenas um esteja aberto
+      setIsCriarOpen(false); 
   };
 
   return (
@@ -55,12 +113,11 @@ function AlunosPage() {
 
       <main className="alunos-main-content">
         <div className="alunos-container">
-          
-
+           
           <div className="top-container-head">
           <h1>Atividades</h1>
           <div className="bnts-top">
-                {/* Wrapper para o botão CRIAR e seu subtítulo */}
+                {/* Botão CRIAR */}
                 <div className="button-and-subtitle-wrapper">
                     <div className={`dropdown-button-container ${isCriarOpen ? 'active' : ''}`}>
                         <div 
@@ -69,7 +126,7 @@ function AlunosPage() {
                         > 
                             <span>Criar</span> 
                             <svg width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg" className="dropdown-arrow">
-                                <path d="M0.5 0.5L6.5 6.5L12.5 0.5" stroke="black" stroke-linecap="round"/>
+                                <path d="M0.5 0.5L6.5 6.5L12.5 0.5" stroke="black" strokeLinecap="round"/>
                             </svg>
                         </div>
                         
@@ -83,8 +140,7 @@ function AlunosPage() {
                     </div>
                 </div>
 
-
-                {/* Wrapper para o botão GERENCIAR e seu subtítulo */}
+                {/* Botão GERENCIAR */}
                 <div className="button-and-subtitle-wrapper">
                     <div className={`dropdown-button-container ${isGerenciarOpen ? 'active' : ''}`}>
                         <div 
@@ -93,7 +149,7 @@ function AlunosPage() {
                         > 
                             <span>Gerenciar</span> 
                             <svg width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg" className="dropdown-arrow">
-                                <path d="M0.5 0.5L6.5 6.5L12.5 0.5" stroke="black" stroke-linecap="round"/>
+                                <path d="M0.5 0.5L6.5 6.5L12.5 0.5" stroke="black" strokeLinecap="round"/>
                             </svg>
                         </div>
                         
@@ -109,56 +165,67 @@ function AlunosPage() {
 
             </div>
         </div>
-         
-
+          
+          {/* LISTA DE CADERNOS DINÂMICA */}
           <div className="student-card-list">
-            
-      
-            <div className="student-list-item-card" onClick={handleAlunoClick} style={{cursor: 'pointer'}}>
-              <img src={iconCaderno} alt="Avatar" className="caderno-avatar" />
-              <div className="student-card-info">
-                <h3>Caderno: Apredizagem das sílabas </h3>
-                <p>Foco na montagem e reconhecimento das sílabas tônicas.</p>
-                <button className="bnt-details"> Vocabulárion e Leitura </button>
-              </div>
-           
-              <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta-main"/></a>
-            </div>
-
-           
-            <div className="student-list-item-card" onClick={handleAlunoClick} style={{cursor: 'pointer'}}>
-              <img src={iconCaderno} alt="Avatar" className="caderno-avatar" />
-              <div className="student-card-info">
-                <h3>Caderno: Apredizagem das sílabas  </h3>
-                <p>Foco na montagem e reconhecimento das sílabas tônicas.</p>
-                <button className="bnt-details"> Escrita </button>
-              </div>
-              
-              <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta-main"/></a>
-            </div>
-
-           
-            <div className="student-list-item-card" onClick={handleAlunoClick} style={{cursor: 'pointer'}}>
-              <img src={iconCaderno} alt="Avatar" className="caderno-avatar" />
-              <div className="student-card-info">
-                <h3>Caderno: Apredizagem das sílabas  </h3>
-                <p>Foco na montagem e reconhecimento das sílabas tônicas.</p>
-                <button className="bnt-details"> Leitura </button>
-              </div>
-           
-             <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta-main"/></a>
-            </div>
-
+            {currentNotebooks.length > 0 ? (
+                currentNotebooks.map((item) => (
+                    <div 
+                        key={item.notebook.id} 
+                        className="student-list-item-card" 
+                        onClick={() => handleAlunoClick(item.notebook.id)} 
+                        style={{cursor: 'pointer'}}
+                    >
+                        <img src={iconCaderno} alt="Avatar" className="caderno-avatar" />
+                        <div className="student-card-info">
+                            {/* Título do Caderno */}
+                            <h3>{item.notebook.description || "Caderno sem título"}</h3>
+                            
+                            {/* Descrição baseada nos grupos ou texto fixo se preferir */}
+                            <p>
+                                {item.taskGroups.length > 0 
+                                ? `${item.taskGroups.length} grupo(s) de atividades.` 
+                                : "Nenhum grupo de atividades vinculado."}
+                            </p>
+                            
+                            {/* Categoria como botão */}
+                            <button className="bnt-details"> 
+                                {item.notebook.category ? item.notebook.category : "Geral"} 
+                            </button>
+                        </div>
+                    
+                        <div className="back-arrow">
+                            <img src={iconSeta} alt="seta" className="seta-main"/>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <p style={{textAlign: 'center', width: '100%', marginTop: '20px'}}>
+                    Carregando...
+                </p>
+            )}
           </div>
 
-          <div className="pagination-controls">
-            <a href="#" className="page-arrow">&lt;</a>
-            <a href="#" className="page-number">1</a>
-            <a href="#" className="page-number active">2</a>
-            <a href="#" className="page-number">3</a>
-            <a href="#" className="page-number">4</a>
-            <a href="#" className="page-arrow">&gt;</a>
-          </div>
+          {/* CONTROLES DE PAGINAÇÃO */}
+          {notebooks.length > 0 && (
+              <div className="pagination-controls">
+                <a href="#" onClick={handlePrevPage} className={`page-arrow ${currentPage === 1 ? 'disabled' : ''}`}>&lt;</a>
+                
+                {/* Gera os números das páginas dinamicamente */}
+                {Array.from({ length: totalPages }, (_, index) => (
+                    <a 
+                        key={index + 1} 
+                        href="#" 
+                        onClick={(e) => { e.preventDefault(); paginate(index + 1); }} 
+                        className={`page-number ${currentPage === index + 1 ? 'active' : ''}`}
+                    >
+                        {index + 1}
+                    </a>
+                ))}
+
+                <a href="#" onClick={handleNextPage} className={`page-arrow ${currentPage === totalPages ? 'disabled' : ''}`}>&gt;</a>
+              </div>
+          )}
 
         </div>
       </main>
