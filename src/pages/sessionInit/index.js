@@ -104,12 +104,14 @@ function SessionInitPage() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { task, sessionId, studentId } = location.state || {}; 
+const { task, tasks, sessionId, studentId } = location.state || {}; 
 
+
+    const [sessionActivities] = useState(tasks ? tasks : (task ? [task] : []));
     const [timeElapsed, setTimeElapsed] = useState(0); 
     const [isAudioPlaying, setIsAudioPlaying] = useState(false);
     
-    const [sessionActivities] = useState(task ? [task] : []);
+    
     const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
     
 

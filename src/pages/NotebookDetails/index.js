@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "./style.css";
 import logo from "../../assets/images/logo.png";
 import iconNotification from "../../assets/images/icon_notification.png";
 import iconProfile from "../../assets/images/icon_profile.png";
 import iconSeta from "../../assets/images/seta_icon.png";
-import iconDoubleCard from "../../assets/images/iconDoublecard.png"; 
-import { useNavigate } from "react-router-dom";
+import iconDoubleCard from "../../assets/images/iconDoublecard.png";
+import iconActivitie from "../../assets/images/iconActivitie.png"; // Certifique-se de importar este ícone
+import { useNavigate, useLocation } from "react-router-dom";
 
 const TrashIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -19,17 +21,111 @@ const TrashIcon = () => (
 
 function NotebookDetailsPage() {
     const navigate = useNavigate();
-    
-    // Simula a lista de atividades dentro deste caderno
-    const handleActivityClick = (e) => { 
-        console.log("Navegar para detalhes da atividade.");
-        // Ex: navigate("/activityDetails/1");
+    const location = useLocation();
+
+    // ID do caderno vindo da navegação
+    const { notebookId } = location.state || {};
+
+    // --- ESTADOS ---
+    const [notebookName, setNotebookName] = useState("Carregando...");
+    const [taskGroups, setTaskGroups] = useState([]); // Grupos dentro do caderno
+    const [allTasks, setAllTasks] = useState([]); // Todas as tarefas (para pegar detalhes)
+    const [loading, setLoading] = useState(true);
+
+    // Estados do Modal
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedGroup, setSelectedGroup] = useState(null);
+
+    const categoryMap = {
+        'reading': 'Leitura',
+        'writing': 'Escrita',
+        'vocabulary': 'Vocabulário',
+        'comprehension': 'Compreensão'
     };
+
+    // --- BUSCAR DADOS ---
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!notebookId) {
+                alert("Erro: ID do caderno não informado.");
+                navigate('/manageNotebooks');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('authToken');
+                const config = { headers: { Authorization: `Bearer ${token}` } };
+
+                // Fazemos 2 requisições ao mesmo tempo: Cadernos e Tarefas
+                const [notebooksResponse, tasksResponse] = await Promise.all([
+                    axios.get('https://labirinto-do-saber.vercel.app/task-notebook/', config),
+                    axios.get('https://labirinto-do-saber.vercel.app/task/', config)
+                ]);
+                
+                // 1. Salvar todas as tarefas para consulta futura
+                if (Array.isArray(tasksResponse.data)) {
+                    setAllTasks(tasksResponse.data);
+                }
+
+                // 2. Filtrar o caderno específico
+                const allNotebooks = notebooksResponse.data;
+                const foundItem = allNotebooks.find(item => item.notebook.id === notebookId);
+
+                if (foundItem) {
+                    setNotebookName(foundItem.notebook.description || "Sem descrição");
+                    setTaskGroups(foundItem.taskGroups || []);
+                } else {
+                    setNotebookName("Caderno não encontrado");
+                }
+
+                setLoading(false);
+
+            } catch (error) {
+                console.error("Erro ao buscar dados:", error);
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [notebookId, navigate]);
+
+
+    // --- LÓGICA DO MODAL ---
     
-    // Função para remover a atividade do caderno
-    const handleRemoveActivity = (e) => {
+    // Ao clicar num grupo (card)
+    const handleGroupClick = (group) => {
+        setSelectedGroup(group);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setSelectedGroup(null);
+    };
+
+    // Função mágica que pega os IDs do grupo e transforma em objetos de tarefa completos
+    const getResolvedTasksForGroup = (group) => {
+        if (!group || !group.tasksIds) return [];
+        
+        // Mapeia os IDs e encontra a tarefa correspondente na lista 'allTasks'
+        return group.tasksIds
+            .map(id => allTasks.find(task => task.id === id))
+            .filter(Boolean); // Remove undefined se não achar alguma
+    };
+
+    // Ações dentro do modal (opcionais por enquanto)
+    const handleEditActivityInModal = () => {
+        console.log("Editar atividade clicada.");
+    };
+
+    const handleRemoveActivityFromGroup = (e) => {
         e.stopPropagation();
-        console.log("Remover atividade do caderno acionado.");
+        alert("Remover atividade do grupo em breve.");
+    };
+
+    const handleRemoveGroup = (e, id) => {
+        e.stopPropagation();
+        alert("Funcionalidade de remover grupo do caderno em breve.");
     };
     
     return (
@@ -37,18 +133,10 @@ function NotebookDetailsPage() {
             <header className="header">
                 <img src={logo} alt="Labirinto do Saber" className="logo" />
                 <nav className="navbar">
-                    <a href="/home" className="nav-link">
-                        Dashboard
-                    </a>
-                    <a href="/activitiesMain" className="nav-link active">
-                        Atividades
-                    </a>
-                    <a href="/alunos" className="nav-link">
-                        Alunos
-                    </a>
-                    <a href="/MainReport" className="nav-link">
-                        Relatórios
-                    </a>
+                    <a href="/home" className="nav-link">Dashboard</a>
+                    <a href="/activitiesMain" className="nav-link active">Atividades</a>
+                    <a href="/alunos" className="nav-link">Alunos</a>
+                    <a href="/MainReport" className="nav-link">Relatórios</a>
                 </nav>
                 <div className="user-controls">
                     <img src={iconNotification} alt="Notificações" className="icon" />
@@ -60,72 +148,106 @@ function NotebookDetailsPage() {
                 
                 <div className="notebook-details-container">
                     <div className="top-container">
-                        <h1>Caderno: Aprendizagem das sílabas</h1>
+                        <h1>Caderno: {notebookName}</h1>
                         <button 
-                        className="add-group-btn" 
-                        onClick={ () => navigate('/GroupSelect') }
+                            className="add-group-btn" 
+                            onClick={ () => navigate('/GroupSelect') }
                         >
-                        Adicionar novo grupo
+                            Adicionar novo grupo
                         </button>
                     </div>
+
                     <div className="details-activity-list">
                         
-                        {/* ATIVIDADE 1 */}
-                        <div className="activity-details-row-wrapper">
-                            <div className="activity-details-list-item-card" onClick={handleActivityClick} style={{ cursor: "pointer" }}>
-                                <img src={iconDoubleCard} alt="icone" className="activity-details-card-icon" />
-                                <div className="activity-details-card-info">
-                                    <h3>Atividade de associação e leitura com animais </h3>
-                                    <button className="activity-details-bnt-details">Vocabulárion e Leitura</button>
-                                </div>
-                                <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta" /></a>
+                        {loading ? (
+                            <p>Carregando...</p>
+                        ) : taskGroups.length === 0 ? (
+                            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                                <p>Nenhum grupo encontrado neste caderno.</p>
                             </div>
-                            <button className="remove-activity-btn" onClick={handleRemoveActivity} title="Remover Atividade">
-                                <TrashIcon />
-                            </button>
-                        </div>
-                        
-                        {/* ATIVIDADE 2 */}
-                        <div className="activity-details-row-wrapper">
-                            <div className="activity-details-list-item-card" onClick={handleActivityClick} style={{ cursor: "pointer" }}>
-                                <img src={iconDoubleCard} alt="icone" className="activity-details-card-icon" />
-                                <div className="activity-details-card-info">
-                                    <h3>Atividade de associação e leitura com animais </h3>
-                                    <button className="activity-details-bnt-details">Escrita</button>
+                        ) : (
+                            // LISTA DE GRUPOS
+                            taskGroups.map((group) => (
+                                <div className="activity-details-row-wrapper" key={group.id}>
+                                    <div 
+                                        className="activity-details-list-item-card" 
+                                        // AQUI MUDOU: Agora abre o modal ao clicar
+                                        onClick={() => handleGroupClick(group)} 
+                                        style={{ cursor: "pointer" }}
+                                    >
+                                        <img src={iconDoubleCard} alt="icone" className="activity-details-card-icon" />
+                                        <div className="activity-details-card-info">
+                                            <h3>{group.name || "Grupo sem nome"}</h3>
+                                            <button className="activity-details-bnt-details">
+                                                {categoryMap[group.category] || group.category}
+                                            </button>
+                                        </div>
+                                        
+                                        <span className="back-arrow">
+                                            <img src={iconSeta} alt="seta" className="seta" />
+                                        </span>
+                                    </div>
+                                    <button 
+                                        className="remove-activity-btn" 
+                                        onClick={(e) => handleRemoveGroup(e, group.id)} 
+                                        title="Remover Grupo do Caderno"
+                                    >
+                                        <TrashIcon />
+                                    </button>
                                 </div>
-                                <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta" /></a>
-                            </div>
-                            <button className="remove-activity-btn" onClick={handleRemoveActivity} title="Remover Atividade">
-                                <TrashIcon />
-                            </button>
-                        </div>
-                        
-                        {/* ATIVIDADE 3 */}
-                        <div className="activity-details-row-wrapper">
-                            <div className="activity-details-list-item-card" onClick={handleActivityClick} style={{ cursor: "pointer" }}>
-                                <img src={iconDoubleCard} alt="icone" className="activity-details-card-icon" />
-                                <div className="activity-details-card-info">
-                                    <h3>Atividade de associação e leitura com animais </h3>
-                                    <button className="activity-details-bnt-details">Leitura</button>
-                                </div>
-                                <a href="/alunos" className="back-arrow"><img src={iconSeta} alt="seta" className="seta" /></a>
-                            </div>
-                            <button className="remove-activity-btn" onClick={handleRemoveActivity} title="Remover Atividade">
-                                <TrashIcon />
-                            </button>
-                        </div>
-
-                    </div>
-                    <div className="pagination-controls">
-                        <a href="#" className="page-arrow">&lt;</a>
-                        <a href="#" className="page-number active">1</a>
-                        <a href="#" className="page-number">2</a>
-                        <a href="#" className="page-number">3</a>
-                        <a href="#" className="page-number">4</a>
-                        <a href="#" className="page-arrow">&gt;</a>
+                            ))
+                        )}
                     </div>
                 </div>
             </main>
+
+            {/* --- MODAL (IGUALZINHO AO DA TELA DE GRUPOS) --- */}
+            {isModalOpen && selectedGroup && (
+                <div className="modal-overlay" onClick={closeModal}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2 className="modal-title">{selectedGroup.name}</h2>
+                            <button className="modal-close-btn" onClick={closeModal}>&times;</button>
+                        </div>
+
+                        <div className="modal-body">
+                            <p style={{ color: "#666", marginBottom: "15px" }}>
+                                Categoria: {categoryMap[selectedGroup.category] || selectedGroup.category}
+                            </p>
+
+                            <div className="activity-card-list">
+                                {getResolvedTasksForGroup(selectedGroup).length > 0 ? (
+                                    getResolvedTasksForGroup(selectedGroup).map((task) => (
+                                        <div key={task.id} className="group-row-wrapper modal-activity-row">
+                                            <div
+                                                className="group-list-item-card modal-group-task-card"
+                                                onClick={handleEditActivityInModal}
+                                                style={{ cursor: "pointer" }}
+                                            >
+                                                <img src={iconActivitie} alt="icone atividade" className="activity-card-icon" />
+                                                <div className="group-card-info">
+                                                    {/* Exibindo prompt ou descrição da tarefa */}
+                                                    <h3>{task.prompt ? (task.prompt.slice(0, 40) + "...") : "Tarefa sem título"}</h3>
+                                                    <button className="group-bnt-details">
+                                                        {categoryMap[task.category] || task.category}
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <button className="remove-group-btn" onClick={handleRemoveActivityFromGroup}>
+                                                <TrashIcon />
+                                            </button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>Este grupo não possui atividades ou as atividades não foram carregadas.</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }

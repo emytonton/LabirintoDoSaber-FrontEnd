@@ -7,10 +7,9 @@ import iconProfile from "../../assets/images/icon_profile.png";
 import iconDoubleCard from "../../assets/images/iconDoublecard.png";
 import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png";
 import SearchBar from "../../components/ui/SearchBar/Search";
-import { useNavigate, useLocation } from "react-router-dom"; // Importe useLocation
+import { useNavigate, useLocation } from "react-router-dom"; 
 
 // --- ÍCONES (Mantidos iguais) ---
-
 const PlusIcon = () => (
     <svg width="25" height="25" viewBox="0 0 65 69" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g filter="url(#filter0_d_398_2393)">
@@ -48,9 +47,10 @@ function SessionGroupPage() {
 
     // Estados
     const [groups, setGroups] = useState([]);
+    const [allTasks, setAllTasks] = useState([]); // NOVO: Guarda todas as tarefas para referência
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
-    const [isStarting, setIsStarting] = useState(false); // Loading do botão iniciar
+    const [isStarting, setIsStarting] = useState(false); 
     
     // ESTADO DE SELEÇÃO ÚNICA
     const [selectedGroup, setSelectedGroup] = useState(null);
@@ -71,13 +71,12 @@ function SessionGroupPage() {
     useEffect(() => {
         if (!studentId || !sessionName) {
             console.warn("Dados de sessão perdidos (studentId/sessionName).");
-            // navigate('/home'); // Opcional: Redirecionar
         }
-    }, [studentId, sessionName, navigate]);
+    }, [studentId, sessionName]);
 
-    // --- INTEGRANDO A API (LISTAR GRUPOS) ---
+    // --- INTEGRANDO A API (LISTAR GRUPOS E TAREFAS) ---
     useEffect(() => {
-        const fetchGroups = async () => {
+        const fetchData = async () => {
             try {
                 const token = localStorage.getItem('authToken');
                 if (!token) {
@@ -88,13 +87,23 @@ function SessionGroupPage() {
                     headers: { Authorization: `Bearer ${token}` }
                 };
 
-                const response = await axios.get("https://labirinto-do-saber.vercel.app/task-group/list-by-educator", config);
+                // Executa as duas requisições em paralelo
+                const [groupsResponse, tasksResponse] = await Promise.all([
+                    axios.get("https://labirinto-do-saber.vercel.app/task-group/list-by-educator", config),
+                    axios.get("https://labirinto-do-saber.vercel.app/task/", config)
+                ]);
                 
-                setGroups(response.data);
+                setGroups(groupsResponse.data);
+                
+                // Salva todas as tarefas para podermos "traduzir" os IDs do grupo depois
+                if (Array.isArray(tasksResponse.data)) {
+                    setAllTasks(tasksResponse.data);
+                }
+
                 setLoading(false);
 
             } catch (error) {
-                console.error("Erro ao buscar grupos:", error);
+                console.error("Erro ao buscar dados:", error);
                 if (error.response && error.response.status === 401) {
                     navigate('/');
                 }
@@ -102,7 +111,7 @@ function SessionGroupPage() {
             }
         };
 
-        fetchGroups();
+        fetchData();
     }, [navigate]);
 
     // Lógica de Seleção ÚNICA
@@ -114,19 +123,31 @@ function SessionGroupPage() {
         }
     };
 
-    // --- INTEGRANDO A API DE START (POST) ---
+    // --- INTEGRANDO A API DE START (POST) E RESOLVENDO TAREFAS ---
     const handleStartSession = async () => {
         if (!selectedGroup) {
             alert("Selecione um grupo.");
             return;
         }
 
-        if (!studentId || !sessionName) {
-            alert("Erro: Dados do aluno não encontrados. Reinicie o fluxo.");
+        // Validação básica se há tarefas no grupo
+        if (!selectedGroup.tasksIds || selectedGroup.tasksIds.length === 0) {
+            alert("Este grupo está vazio (sem atividades).");
             return;
         }
 
         setIsStarting(true);
+
+        // --- AQUI A MÁGICA ACONTECE: TRADUZIR IDs EM OBJETOS ---
+        const resolvedTasks = selectedGroup.tasksIds.map(id => {
+            return allTasks.find(t => t.id === id);
+        }).filter(task => task !== undefined); // Remove undefined se não achar
+
+        if (resolvedTasks.length === 0) {
+            alert("Erro: Não foi possível carregar os detalhes das atividades deste grupo.");
+            setIsStarting(false);
+            return;
+        }
 
         try {
             const token = localStorage.getItem('authToken');
@@ -134,11 +155,11 @@ function SessionGroupPage() {
                 headers: { Authorization: `Bearer ${token}` }
             };
 
-            // Payload para iniciar sessão com GRUPO
+            // Payload para iniciar sessão com GRUPO (Back-end log)
             const payload = {
                 studentId: studentId,
                 name: sessionName,
-                taskGroupId: selectedGroup.id // ID do grupo selecionado
+                taskGroupId: selectedGroup.id 
             };
 
             console.log("Iniciando sessão de GRUPO com payload:", payload);
@@ -152,12 +173,14 @@ function SessionGroupPage() {
             console.log("Sessão criada:", response.data);
             const sessionId = response.data.sessionId;
 
-            // Navega para a tela de execução
+            // Navega para a tela de execução enviando o ARRAY de tarefas
             navigate(`/sessionInit`, { 
                 state: { 
                     sessionId: sessionId,
+                    studentId: studentId,
                     itemType: 'group',
-                    group: selectedGroup // Passando dados do grupo se precisar mostrar nome, etc.
+                    groupName: selectedGroup.name,
+                    tasks: resolvedTasks // <--- Envia o array de objetos completos
                 } 
             });
 
@@ -208,7 +231,6 @@ function SessionGroupPage() {
                     <div className="top-container">
                         <h1>Selecione o grupo de atividade desejado</h1>
                         
-                        {/* Flex Container para Search e Botão */}
                         <div className="search-filter-group" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                             <SearchBar 
                                 searchTerm={searchTerm}
@@ -220,7 +242,6 @@ function SessionGroupPage() {
                                 onFilterClick={() => console.log("Abrir Filtro")}
                             />
 
-                            {/* --- BOTÃO DE AÇÃO (INICIAR SESSÃO) --- */}
                             <button 
                                 onClick={handleStartSession}
                                 disabled={!selectedGroup || isStarting}
@@ -250,7 +271,6 @@ function SessionGroupPage() {
                         ) : (
                             currentItems.length > 0 ? (
                                 currentItems.map((group) => {
-                                    // Verifica se ESTE é o grupo selecionado
                                     const isSelected = selectedGroup && selectedGroup.id === group.id;
 
                                     return (
@@ -306,7 +326,6 @@ function SessionGroupPage() {
                         )}
                     </div>
 
-                    {/* Controles de Paginação */}
                     {!loading && filteredGroups.length > 0 && (
                         <div className="pagination-controls">
                             <a 
