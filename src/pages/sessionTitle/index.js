@@ -6,6 +6,8 @@ import iconNotification from "../../assets/images/icon_notification.png";
 import iconProfile from "../../assets/images/icon_profile.png";
 import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png"; 
 
+console.log("State recebido na SessionTitlePage:", location.state);
+
 // SVG da caneta (PenIcon)
 const PenIcon = () => (
     <svg width="34" height="26" viewBox="0 0 34 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -21,17 +23,18 @@ function SessionTitlePage() {
     // Vamos chamar de studentId para alinhar com a API, mesmo que venha como patientId
     const [studentId, setStudentId] = useState(null); 
 
-    useEffect(() => {
-        // Verifica se recebemos o ID da tela de seleção de alunos
-        if (location.state && location.state.patientId) {
-            setStudentId(location.state.patientId);
-            console.log("Fluxo - ID do Aluno recebido:", location.state.patientId);
-        } else {
-            console.warn("Nenhum ID de aluno encontrado. O fluxo pode estar quebrado.");
-            // Opcional: Redirecionar para a lista de alunos se não tiver ID
-            // navigate('/session'); 
-        }
-    }, [location, navigate]);
+        useEffect(() => {
+            if (location.state) {
+                const id = location.state.studentId || location.state.patientId;
+                
+                if (id) {
+                    setStudentId(id);
+                    console.log("Fluxo - ID do Aluno recebido:", id);
+                } else {
+                    console.warn("Nenhum ID de aluno encontrado.");
+                }
+            }
+        }, [location]);
 
     const handleNext = () => {
         // Validação do nome

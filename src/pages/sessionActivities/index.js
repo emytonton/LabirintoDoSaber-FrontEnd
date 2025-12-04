@@ -145,28 +145,76 @@ function SessionActivitiesPage() {
     }
   };
 
-  // FUNÇÃO CORRIGIDA: Implementação de navegação instantânea e correção do async/await
-  const handleStartSession = async () => {
+ const handleStartSession = async () => {
+    // 1. Validações Iniciais
     if (!selectedActivity) {
       alert("Selecione uma atividade.");
       return;
     }
 
+    if (!studentId) {
+      alert("Erro: Nenhum aluno identificado. Volte e selecione o aluno.");
+      return;
+    }
+
     setIsStarting(true);
 
-    let newSessionId = "sessao-mock-123";
+    try {
+      const token = localStorage.getItem("authToken");
+      
+      // 2. Monta o Payload para a rota /start
+      // Geralmente essa rota espera receber quem é o aluno e qual é a tarefa
+      const payload = {
+        studentId: studentId,
+        name: sessionName,
+        taskId: selectedActivity.id
+        // Se o backend exigir notebookId mesmo que nulo, descomente abaixo:
+        // notebookId: null 
+      };
 
-    /* (Lógica real do POST /sessions/start seria aqui) */
+      console.log("Iniciando sessão em /start com:", payload);
 
-    navigate(`/sessionInit`, {
-      state: {
-        sessionId: newSessionId,
-        itemType: "activity",
-        task: selectedActivity.originalData,
-      },
-    });
+      // 3. Chamada POST para a rota CORRETA
+      const response = await axios.post(
+        "https://labirinto-do-saber.vercel.app/task-notebook-session/start", 
+        payload,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-    setIsStarting(false);
+      console.log("Resposta do servidor:", response.data);
+
+      // 4. Extrai o sessionId da resposta
+      // Verifica se o backend devolve { sessionId: "..." } ou o objeto completo da sessão
+      const realSessionId = response.data.sessionId || response.data.id;
+
+      if (!realSessionId) {
+        throw new Error("ID da sessão não foi retornado pelo servidor.");
+      }
+
+      // 5. Navega para a tela de execução com o ID VÁLIDO
+      navigate(`/sessionInit`, {
+        state: {
+          sessionId: realSessionId, // UUID vindo do banco
+          studentId: studentId,
+          itemType: "activity",
+          task: selectedActivity.originalData,
+        },
+      });
+
+    } catch (error) {
+      console.error("❌ Erro ao iniciar sessão:", error);
+      
+      if (error.response) {
+         // Mostra erro detalhado se o servidor recusar (ex: aluno não encontrado, task inválida)
+         alert(`Erro ao iniciar: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
+      } else {
+         alert("Erro de conexão. Verifique sua internet.");
+      }
+    } finally {
+      setIsStarting(false);
+    }
   };
 
   const handleFilterAction = () => {

@@ -79,7 +79,8 @@ function SessionPage() {
     
     const handlePatientClick = (patientId) => {
         const nextScreenPath = `/sessionTitle`;
-        navigate(nextScreenPath, { state: { patientId: patientId } });
+        navigate(nextScreenPath, { state: { studentId: patientId } });
+
     };
 
     // --- LÓGICA DE FILTRO E PAGINAÇÃO ---

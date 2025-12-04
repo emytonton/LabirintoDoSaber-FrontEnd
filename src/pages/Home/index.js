@@ -10,9 +10,12 @@ import iconNotification from '../../assets/images/icon_notification.png';
 import iconProfile from '../../assets/images/icon_profile.png';
 import iconRandom from '../../assets/images/icon_random.png';
 
+const API_BASE_URL = "https://labirinto-do-saber.vercel.app";
+
 function Home() {
   const [userName, setUserName] = useState('');
-  const [students, setStudents] = useState([]); // Estado para os alunos
+  const [students, setStudents] = useState([]); 
+  const [recentActivities, setRecentActivities] = useState([]); // Novo estado para os cards da esquerda
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -20,33 +23,62 @@ function Home() {
     navigate('/session');
   };
 
+  // Função auxiliar para formatar data
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pt-BR');
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('authToken');
-        
-        // Configuração do Header com Token (necessário para ambas as rotas geralmente)
-        const config = {
-            headers: { Authorization: `Bearer ${token}` }
-        };
+        const config = { headers: { Authorization: `Bearer ${token}` } };
 
         // 1. Busca dados do Educador
-        const userResponse = await axios.get('https://labirinto-do-saber.vercel.app/educator/me', config);
+        const userResponse = await axios.get(`${API_BASE_URL}/educator/me`, config);
         setUserName(userResponse.data.name);
 
         // 2. Busca lista de Alunos
-        const studentsResponse = await axios.get('https://labirinto-do-saber.vercel.app/student/', config);
-        
-        // Ordena por data de criação (mais recente primeiro) e pega os 3 primeiros
-        const sortedStudents = studentsResponse.data.sort((a, b) => {
-            return new Date(b.createdAt) - new Date(a.createdAt);
-        }).slice(0, 3);
+        const studentsResponse = await axios.get(`${API_BASE_URL}/student/`, config);
+        let allStudents = studentsResponse.data;
 
-        setStudents(sortedStudents);
+        // 3. Buscar a última sessão de cada aluno (limitado aos 5 mais recentes para não pesar)
+        // Ordenamos primeiro por criação para pegar os alunos mais novos, ou pegamos todos se forem poucos
+        const studentsToFetch = allStudents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+
+        const studentsWithSessionPromises = studentsToFetch.map(async (student) => {
+            try {
+                const sessionsRes = await axios.get(`${API_BASE_URL}/task-notebook-session/student/${student.id}`, config);
+                const sessions = sessionsRes.data || [];
+                
+                // Ordena sessões para pegar a mais recente
+                const sortedSessions = sessions.sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt));
+                const lastSession = sortedSessions.length > 0 ? sortedSessions[0] : null;
+
+                return {
+                    ...student,
+                    lastSession: lastSession // Anexa a última sessão ao objeto do aluno
+                };
+            } catch (err) {
+                console.warn(`Erro ao buscar sessão para ${student.name}`, err);
+                return { ...student, lastSession: null };
+            }
+        });
+
+        // Aguarda todas as requisições paralelas terminarem
+        const detailedStudents = await Promise.all(studentsWithSessionPromises);
+
+        // Define a lista de alunos (Lado Direito)
+        setStudents(detailedStudents.slice(0, 3)); // Pega os 3 primeiros para a lista
+
+        // Define as Atividades Recentes (Lado Esquerdo) - Apenas alunos que TÊM sessão
+        const activeStudents = detailedStudents.filter(s => s.lastSession !== null);
+        setRecentActivities(activeStudents.slice(0, 2)); // Pega os 2 mais ativos para os cards grandes
 
       } catch (error) {
         console.error("Erro ao buscar dados:", error);
-        // Se der erro de autenticação, redireciona
         if (error.response && error.response.status === 401) {
             alert("Sua sessão expirou. Por favor, faça login novamente.");
             navigate('/'); 
@@ -62,7 +94,7 @@ function Home() {
   if (isLoading) {
     return (
       <div className="home-dashboard-container">
-        <h1>Carregando...</h1>
+        <h1>Carregando dashboard...</h1>
       </div>
     );
   }
@@ -91,41 +123,49 @@ function Home() {
       </header>
 
       <main className="home-main-content">
+        {/* --- LADO ESQUERDO: CARDS GRANDES --- */}
         <div className="home-content-left">
           <h1>Dashboard</h1>
   
           <p className="home-welcome-message">
-            Bem vindo(a) de volta, {userName || 'Usuário'}!
+            Bem vindo(a) de volta, {userName || 'Educador'}!
           </p>
 
           <h2>Atividades recentes</h2>
 
-          <div className="home-activity-card">
-            <img src={boyHome} alt="Menino lendo" className="home-activity-image" />
-            <div className="home-activity-info">
-              <h3>Sessão de sílabas com Lucas</h3>
-              <p>Foco na montagem e reconhecimento das sílabas tônicas.</p>
-            </div>
-            <img src={setaIcon} alt="Seta" className="home-arrow" />
-          </div>
-
-          <div className="home-activity-card">
-            <img src={girlHome} alt="Menina lendo" className="home-activity-image" />
-            <div className="home-activity-info">
-              <h3>Sessão de sílabas com Ana</h3>
-              <p>Foco na montagem e reconhecimento das sílabas tônicas.</p>
-            </div>
-            <img src={setaIcon} alt="Seta" className="home-arrow" />
-          </div>
+          {recentActivities.length > 0 ? (
+            recentActivities.map((student, index) => (
+              <div className="home-activity-card" key={student.id} onClick={() => navigate('/ReportSession', { state: { sessionId: student.lastSession.sessionId || student.lastSession.id } })} style={{cursor: 'pointer'}}>
+                {/* Alterna imagem entre menino e menina baseado no index (apenas visual) */}
+                <img src={index % 2 === 0 ? boyHome : girlHome} alt="Aluno lendo" className="home-activity-image" />
+                
+                <div className="home-activity-info">
+                  <h3>Sessão com {student.name.split(' ')[0]}</h3>
+                  <p>
+                    {student.lastSession.sessionName 
+                        ? student.lastSession.sessionName 
+                        : "Sessão realizada"}
+                  </p>
+                  <small style={{color: '#666'}}>
+                     Data: {formatDate(student.lastSession.startedAt)}
+                  </small>
+                </div>
+                <img src={setaIcon} alt="Seta" className="home-arrow" />
+              </div>
+            ))
+          ) : (
+            <p>Nenhuma atividade recente encontrada.</p>
+          )}
         </div>
 
+        {/* --- LADO DIREITO: LISTA DE ALUNOS --- */}
         <div className="home-content-right">
           <div className="home-action-buttons">
             <button 
               className="home-btn-primary-session"
               onClick={handleStartSession}
             >
-              Iniciar Sessão
+              Iniciar Nova Sessão
             </button>
           </div>
 
@@ -137,23 +177,29 @@ function Home() {
               <span>Última atividade</span>
             </div>
 
-            {/* Mapeamento dos alunos vindos da API */}
             {students.length > 0 ? (
                 students.map((student) => (
                     <div className="home-student-row" key={student.id}>
                         <div className="home-student-name-group">
                             <img src={iconRandom} alt={student.name} className="home-student-avatar" />
-                            {/* Mostrando apenas o primeiro nome para caber melhor no layout, ou o nome completo se preferir */}
                             <span title={student.name}>
                                 {student.name.split(' ')[0]} 
                             </span>
                         </div>
-                        <span className="home-student-activity-tag">Atividade X</span>
+                        
+                        <span className="home-student-activity-tag" style={{
+                            backgroundColor: student.lastSession ? '#E3F2FD' : '#f5f5f5',
+                            color: student.lastSession ? '#1565C0' : '#999'
+                        }}>
+                            {student.lastSession 
+                                ? (student.lastSession.sessionName || "Sessão Geral")
+                                : "Nenhuma"}
+                        </span>
                     </div>
                 ))
             ) : (
                 <div className="home-student-row">
-                    <span>Nenhum aluno recente.</span>
+                    <span>Nenhum aluno encontrado.</span>
                 </div>
             )}
           </div>
