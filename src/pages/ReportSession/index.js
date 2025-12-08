@@ -10,6 +10,23 @@ import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png";
 
 const API_BASE_URL = "https://labirinto-do-saber.vercel.app";
 
+// --- NOVA FUNÇÃO AUXILIAR PARA FORMATAR O TEMPO ---
+const formatDuration = (seconds) => {
+    const val = Number(seconds) || 0; // Garante que é número
+    
+    // Se for menos de 1 minuto, mostra em segundos
+    if (val < 60) {
+        return `${Math.round(val)} segundos`;
+    }
+    
+    // Se for maior, calcula minutos e segundos restantes
+    const m = Math.floor(val / 60);
+    const s = Math.round(val % 60);
+    
+    if (s === 0) return `${m} minutos`;
+    return `${m} min e ${s} seg`;
+};
+
 function ReportSession() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -48,18 +65,18 @@ function ReportSession() {
                     throw new Error("Dados vazios retornados pela API.");
                 }
 
-                // --- ATUALIZAÇÃO AQUI ---
                 // Usa o sessionName vindo do back. Se não tiver, usa "Sessão" + parte do ID.
                 const displayTitle = api.sessionName ? api.sessionName : `Sessão ${sessionId.substring(0, 8)}`;
 
                 setSessionData({
                     title: displayTitle, 
                     
+                    // --- AQUI APLICAMOS A FORMATAÇÃO INTELIGENTE ---
                     timeMetrics: [
-                        { label: "Tempo total da sessão", value: `${Math.round((api.totalTimeSession || 0) / 60)} minutos` },
-                        { label: "Tempo médio de resposta", value: `${Math.round((api.averageTimePerQuestion || 0) / 60)} minutos` },
-                        { label: "Tempo médio para acerto", value: `${Math.round((api.averageCorrectTime || 0) / 60)} minutos` },
-                        { label: "Tempo médio para erro", value: `${Math.round((api.averageIncorrectTime || 0) / 60)} minutos` },
+                        { label: "Tempo total da sessão", value: formatDuration(api.totalTimeSession) },
+                        { label: "Tempo médio de resposta", value: formatDuration(api.averageTimePerQuestion) },
+                        { label: "Tempo médio para acerto", value: formatDuration(api.averageCorrectTime) },
+                        { label: "Tempo médio para erro", value: formatDuration(api.averageIncorrectTime) },
                     ],
 
                     categoryRates: api.percentageByCategory ? Object.keys(api.percentageByCategory).map(key => ({
@@ -110,7 +127,6 @@ function ReportSession() {
                     </div>
 
                     <div className="session-report-card">
-                        {/* Título agora exibe o Nome da Sessão */}
                         <h1 className="session-page-title">
                             {sessionData.title}
                         </h1>

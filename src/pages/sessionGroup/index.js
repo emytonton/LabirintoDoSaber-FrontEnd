@@ -123,46 +123,68 @@ function SessionGroupPage() {
         }
     };
 
-    // --- INTEGRANDO A API DE START (POST) E RESOLVENDO TAREFAS ---
+  // --- LÓGICA CORRIGIDA PARA HABILITAR O BOTÃO ---
     const handleStartSession = async () => {
         if (!selectedGroup) {
             alert("Selecione um grupo.");
             return;
         }
 
-        // Validação básica se há tarefas no grupo
-        if (!selectedGroup.tasksIds || selectedGroup.tasksIds.length === 0) {
+        // 1. Pega a lista crua de IDs ou Objetos
+        const rawTasksOrIds = selectedGroup.tasksIds || selectedGroup.tasks || [];
+
+        if (rawTasksOrIds.length === 0) {
             alert("Este grupo está vazio (sem atividades).");
             return;
         }
 
         setIsStarting(true);
 
-        // --- AQUI A MÁGICA ACONTECE: TRADUZIR IDs EM OBJETOS ---
-        const resolvedTasks = selectedGroup.tasksIds.map(id => {
-            return allTasks.find(t => t.id === id);
-        }).filter(task => task !== undefined); // Remove undefined se não achar
+        // 2. NORMALIZAÇÃO DE DADOS (A CORREÇÃO ESTÁ AQUI)
+        const resolvedTasks = rawTasksOrIds.map(item => {
+            // Acha a tarefa original completa na lista global 'allTasks'
+            // Verifica tanto pelo .id quanto pelo ._id para garantir
+            const originalTask = typeof item === 'object' 
+                ? item 
+                : allTasks.find(t => t.id === item || t._id === item);
+
+            if (!originalTask) return undefined;
+
+            console.log("Processando tarefa:", originalTask.prompt || originalTask.name);
+
+            // Retorna um objeto limpo e formatado corretamente para o SessionInit
+            return {
+                ...originalTask,
+                // Garante que o ID da tarefa seja o do banco (_id tem prioridade)
+                id: originalTask._id || originalTask.id, 
+                
+                // Mapeia as alternativas garantindo que o ID seja uma STRING VÁLIDA
+                // Se o backend receber número (index), ele pode rejeitar.
+                alternatives: (originalTask.alternatives || originalTask.options || []).map((opt, index) => ({
+                    ...opt,
+                    // PRIORIDADE MÁXIMA PARA O _id do banco
+                    id: opt._id || opt.id || String(index), 
+                    text: opt.text || opt.label || "Opção sem texto"
+                }))
+            };
+        }).filter(task => task !== undefined);
 
         if (resolvedTasks.length === 0) {
-            alert("Erro: Não foi possível carregar os detalhes das atividades deste grupo.");
+            alert("Erro: Não foi possível carregar os detalhes das atividades.");
             setIsStarting(false);
             return;
         }
 
         try {
             const token = localStorage.getItem('authToken');
-            const config = {
-                headers: { Authorization: `Bearer ${token}` }
-            };
+            const config = { headers: { Authorization: `Bearer ${token}` } };
 
-            // Payload para iniciar sessão com GRUPO (Back-end log)
+            // Payload para criar a sessão no banco
             const payload = {
                 studentId: studentId,
                 name: sessionName,
-                taskGroupId: selectedGroup.id 
+                taskGroupId: selectedGroup.id
             };
-
-            console.log("Iniciando sessão de GRUPO com payload:", payload);
 
             const response = await axios.post(
                 "https://labirinto-do-saber.vercel.app/task-notebook-session/start", 
@@ -170,28 +192,32 @@ function SessionGroupPage() {
                 config
             );
 
-            console.log("Sessão criada:", response.data);
-            const sessionId = response.data.sessionId;
+            const realSessionId = response.data.sessionId || response.data.id;
 
-            // Navega para a tela de execução enviando o ARRAY de tarefas
-            navigate(`/sessionInit`, { 
+            if (!realSessionId) {
+                throw new Error("O servidor não retornou o ID da sessão.");
+            }
+
+            console.log("Sessão iniciada com tarefas:", resolvedTasks);
+
+            // Navega para a tela de execução com tudo pronto
+            navigate('/sessionInit', { 
                 state: { 
-                    sessionId: sessionId,
+                    sessionId: realSessionId,
                     studentId: studentId,
                     itemType: 'group',
                     groupName: selectedGroup.name,
-                    tasks: resolvedTasks // <--- Envia o array de objetos completos
+                    tasks: resolvedTasks 
                 } 
             });
 
         } catch (error) {
             console.error("Erro ao iniciar sessão:", error);
-            alert("Não foi possível iniciar a sessão. Tente novamente.");
+            alert("Erro ao iniciar. Verifique o console para detalhes.");
         } finally {
             setIsStarting(false);
         }
     };
-
     // --- PAGINAÇÃO E FILTROS ---
     const filteredGroups = groups.filter((group) => 
         group.name && group.name.toLowerCase().includes(searchTerm.toLowerCase())
