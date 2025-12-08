@@ -7,10 +7,9 @@ import iconProfile from "../../assets/images/icon_profile.png";
 import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png";
 import iconCard from "../../assets/images/caderneta.png";
 import SearchBar from "../../components/ui/SearchBar/Search";
-import { useNavigate, useLocation } from "react-router-dom"; // Importe useLocation
+import { useNavigate, useLocation } from "react-router-dom"; 
 
 // --- ÍCONES (Mantidos iguais) ---
-
 const PlusIcon = () => (
     <svg width="25" height="25" viewBox="0 0 65 69" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g filter="url(#filter0_d_398_2393)">
@@ -48,14 +47,15 @@ function SessionNotebookPage() {
 
     // Estados
     const [notebooks, setNotebooks] = useState([]);
+    const [allTasks, setAllTasks] = useState([]); 
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
-    const [isStarting, setIsStarting] = useState(false); // Estado de loading do botão iniciar
+    const [isStarting, setIsStarting] = useState(false); 
     
-    // ESTADO DA SELEÇÃO (Apenas um por vez)
+    // Seleção
     const [selectedNotebook, setSelectedNotebook] = useState(null);
 
-    // Estados de Paginação
+    // Paginação
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4;
 
@@ -67,55 +67,65 @@ function SessionNotebookPage() {
         general: "Geral"
     };
 
-    // --- VERIFICAÇÃO DE SEGURANÇA ---
+    // Segurança
     useEffect(() => {
         if (!studentId || !sessionName) {
             console.warn("Dados da sessão perdidos (studentId/sessionName).");
-            // navigate('/home'); // Opcional
         }
-    }, [studentId, sessionName, navigate]);
+    }, [studentId, sessionName]);
 
-    // --- INTEGRANDO A API DE BUSCA (GET) ---
+    // --- FETCH DATA ---
     useEffect(() => {
-        const fetchNotebooks = async () => {
+        const fetchData = async () => {
             try {
                 const token = localStorage.getItem('authToken');
-                if (!token) {
-                    navigate('/'); 
-                    return;
-                }
-                const config = {
-                    headers: { Authorization: `Bearer ${token}` }
-                };
-
-                const response = await axios.get("https://labirinto-do-saber.vercel.app/task-notebook/", config);
+                if (!token) { navigate('/'); return; }
                 
-                const formattedData = response.data.map(item => {
+                const config = { headers: { Authorization: `Bearer ${token}` } };
+
+                // Busca Cadernos e Tarefas
+                const [notebooksResponse, tasksResponse] = await Promise.all([
+                    axios.get("https://labirinto-do-saber.vercel.app/task-notebook/", config),
+                    axios.get("https://labirinto-do-saber.vercel.app/task/", config)
+                ]);
+                
+                // Mapeamento correto inspirado no seu NotebookDetailsPage
+                const formattedNotebooks = notebooksResponse.data.map(item => {
+                    // O objeto real do caderno pode estar em 'item.notebook' ou ser o próprio 'item'
                     const coreData = item.notebook ? item.notebook : item;
+                    
                     return {
-                        id: coreData.id,
+                        id: coreData.id || coreData._id,
                         name: coreData.description || coreData.name || "Caderno sem nome",
                         category: coreData.category || "general",
+                        
+                        // IMPORTANTE: Trazemos os dados crus para processar no Start
+                        // Se tiver taskGroups (vindo da raiz do item), guardamos.
+                        // Se tiver tasksIds (vindo do coreData), guardamos.
+                        taskGroups: item.taskGroups || [], 
+                        tasksIds: coreData.tasksIds || coreData.tasks || [],
+                        
                         originalData: item 
                     };
                 });
 
-                setNotebooks(formattedData);
+                setNotebooks(formattedNotebooks);
+
+                if (Array.isArray(tasksResponse.data)) {
+                    setAllTasks(tasksResponse.data);
+                }
+
                 setLoading(false);
 
             } catch (error) {
-                console.error("Erro ao buscar cadernos:", error);
-                if (error.response && error.response.status === 401) {
-                    navigate('/');
-                }
+                console.error("Erro ao buscar dados:", error);
                 setLoading(false);
             }
         };
 
-        fetchNotebooks();
+        fetchData();
     }, [navigate]);
 
-    // Função de Seleção (Alterna seleção)
     const handleNotebookSelection = (notebook) => {
         if (selectedNotebook && selectedNotebook.id === notebook.id) {
             setSelectedNotebook(null);
@@ -124,34 +134,83 @@ function SessionNotebookPage() {
         }
     };
 
-    // --- INTEGRANDO A API DE START (POST) ---
+    // --- START SESSION (A CORREÇÃO ESTÁ AQUI) ---
     const handleStartSession = async () => {
         if (!selectedNotebook) {
             alert("Por favor, selecione um caderno.");
             return;
         }
 
-        if (!studentId || !sessionName) {
-            alert("Erro: Dados do aluno não encontrados. Reinicie o fluxo.");
+        if (!studentId) {
+            alert("Erro: Dados do aluno perdidos. Reinicie o fluxo.");
             return;
         }
-        
+
         setIsStarting(true);
+
+        // 1. EXTRAÇÃO INTELIGENTE DAS TAREFAS
+        // Verificamos se o caderno tem GRUPOS ou TAREFAS DIRETAS
+        let targetTasksIds = [];
+
+        if (selectedNotebook.taskGroups && selectedNotebook.taskGroups.length > 0) {
+            // CASO 1: O caderno é feito de grupos.
+            // Precisamos pegar todas as tarefas de todos os grupos e juntar numa lista só.
+            console.log("Caderno com Grupos detectado.");
+            selectedNotebook.taskGroups.forEach(group => {
+                if (group.tasksIds && Array.isArray(group.tasksIds)) {
+                    targetTasksIds = [...targetTasksIds, ...group.tasksIds];
+                }
+            });
+        } else {
+            // CASO 2: O caderno tem tarefas diretas.
+            console.log("Caderno com Tarefas Diretas detectado.");
+            targetTasksIds = selectedNotebook.tasksIds || [];
+        }
+
+        if (targetTasksIds.length === 0) {
+            alert("Este caderno está vazio (não contém grupos com atividades nem atividades soltas).");
+            setIsStarting(false);
+            return;
+        }
+
+        // 2. RESOLUÇÃO (IDs -> Objetos)
+        const resolvedTasks = targetTasksIds.map(item => {
+            // Busca a tarefa completa na lista global
+            const originalTask = typeof item === 'object' 
+                ? item 
+                : allTasks.find(t => t.id === item || t._id === item);
+
+            if (!originalTask) return undefined;
+
+            return {
+                ...originalTask,
+                // Normaliza ID e Alternativas para o SessionInit não travar
+                id: originalTask._id || originalTask.id, 
+                alternatives: (originalTask.alternatives || originalTask.options || []).map((opt, index) => ({
+                    ...opt,
+                    id: opt._id || opt.id || String(index), 
+                    text: opt.text || opt.label || "Opção"
+                }))
+            };
+        }).filter(task => task !== undefined);
+
+        if (resolvedTasks.length === 0) {
+            alert("Erro: Não foi possível carregar os detalhes das atividades.");
+            setIsStarting(false);
+            return;
+        }
 
         try {
             const token = localStorage.getItem('authToken');
-            const config = {
-                headers: { Authorization: `Bearer ${token}` }
-            };
+            const config = { headers: { Authorization: `Bearer ${token}` } };
 
-            // Payload para iniciar com CADERNO
             const payload = {
                 studentId: studentId,
                 name: sessionName,
-                notebookId: selectedNotebook.id // ID do caderno
+                notebookId: selectedNotebook.id
             };
 
-            console.log("Iniciando sessão de CADERNO com payload:", payload);
+            console.log("Iniciando sessão de CADERNO:", payload);
 
             const response = await axios.post(
                 "https://labirinto-do-saber.vercel.app/task-notebook-session/start", 
@@ -159,33 +218,33 @@ function SessionNotebookPage() {
                 config
             );
 
-            console.log("Sessão criada:", response.data);
-            const sessionId = response.data.sessionId;
+            const sessionId = response.data.sessionId || response.data.id;
 
-            // Navega para a tela de execução
+            // Envia o array 'resolvedTasks' que montamos a partir dos grupos/tarefas
             navigate(`/sessionInit`, { 
                 state: { 
                     sessionId: sessionId,
+                    studentId: studentId,
                     itemType: 'notebook',
-                    notebook: selectedNotebook 
+                    groupName: selectedNotebook.name,
+                    tasks: resolvedTasks 
                 } 
             });
 
         } catch (error) {
             console.error("Erro ao iniciar sessão:", error);
-            alert("Não foi possível iniciar a sessão. Tente novamente.");
+            alert("Não foi possível iniciar a sessão. Verifique a conexão.");
         } finally {
             setIsStarting(false);
         }
     };
 
     const handleFilterAction = () => {
-        console.log("Abrir Filtro do Caderno");
+        console.log("Abrir Filtro");
     };
 
-    // --- PAGINAÇÃO ---
     const filteredNotebooks = notebooks.filter((notebook) => 
-        notebook.name.toLowerCase().includes(searchTerm.toLowerCase())
+        notebook.name && notebook.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -221,7 +280,6 @@ function SessionNotebookPage() {
                     <div className="top-container">
                         <h1>Selecione o caderno desejado</h1>
                         
-                        {/* Container Flex para alinhar SearchBar e Botão */}
                         <div className="search-filter-group" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                             <SearchBar 
                                 searchTerm={searchTerm}
@@ -233,7 +291,6 @@ function SessionNotebookPage() {
                                 onFilterClick={handleFilterAction}
                             />
 
-                            {/* --- BOTÃO DE AÇÃO (INICIAR SESSÃO) --- */}
                             <button 
                                 onClick={handleStartSession}
                                 disabled={!selectedNotebook || isStarting}
