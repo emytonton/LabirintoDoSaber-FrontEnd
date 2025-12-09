@@ -10,7 +10,6 @@ import iconCard from "../../assets/images/caderneta.png";
 import iconActivity from "../../assets/images/iconActivitie.png"; 
 import { useNavigate, useLocation } from "react-router-dom"; // Importe useLocation
 
-console.log("State recebido na SessionTypePage:", location.state);
 // Componente reútil para os botões de opção dentro do card
 const OptionButton = ({ label, iconSrc, onClick }) => (
     <button 
@@ -33,6 +32,7 @@ function SessionTypePage() {
     const { studentId, sessionName } = location.state || {};
 
     useEffect(() => {
+        console.log("State recebido na SessionTypePage:", location.state);
         console.log("SessionType - Dados recebidos:", { studentId, sessionName });
         
         // Segurança: Se perdeu os dados, avisa (ou redireciona)

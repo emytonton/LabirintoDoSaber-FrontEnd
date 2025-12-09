@@ -6,7 +6,6 @@ import iconNotification from "../../assets/images/icon_notification.png";
 import iconProfile from "../../assets/images/icon_profile.png";
 import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png"; 
 
-console.log("State recebido na SessionTitlePage:", location.state);
 
 // SVG da caneta (PenIcon)
 const PenIcon = () => (
@@ -26,6 +25,7 @@ function SessionTitlePage() {
         useEffect(() => {
             if (location.state) {
                 const id = location.state.studentId || location.state.patientId;
+                console.log("State recebido na SessionTitlePage:", location.state);
                 
                 if (id) {
                     setStudentId(id);
