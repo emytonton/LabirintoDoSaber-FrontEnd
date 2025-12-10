@@ -15,12 +15,23 @@ function AlunosPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3; 
 
-  const handleAlunoClick = (id) => {
-    navigate(`/alunosDetails`);
+
+  const handleAlunoClick = (studentId) => {
+    navigate(`/alunosDetails`, { 
+        state: { 
+            studentId: studentId 
+        } 
+    });
   };
 
-  const handleEditClick = (e, id) => {
-    e.stopPropagation();
+
+  const handleEditClick = (e, studentId) => {
+    e.stopPropagation(); 
+    navigate(`/alunosDetails`, { 
+        state: { 
+            studentId: studentId 
+        } 
+    });
   };
 
   useEffect(() => {
