@@ -3,10 +3,9 @@ import "./style.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-import logo from "../../assets/images/logo.png";
-import iconNotification from "../../assets/images/icon_notification.png";
 import iconProfile from "../../assets/images/icon_profile.png";
 import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png";
+import Navbar from "../../components/ui/NavBar/index.js";
 
 const API_BASE_URL = "https://labirinto-do-saber.vercel.app";
 
@@ -46,7 +45,10 @@ function ProfileEdit() {
           contact: userData.contact || "",
         });
 
-        setAvatarUrl(userData._photoUrl || iconProfile);
+        const apiAvatar =
+          userData.photoUrl || userData._photoUrl || iconProfile;
+        setAvatarUrl(apiAvatar);
+
         setLoading(false);
       } catch (error) {
         console.error("Erro ao buscar perfil:", error);
@@ -99,8 +101,12 @@ function ProfileEdit() {
         config
       );
 
-      if (response.data && response.data._photoUrl) {
-        setAvatarUrl(response.data._photoUrl);
+      if (response.data) {
+        const newAvatar =
+          response.data.photoUrl ||
+          response.data._photoUrl ||
+          avatarUrl;
+        setAvatarUrl(newAvatar);
       }
 
       return true;
@@ -178,31 +184,7 @@ function ProfileEdit() {
 
   return (
     <div className="dashboard-container">
-      <header className="header">
-        <img src={logo} alt="Labirinto do Saber" className="logo" />
-        <nav className="navbar">
-          <a href="/home" className="nav-link">
-            Dashboard
-          </a>
-          <a href="/activitiesMain" className="nav-link">
-            Atividades
-          </a>
-          <a href="/alunos" className="nav-link">
-            Alunos
-          </a>
-          <a href="/MainReport" className="nav-link">
-            Relatórios
-          </a>
-        </nav>
-        <div className="user-controls">
-          <img
-            src={iconNotification}
-            alt="Notificações"
-            className="icon"
-          />
-          <img src={iconProfile} alt="Perfil" className="icon profile-icon" />
-        </div>
-      </header>
+      <Navbar />
 
       <main className="profile-main-content">
         <div className="profile-container">
@@ -282,11 +264,11 @@ function ProfileEdit() {
 
               <div className="form-group">
                 <label className="field-label">
-                  Profissão (Não será salvo agora)
+                  Profissão 
                 </label>
                 <input
                   type="text"
-                  value="Profissão Indisponível"
+                  value="Preencha aqui"
                   disabled
                   className="form-input"
                   style={{ backgroundColor: "#f5f5f5" }}

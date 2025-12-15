@@ -1,5 +1,3 @@
-
-
 .header {
     display: flex;
     justify-content: space-between;
@@ -24,7 +22,7 @@
     text-decoration: none;
     color: #555;
     font-weight: 600;
-    font-size: 20px; /* Tamanho GRANDE original */
+    font-size: 20px;
     padding-bottom: 4px;
 }
 
@@ -53,11 +51,6 @@
     width: 59px;
 }
 
-/* ==========================================================================
-   ESTILOS DA TELA DE PERFIL (PROFILE EDIT)
-   ========================================================================== */
-
-/* Container da página */
 .profile-main-content {
     flex: 1;
     display: flex;
@@ -68,12 +61,11 @@
 
 .profile-container {
     width: 100%;
-    max-width: 1000px; /* Largura um pouco menor que o relatório */
+    max-width: 1000px;
     display: flex;
     flex-direction: column;
 }
 
-/* Botão Voltar (Seta) */
 .top-nav-row {
     margin-bottom: 1rem;
     padding-left: 1rem;
@@ -93,7 +85,6 @@
     height: 44px;
 }
 
-/* --- CARD BRANCO PRINCIPAL --- */
 .profile-edit-card {
     background-color: #fff;
     border-radius: 40px;
@@ -102,7 +93,6 @@
     border: 1px solid #f0f0f0;
 }
 
-/* --- SEÇÃO DE UPLOAD DE FOTO --- */
 .avatar-upload-section {
     display: flex;
     align-items: center;
@@ -110,7 +100,6 @@
     margin-bottom: 2rem;
 }
 
-/* Avatar circular preto/padrão */
 .avatar-placeholder-large {
     width: 100px;
     height: 100px;
@@ -123,13 +112,21 @@
     flex-shrink: 0;
 }
 
-/* Simulando o ícone de boneco branco dentro do circulo preto */
+.actual-avatar-image {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
+}
+
 .default-user-icon {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
+
 .user-head {
     width: 35px;
     height: 35px;
@@ -137,6 +134,7 @@
     border-radius: 50%;
     margin-bottom: 5px;
 }
+
 .user-body {
     width: 60px;
     height: 30px;
@@ -152,12 +150,11 @@
     gap: 0.5rem;
 }
 
-/* O container que parece um input mas tem um botão dentro */
 .custom-file-wrapper {
     display: flex;
     align-items: center;
-    border: 1px solid #777; /* Borda cinza escuro como na imagem */
-    border-radius: 50px; /* Borda bem redonda */
+    border: 1px solid #777;
+    border-radius: 50px;
     padding: 5px;
     width: 100%;
     max-width: 500px;
@@ -193,7 +190,6 @@
     margin-top: 5px;
 }
 
-/* --- FORMULÁRIO --- */
 .profile-form {
     display: flex;
     flex-direction: column;
@@ -211,7 +207,7 @@
 
 .form-input {
     width: 100%;
-    max-width: 500px; /* Alinhado com o input de arquivo */
+    max-width: 500px;
     padding: 12px 20px;
     border: 1px solid #777;
     border-radius: 50px;
@@ -231,7 +227,6 @@
     border-color: #63E9E2;
 }
 
-/* --- BOTÃO SALVAR --- */
 .form-actions {
     display: flex;
     justify-content: center;
@@ -239,8 +234,8 @@
 }
 
 .btn-save-profile {
-    background-color: #FFF8E1; /* Amarelo bem claro/bege */
-    border: 1px solid #EEDEA8; /* Borda sutil */
+    background-color: #FFF8E1;
+    border: 1px solid #EEDEA8;
     color: #444;
     font-family: 'Nunito', sans-serif;
     font-size: 1.1rem;
@@ -256,7 +251,6 @@
     transform: translateY(-2px);
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
     .profile-edit-card {
         padding: 2rem;
@@ -265,7 +259,8 @@
         flex-direction: column;
         align-items: flex-start;
     }
-    .custom-file-wrapper, .form-input {
+    .custom-file-wrapper, 
+    .form-input {
         max-width: 100%;
     }
 }
