@@ -9,7 +9,6 @@ import iconSeta from "../../assets/images/seta_icon.png";
 import iconActivitie from "../../assets/images/iconActivitie.png"; 
 import { useNavigate } from "react-router-dom";
 
-
 const TrashIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M5 6H19L18.1245 19.133C18.0544 20.1836 17.1818 21 16.1289 21H7.87111C6.81818 21 5.94558 20.1836 5.87554 19.133L5 6Z" stroke="black" strokeWidth="2"/>
@@ -40,7 +39,12 @@ function ManageGroupPage() {
         comprehension: "Compreensão"
     };
 
-    
+    // Helper para pegar headers de autorização
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem("authToken");
+        return { headers: { Authorization: `Bearer ${token}` } };
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -80,18 +84,85 @@ function ManageGroupPage() {
         setSelectedGroup(null);
     };
 
-    const handleRemoveGroup = (e, id) => {
-        e.stopPropagation();
-        alert("Funcionalidade de excluir grupo será implementada em breve.");
+    // --- FUNÇÃO DE DELETAR O GRUPO INTEIRO ---
+    const handleRemoveGroup = async (e, id) => {
+        e.stopPropagation(); // Impede que o modal abra ao clicar na lixeira
+        
+        const confirmDelete = window.confirm("Tem certeza que deseja excluir este grupo? Essa ação não pode ser desfeita.");
+        if (!confirmDelete) return;
+
+        try {
+            const config = getAuthHeaders();
+            await axios.delete(`https://labirinto-do-saber.vercel.app/task-group/delete/${id}`, config);
+
+            // Atualiza o estado local removendo o grupo excluído
+            setGroups((prevGroups) => prevGroups.filter((group) => group.id !== id));
+            
+            // Se o modal estiver aberto com este grupo (caso especial), fecha ele
+            if (selectedGroup && selectedGroup.id === id) {
+                closeModal();
+            }
+
+        } catch (error) {
+            console.error("Erro ao deletar grupo:", error);
+            alert("Erro ao excluir o grupo. Tente novamente.");
+        }
     };
 
-    const handleRemoveActivityFromGroup = (e) => {
-        e.stopPropagation();
-        alert("Remover atividade será implementado.");
+    // --- FUNÇÃO DE REMOVER ATIVIDADE (ATUALIZAR GRUPO) ---
+    const handleRemoveActivityFromGroup = async (taskId) => {
+        if (!selectedGroup) return;
+
+        const currentTasksIds = selectedGroup.tasksIds || [];
+        const taskCount = currentTasksIds.length;
+
+        // CASO 1: É a última atividade do grupo
+        if (taskCount <= 1) {
+            const confirmDeleteGroup = window.confirm(
+                "Este grupo possui apenas uma atividade. Remover esta atividade excluirá o grupo inteiro. Deseja continuar?"
+            );
+
+            if (confirmDeleteGroup) {
+                // Chama a função de deletar o grupo passando o evento fake e o ID do grupo
+                await handleRemoveGroup({ stopPropagation: () => {} }, selectedGroup.id);
+            }
+            return;
+        }
+
+        // CASO 2: Existem múltiplas atividades, apenas remove uma
+        const confirmRemoveActivity = window.confirm("Tem certeza que deseja remover esta atividade do grupo?");
+        if (!confirmRemoveActivity) return;
+
+        try {
+            const config = getAuthHeaders();
+            
+            // Filtra removendo o ID da task clicada
+            const newTasksIds = currentTasksIds.filter(id => id !== taskId);
+
+            const payload = {
+                id: selectedGroup.id,
+                tasksIds: newTasksIds
+                // O backend UpdateTaskGroupUseCase atualiza apenas o que é enviado
+            };
+
+            await axios.put("https://labirinto-do-saber.vercel.app/task-group/update", payload, config);
+
+            // Atualiza o estado local (Interface Otimista)
+            const updatedGroup = { ...selectedGroup, tasksIds: newTasksIds };
+            
+            setSelectedGroup(updatedGroup); // Atualiza o modal
+            setGroups((prevGroups) => 
+                prevGroups.map(g => g.id === selectedGroup.id ? updatedGroup : g)
+            ); // Atualiza a lista de fundo
+
+        } catch (error) {
+            console.error("Erro ao remover atividade:", error);
+            alert("Erro ao atualizar o grupo.");
+        }
     };
 
     const handleEditActivityInModal = () => {
-        console.log("Editar atividade.");
+        console.log("Editar atividade - Funcionalidade futura.");
     };
 
     const getResolvedTasksForGroup = (group) => {
@@ -132,7 +203,7 @@ function ManageGroupPage() {
                         <h2>Gerencie os grupos de atividades</h2>
                     </div>
 
-                   
+                    
                     <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "20px" }}>
                         <button 
                             className="create-patient-bnt"
@@ -193,7 +264,7 @@ function ManageGroupPage() {
                 </div>
             </main>
 
-           
+            
             {isModalOpen && selectedGroup && (
                 <div className="modal-overlay" onClick={closeModal}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -216,7 +287,7 @@ function ManageGroupPage() {
                                                 onClick={handleEditActivityInModal}
                                                 style={{ cursor: "pointer" }}
                                             >
-                                                <img src={iconActivitie} className="activity-card-icon" />
+                                                <img src={iconActivitie} className="activity-card-icon" alt="Atividade" />
                                                 <div className="group-card-info">
                                                     <h3>{task.prompt?.slice(0, 40) + "..."}</h3>
                                                     <button className="group-bnt-details">
@@ -225,7 +296,12 @@ function ManageGroupPage() {
                                                 </div>
                                             </div>
 
-                                            <button className="remove-group-btn" onClick={handleRemoveActivityFromGroup}>
+                                            {/* Botão de remover atividade individualmente */}
+                                            <button 
+                                                className="remove-group-btn" 
+                                                onClick={() => handleRemoveActivityFromGroup(task.id)}
+                                                title="Remover atividade do grupo"
+                                            >
                                                 <TrashIcon />
                                             </button>
                                         </div>
