@@ -119,16 +119,27 @@ function AlunoDetalhe() {
         const categoriesObj = reportData.categories || {};
         const categoriesArray = Object.values(categoriesObj);
 
+        // filtra apenas categorias com alguma porcentagem real (acima de 0)
+        const categoriesWithProgress = categoriesArray.filter(
+          item => (item.accuracy || 0) > 0
+        );
+
+        // se nenhuma categoria teve progresso, evita dividir por zero
+        const baseArray = categoriesWithProgress.length > 0
+          ? categoriesWithProgress
+          : [];
+
         let totalAccuracy = 0;
-        if (categoriesArray.length > 0) {
-          const sumAccuracy = categoriesArray.reduce(
+
+        if (baseArray.length > 0) {
+          const sumAccuracy = baseArray.reduce(
             (sum, item) => sum + (item.accuracy || 0),
             0
           );
-          totalAccuracy = Math.round(
-            (sumAccuracy / categoriesArray.length) * 100
-          );
+          totalAccuracy = Math.round(sumAccuracy / baseArray.length * 100);
         }
+
+        setOverallCompletionRate(totalAccuracy);
 
         if (totalAccuracy < 0) totalAccuracy = 0;
         if (totalAccuracy > 100) totalAccuracy = 100;
@@ -272,10 +283,10 @@ function AlunoDetalhe() {
           {historyData.length === 0 ? (
             <div
               style={{
-                textAlign: "center",
-                color: "#999",
-                fontSize: "1.2rem",
-                padding: "2rem 0",
+                textAlign: 'center',
+                color: '#999',
+                fontSize: '1.2rem',
+                padding: '2rem 0',
                 fontWeight: 500,
               }}
             >
@@ -305,7 +316,7 @@ function AlunoDetalhe() {
                     />
                   ))
                 ) : (
-                  <p style={{ textAlign: "center", color: "#999" }}>
+                  <p style={{ textAlign: 'center', color: '#999' }}>
                     Dados de progresso indisponíveis.
                   </p>
                 )}
