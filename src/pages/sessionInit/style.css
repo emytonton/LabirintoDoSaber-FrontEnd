@@ -36,7 +36,6 @@ body {
     grid-column: 2;
     justify-self: center;
     height: 60px;
-    width: 40px;
     width: auto;
 }
 
@@ -96,11 +95,21 @@ body {
     text-align: center;
 }
 
-.activity-main-image {
-    max-width: 250px;
-    height: auto;
+.activity-image-wrapper {
+    width: 250px;
+    height: 250px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-bottom: 20px;
-    border-radius: 50%;
+    background-color: #ffffff;
+}
+
+.activity-main-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
 }
 
 .session-activity-question {
@@ -198,4 +207,51 @@ body {
 
 .session-debug-btn:hover {
     background-color: #D8F5F3;
+}
+
+.dark-mode {
+  background-color: #333;
+  color: #fff;
+}
+
+.session-activity-header,
+.session-activity-card {
+  background-color: #fff;
+  color: #333;
+}
+
+.dark-mode .session-activity-header,
+.dark-mode .session-activity-card {
+  background-color: #222;
+  color: #fff;
+}
+
+.dark-mode .session-option-btn {
+  background-color: #444;
+  color: #ddd;
+}
+
+.dark-mode .session-audio-control-btn {
+  color: #fff;
+}
+
+.session-bw {
+  filter: grayscale(1);
+}
+
+.session-theme-toggle-btn {
+  padding: 8px 14px;
+  border-radius: 18px;
+  border: 1px solid #e0e0e0;
+  background: #f3fbfb;
+  cursor: pointer;
+  font-family: "Nunito", sans-serif;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.session-audio-time-text {
+  margin-left: 12px;
+  font-size: 0.9rem;
+  color: #777;
 }
