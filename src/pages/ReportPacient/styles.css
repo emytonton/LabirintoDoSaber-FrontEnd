@@ -104,12 +104,12 @@ body {
     padding-left: 1rem;
 }
 
-.back-arrow-link {
+.back-arrow-link-report {
     display: inline-block;
     transition: transform 0.2s;
 }
 
-.back-arrow-link:hover {
+.back-arrow-link-report:hover {
     transform: translateX(-5px);
 }
 

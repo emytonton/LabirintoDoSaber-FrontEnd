@@ -189,7 +189,7 @@ function ReportPacient() {
             <main className="session-main-content">
                 <div className="session-container">
                     <div className="top-nav-row">
-                        <button onClick={() => navigate(-1)} className="back-arrow-link" style={{background: 'none', border: 'none', cursor: 'pointer'}}>
+                        <button onClick={() => navigate(-1)} className="back-arrow-link-report" style={{background: 'none', border: 'none', cursor: 'pointer'}}>
                             <img src={iconArrowLeft} alt="Voltar" className="back-arrow-icon" />
                         </button>
                     </div>
