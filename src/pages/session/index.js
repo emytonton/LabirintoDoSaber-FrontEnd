@@ -47,7 +47,7 @@ function SessionPage() {
                     id: student.id,
                     name: student.name,
                     age: student.age,
-                    // Pega o primeiro tópico ou define padrão
+                    photoUrl: student.photoUrl,
                     status: student.learningTopics && student.learningTopics.length > 0 
                             ? student.learningTopics[0] 
                             : "Geral"
@@ -165,7 +165,14 @@ function SessionPage() {
                                             onClick={() => handlePatientClick(patient.id)}
                                             style={{ cursor: "pointer" }}
                                         >
-                                            <img src={patientAvatar} alt={`Avatar de ${patient.name}`} className="patient-avatar" />
+                                           <img
+                                            src={patient.photoUrl || patientAvatar}
+                                            alt={`Avatar de ${patient.name}`}
+                                            className="patient-avatar"
+                                            onError={(e) => {
+                                                e.currentTarget.src = patientAvatar;
+                                            }}
+                                            />
                                             <div className="patient-card-info">
                                                 <h3>{patient.name}</h3>
                                                 <p>{patient.age} anos</p>

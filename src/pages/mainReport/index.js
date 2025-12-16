@@ -53,6 +53,7 @@ function MainReport() {
                     id: s.id,
                     name: s.name,
                     age: s.age,
+                    photoUrl: s.photoUrl,
                     status: s.learningTopics?.[0] || "Sem tópico definido"
                 }));
 
@@ -128,11 +129,14 @@ function MainReport() {
                                         onClick={() => handlePatientClick(patient.id)}
                                         style={{ cursor: "pointer" }}
                                     >
-                                        <img
-                                            src={patientAvatar}
-                                            alt={`Avatar de ${patient.name}`}
-                                            className="patient-avatar"
-                                        />
+                                    <img
+                                    src={patient.photoUrl || patientAvatar}
+                                    alt={`Avatar de ${patient.name}`}
+                                    className="patient-avatar"
+                                    onError={(e) => {
+                                        e.currentTarget.src = patientAvatar;
+                                    }}
+                                    />
                                         <div className="patient-card-info">
                                             <h3>{patient.name}</h3>
                                             <p>{patient.age} anos</p>

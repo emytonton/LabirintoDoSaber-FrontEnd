@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import './style.css';
-import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import "./style.css";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 
-import logo from '../../assets/images/logo.png';
-import iconNotification from '../../assets/images/icon_notification.png';
-import iconProfile from '../../assets/images/icon_profile.png';
-import iconRandom from '../../assets/images/icon_random.png';
-import edit from '../../assets/images/edit.png';
-import seta from '../../assets/images/seta_icon_esquerda.png';
+import logo from "../../assets/images/logo.png";
+import iconNotification from "../../assets/images/icon_notification.png";
+import iconProfile from "../../assets/images/icon_profile.png";
+import iconRandom from "../../assets/images/icon_random.png";
+import edit from "../../assets/images/edit.png";
+import seta from "../../assets/images/seta_icon_esquerda.png";
 
-const API_BASE_URL = 'https://labirinto-do-saber.vercel.app';
+const API_BASE_URL = "https://labirinto-do-saber.vercel.app";
 
 const SubProgressItem = ({ category, percentage }) => (
   <div className="sub-progress-item">
@@ -21,8 +21,8 @@ const SubProgressItem = ({ category, percentage }) => (
 
 const HistoryRow = ({ activityName, date, status }) => {
   const formattedDate = date
-    ? new Date(date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })
-    : 'Data Indisp.';
+    ? new Date(date).toLocaleDateString("pt-BR", { timeZone: "UTC" })
+    : "Data Indisp.";
 
   return (
     <tr>
@@ -34,8 +34,8 @@ const HistoryRow = ({ activityName, date, status }) => {
         <span
           className="btn-tag"
           style={{
-            backgroundColor: status === 'Pendente' ? '#FFECB3' : '#C8E6C9',
-            color: status === 'Pendente' ? '#FFA000' : '#388E3C',
+            backgroundColor: status === "Pendente" ? "#FFECB3" : "#C8E6C9",
+            color: status === "Pendente" ? "#FFA000" : "#388E3C",
           }}
         >
           {status}
@@ -52,6 +52,7 @@ function AlunoDetalhe() {
   const studentId = location.state?.studentId;
 
   const [studentDetails, setStudentDetails] = useState(null);
+  const [educatorDetails, setEducatorDetails] = useState(null);
   const [progressData, setProgressData] = useState([]);
   const [historyData, setHistoryData] = useState([]);
   const [overallCompletionRate, setOverallCompletionRate] = useState(0);
@@ -60,15 +61,27 @@ function AlunoDetalhe() {
   useEffect(() => {
     if (!studentId) {
       setIsLoading(false);
-      alert('Erro: ID do aluno não fornecido.');
-      navigate('/alunos');
+      alert("Erro: ID do aluno não fornecido.");
+      navigate("/alunos");
       return;
     }
 
     const fetchStudentData = async () => {
       try {
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem("authToken");
         const config = { headers: { Authorization: `Bearer ${token}` } };
+
+        const educatorRes = await axios.get(`${API_BASE_URL}/educator/me`, config);
+        const educatorData = educatorRes.data || {};
+
+        setEducatorDetails({
+          name:
+            educatorData.name ||
+            educatorData.fullName ||
+            educatorData.username ||
+            "Profissional responsável",
+          photoUrl: educatorData.photoUrl || educatorData._photoUrl || "",
+        });
 
         const studentRes = await axios.get(`${API_BASE_URL}/student`, config);
 
@@ -80,25 +93,9 @@ function AlunoDetalhe() {
 
         if (!studentData) {
           setIsLoading(false);
-          alert('Aluno não encontrado.');
+          alert("Aluno não encontrado.");
           return;
         }
-
-        let educatorName = 'Profissional responsável';
-
-        try {
-          const educatorRes = await axios.get(
-            `${API_BASE_URL}/educator/me`,
-            config
-          );
-
-          const educatorData = educatorRes.data || {};
-          educatorName =
-            educatorData.name ||
-            educatorData.fullName ||
-            educatorData.username ||
-            educatorName;
-        } catch (err) {}
 
         setStudentDetails({
           id: studentData.id,
@@ -106,7 +103,6 @@ function AlunoDetalhe() {
           age: studentData.age,
           learningTopics: studentData.learningTopics,
           photoUrl: studentData.photoUrl,
-          educatorName,
         });
 
         const analysisRes = await axios.get(
@@ -115,31 +111,21 @@ function AlunoDetalhe() {
         );
 
         const reportData = analysisRes.data || {};
-
         const categoriesObj = reportData.categories || {};
         const categoriesArray = Object.values(categoriesObj);
 
-        // filtra apenas categorias com alguma porcentagem real (acima de 0)
         const categoriesWithProgress = categoriesArray.filter(
-          item => (item.accuracy || 0) > 0
+          (item) => (item.accuracy || 0) > 0
         );
 
-        // se nenhuma categoria teve progresso, evita dividir por zero
-        const baseArray = categoriesWithProgress.length > 0
-          ? categoriesWithProgress
-          : [];
-
         let totalAccuracy = 0;
-
-        if (baseArray.length > 0) {
-          const sumAccuracy = baseArray.reduce(
+        if (categoriesWithProgress.length > 0) {
+          const sumAccuracy = categoriesWithProgress.reduce(
             (sum, item) => sum + (item.accuracy || 0),
             0
           );
-          totalAccuracy = Math.round(sumAccuracy / baseArray.length * 100);
+          totalAccuracy = Math.round((sumAccuracy / categoriesWithProgress.length) * 100);
         }
-
-        setOverallCompletionRate(totalAccuracy);
 
         if (totalAccuracy < 0) totalAccuracy = 0;
         if (totalAccuracy > 100) totalAccuracy = 100;
@@ -162,11 +148,9 @@ function AlunoDetalhe() {
             new Date(a.startedAt || a.date || a.createdAt)
         );
 
-        const limitedSessions = sortedSessions.slice(0, 10);
-
-        setHistoryData(limitedSessions);
+        setHistoryData(sortedSessions.slice(0, 10));
       } catch (error) {
-        alert('Erro ao carregar dados.');
+        alert("Erro ao carregar dados.");
       } finally {
         setIsLoading(false);
       }
@@ -178,7 +162,7 @@ function AlunoDetalhe() {
   if (isLoading) {
     return (
       <div className="aluno-detalhe-container">
-        <h1 style={{ textAlign: 'center', marginTop: '50px' }}>
+        <h1 style={{ textAlign: "center", marginTop: "50px" }}>
           Carregando detalhes do aluno...
         </h1>
       </div>
@@ -188,19 +172,19 @@ function AlunoDetalhe() {
   if (!studentDetails) {
     return (
       <div className="aluno-detalhe-container">
-        <h1 style={{ textAlign: 'center', marginTop: '50px' }}>
+        <h1 style={{ textAlign: "center", marginTop: "50px" }}>
           Aluno não encontrado.
         </h1>
         <button
-          onClick={() => navigate('/alunos')}
+          onClick={() => navigate("/alunos")}
           style={{
-            padding: '10px 20px',
-            marginTop: '20px',
-            backgroundColor: '#4A90E2',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
+            padding: "10px 20px",
+            marginTop: "20px",
+            backgroundColor: "#4A90E2",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
           }}
         >
           Voltar
@@ -209,20 +193,29 @@ function AlunoDetalhe() {
     );
   }
 
-  const { name, age, learningTopics, photoUrl, educatorName } = studentDetails;
-  const firstTopic = Array.isArray(learningTopics)
-    ? learningTopics[0]
-    : learningTopics;
+  const { name, age, learningTopics, photoUrl } = studentDetails;
+  const firstTopic = Array.isArray(learningTopics) ? learningTopics[0] : learningTopics;
+
+  const educatorName = educatorDetails?.name || "Profissional responsável";
+  const educatorPhotoUrl = educatorDetails?.photoUrl || "";
 
   return (
     <div className="aluno-detalhe-container">
       <header className="header">
         <img src={logo} alt="Labirinto do Saber" className="logo" />
         <nav className="navbar">
-          <a href="/home" className="nav-link">Dashboard</a>
-          <a href="/activitiesMain" className="nav-link">Atividades</a>
-          <a href="/alunos" className="nav-link active">Alunos</a>
-          <a href="/MainReport" className="nav-link">Relatórios</a>
+          <a href="/home" className="nav-link">
+            Dashboard
+          </a>
+          <a href="/activitiesMain" className="nav-link">
+            Atividades
+          </a>
+          <a href="/alunos" className="nav-link active">
+            Alunos
+          </a>
+          <a href="/MainReport" className="nav-link">
+            Relatórios
+          </a>
         </nav>
         <div className="user-controls">
           <img src={iconNotification} alt="Notificações" className="icon" />
@@ -239,15 +232,11 @@ function AlunoDetalhe() {
 
         <div className="info-card">
           <div className="info-section">
-            <img
-              src={photoUrl || iconRandom}
-              alt={name}
-              className="avatar-grande1"
-            />
+            <img src={photoUrl || iconRandom} alt={name} className="avatar-grande1" />
             <div className="info-text1">
               <h3>{name}</h3>
-              <p>{age || '?'} anos</p>
-              <p>{firstTopic || 'Sem área definida'}</p>
+              <p>{age || "?"} anos</p>
+              <p>{firstTopic || "Sem área definida"}</p>
             </div>
           </div>
 
@@ -255,9 +244,10 @@ function AlunoDetalhe() {
 
           <div className="info-section">
             <img
-              src={iconRandom}
+              src={educatorPhotoUrl || iconRandom}
               alt={educatorName}
               className="avatar-grande2"
+              style={{ objectFit: "cover" }}
             />
             <div className="info-text2">
               <h3>{educatorName}</h3>
@@ -266,9 +256,7 @@ function AlunoDetalhe() {
           </div>
 
           <button
-            onClick={() =>
-              navigate('/edit-student-route', { state: { studentId } })
-            }
+            onClick={() => navigate("/EditStudent", { state: { studentId } })}
             className="btn-tag btn-editar"
           >
             <img src={edit} alt="edit" className="iconEdit" />
@@ -283,10 +271,10 @@ function AlunoDetalhe() {
           {historyData.length === 0 ? (
             <div
               style={{
-                textAlign: 'center',
-                color: '#999',
-                fontSize: '1.2rem',
-                padding: '2rem 0',
+                textAlign: "center",
+                color: "#999",
+                fontSize: "1.2rem",
+                padding: "2rem 0",
                 fontWeight: 500,
               }}
             >
@@ -301,9 +289,7 @@ function AlunoDetalhe() {
                     style={{ width: `${overallCompletionRate}%` }}
                   ></div>
                 </div>
-                <span className="progress-percent-main">
-                  {overallCompletionRate}%
-                </span>
+                <span className="progress-percent-main">{overallCompletionRate}%</span>
               </div>
 
               <div className="sub-progress-container">
@@ -316,7 +302,7 @@ function AlunoDetalhe() {
                     />
                   ))
                 ) : (
-                  <p style={{ textAlign: 'center', color: '#999' }}>
+                  <p style={{ textAlign: "center", color: "#999" }}>
                     Dados de progresso indisponíveis.
                   </p>
                 )}
@@ -341,27 +327,17 @@ function AlunoDetalhe() {
                 historyData.map((session, index) => (
                   <HistoryRow
                     key={index}
-                    activityName={
-                      session.sessionName ||
-                      session.activityName ||
-                      'Sessão'
-                    }
-                    date={
-                      session.startedAt ||
-                      session.date ||
-                      session.createdAt
-                    }
+                    activityName={session.sessionName || session.activityName || "Sessão"}
+                    date={session.startedAt || session.date || session.createdAt}
                     status={
                       session.status ||
-                      (session.finishedAt || session.isFinished
-                        ? 'Concluído'
-                        : 'Pendente')
+                      (session.finishedAt || session.isFinished ? "Concluído" : "Pendente")
                     }
                   />
                 ))
               ) : (
                 <tr>
-                  <td colSpan="3" style={{ textAlign: 'center', color: '#999' }}>
+                  <td colSpan="3" style={{ textAlign: "center", color: "#999" }}>
                     Nenhum histórico encontrado.
                   </td>
                 </tr>

@@ -180,10 +180,14 @@ function Home() {
                 <div className="home-student-row" key={student.id}>
                   <div className="home-student-name-group">
                     <img
-                      src={iconRandom}
-                      alt={student.name || "Aluno"}
-                      className="home-student-avatar"
-                    />
+                    src={student.photoUrl || iconRandom}
+                    alt={student.name || "Avatar"}
+                    className="home-student-avatar"
+                    onError={(e) => {
+                      e.currentTarget.src = iconRandom;
+                    }}
+                  />
+
                     <span title={student.name || ""}>{getFirstName(student.name)}</span>
                   </div>
 

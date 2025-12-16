@@ -42,6 +42,7 @@ function AlunosPage() {
 
         const payload = {
             name: formData.nome,
+            photo: formData.photoUrl || null,
             age: idadeNumerica, 
             gender: formData.genero, 
             zipcode: formData.cep,

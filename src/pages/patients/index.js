@@ -123,7 +123,15 @@ function AlunosPage() {
                         onClick={() => handleAlunoClick(aluno.id)} 
                         style={{cursor: 'pointer'}}
                     >
-                        <img src={iconRandom} alt="Avatar" className="student-card-avatar" />
+                        <img
+                          src={aluno.photoUrl || iconRandom}
+                          alt={aluno.name || "Avatar"}
+                          className="student-card-avatar"
+                          onError={(e) => {
+                            e.currentTarget.src = iconRandom;
+                          }}
+                        />
+
                         <div className="student-card-info">
                             <h3>{aluno.name}</h3>
                             <p>{aluno.age} anos</p>
