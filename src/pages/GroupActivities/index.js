@@ -129,7 +129,7 @@ function GroupActivitiesPage() {
     const payload = {
       name: groupName,
       category: categoryMap[selectedCategory] || 'reading',
-      tasksId: tasksIds
+      tasksIds: tasksIds
     };
 
     console.log("Enviando Payload:", payload);
