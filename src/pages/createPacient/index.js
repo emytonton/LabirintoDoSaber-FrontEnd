@@ -89,51 +89,51 @@ function AlunosPage() {
     };
 
     return (
-        <div className="dashboard-container">
+        <div className="alunos-dashboard-container">
             
-            <header className="header">
-                <img src={logo} alt="Labirinto do Saber" className="logo" />
-                <nav className="navbar">
-                    <a href="/home" className="nav-link">Dashboard</a> 
-                    <a href="/activitiesMain" className="nav-link">Atividades</a>
-                    <a href="/alunos" className="nav-link active">Alunos</a> 
-                    <a href="/MainReport" className="nav-link">Relatórios</a>
+            <header className="alunos-header">
+                <img src={logo} alt="Labirinto do Saber" className="alunos-logo" />
+                <nav className="alunos-navbar">
+                    <a href="/home" className="alunos-nav-link">Dashboard</a> 
+                    <a href="/activitiesMain" className="alunos-nav-link">Atividades</a>
+                    <a href="/alunos" className="alunos-nav-link active">Alunos</a> 
+                    <a href="/MainReport" className="alunos-nav-link">Relatórios</a>
                 </nav>
-                <div className="user-controls">
-                    <img src={iconNotification} alt="Notificações" className="icon" />
-                    <img src={iconProfile} alt="Perfil" className="icon profile-icon" />
+                <div className="alunos-user-controls">
+                    <img src={iconNotification} alt="Notificações" className="alunos-icon" />
+                    <img src={iconProfile} alt="Perfil" className="alunos-icon alunos-profile-icon" />
                 </div>
             </header>
 
-            <main className="main-content">
+            <main className="alunos-main-content">
             
-                <button className="back-button">
-                    <a href="/alunos" className="back-arrow"><img src={iconBack} alt="seta" className="seta"/></a>
+                <button className="alunos-back-button">
+                    <a href="/alunos" className="alunos-back-arrow"><img src={iconBack} alt="seta" className="alunos-seta"/></a>
                 </button>
 
-                <div className="profile-card">
+                <div className="alunos-profile-card">
                     <form onSubmit={handleSubmit}>
     
-                        <div className="profile-pic-section">
-                            <img src={avatarPlaceholder} alt="Foto de perfil" className="avatar" />
-                            <div className="file-uploader">
-                                <label htmlFor="file-upload" className="file-upload-label">
+                        <div className="alunos-profile-pic-section">
+                            <img src={avatarPlaceholder} alt="Foto de perfil" className="alunos-avatar" />
+                            <div className="alunos-file-uploader">
+                                <label htmlFor="file-upload" className="alunos-file-upload-label">
                                     <img src={iconUpload} alt="" style={{ width: 20, height: 20, opacity: 0.7 }} />
                                     Selecionar arquivo
                                 </label>
                                 <input id="file-upload" type="file" />
-                                <span className="file-name">Nenhum arquivo foi selecionado</span>
-                                <p className="file-hint">Formatos aceitos: JPG, PNG. Tamanho máximo: 2MB.</p>
+                                <span className="alunos-file-name">Nenhum arquivo foi selecionado</span>
+                                <p className="alunos-file-hint">Formatos aceitos: JPG, PNG. Tamanho máximo: 2MB.</p>
                             </div>
                         </div>
                         
-                        <div className="form-grid">
+                        <div className="alunos-form-grid">
                             
-                            <div className="form-column">
-                                <div className="form-group">
+                            <div className="alunos-form-column">
+                                <div className="alunos-form-group">
                                     <label htmlFor="nome">Nome do paciente</label>
-                                    <div className="input-with-icon">
-                                        <img src={iconPencil} alt="" className="input-icon" />
+                                    <div className="alunos-input-with-icon">
+                                        <img src={iconPencil} alt="" className="alunos-input-icon" />
                                         <input 
                                             type="text" 
                                             id="nome" 
@@ -145,7 +145,7 @@ function AlunosPage() {
                                     </div>
                                 </div>
 
-                                <div className="form-group">
+                                <div className="alunos-form-group">
                                     <label htmlFor="idade">Idade do paciente</label>
                                     <input
                                         type="number"
@@ -158,10 +158,10 @@ function AlunosPage() {
                                     />
                                 </div>
 
-                                <div className="form-group">
+                                <div className="alunos-form-group">
                                     <label htmlFor="objetivo">Objetivo do paciente</label>
-                                    <div className="input-with-icon">
-                                        <img src={iconPencil} alt="" className="input-icon" />
+                                    <div className="alunos-input-with-icon">
+                                        <img src={iconPencil} alt="" className="alunos-input-icon" />
                                         <input 
                                             type="text" 
                                             id="objetivo" 
@@ -174,8 +174,8 @@ function AlunosPage() {
                                 </div>
                             </div>
                         
-                            <div className="form-column">
-                                <div className="form-group">
+                            <div className="alunos-form-column">
+                                <div className="alunos-form-group">
                                     <label htmlFor="genero">Gênero</label>
                                     <select 
                                         id="genero" 
@@ -189,10 +189,10 @@ function AlunosPage() {
                                     </select>
                                 </div>
 
-                                <div className="form-group">
+                                <div className="alunos-form-group">
                                     <label htmlFor="cep">CEP</label>
-                                    <div className="input-with-icon">
-                                        <img src={iconPencil} alt="" className="input-icon" />
+                                    <div className="alunos-input-with-icon">
+                                        <img src={iconPencil} alt="" className="alunos-input-icon" />
                                         <input 
                                             type="text" 
                                             id="cep" 
@@ -204,11 +204,11 @@ function AlunosPage() {
                                     </div>
                                 </div>
 
-                                <div className="form-row">
-                                    <div className="form-group" style={{ flex: 3 }}>
+                                <div className="alunos-form-row">
+                                    <div className="alunos-form-group" style={{ flex: 3 }}>
                                         <label htmlFor="rua">Rua</label>
-                                        <div className="input-with-icon">
-                                            <img src={iconPencil} alt="" className="input-icon" />
+                                        <div className="alunos-input-with-icon">
+                                            <img src={iconPencil} alt="" className="alunos-input-icon" />
                                             <input 
                                                 type="text" 
                                                 id="rua" 
@@ -219,7 +219,7 @@ function AlunosPage() {
                                             />
                                         </div>
                                     </div>
-                                    <div className="form-group" style={{ flex: 1 }}>
+                                    <div className="alunos-form-group" style={{ flex: 1 }}>
                                         <label htmlFor="numero">Número</label>
                                         <input 
                                             type="text" 
@@ -231,7 +231,7 @@ function AlunosPage() {
                                     </div>
                                 </div>
 
-                                <div className="form-group">
+                                <div className="alunos-form-group">
                                     <label htmlFor="contato">Contato do responsável</label>
                                     <input 
                                         type="text" 
@@ -245,8 +245,8 @@ function AlunosPage() {
                             </div>
                         </div>
 
-                        <div className="form-footer">
-                            <button type="submit" className="save-button">Salvar perfil</button>
+                        <div className="alunos-form-footer">
+                            <button type="submit" className="alunos-save-button">Salvar perfil</button>
                         </div>
 
                     </form>
