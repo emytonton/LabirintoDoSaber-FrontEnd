@@ -230,19 +230,27 @@ ESTILOS DO CONTEÚDO PRINCIPAL (FORMULÁRIO)
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-.activity-input {
+/* Garanta que o nome aqui seja IDÊNTICO ao className no React */
+.activity-input-grupo {
   width: 100%; 
-  border: none;
-  outline: none;
+  border: none !important; /* Força a remoção da borda */
+  outline: none !important; /* Remove a linha azul/preta ao clicar */
+  background-color: transparent; /* Garante que o fundo não cubra o container */
   font-size: 15px; 
   color: #000000;
+  box-shadow: none; /* Alguns navegadores usam sombra como borda */
+  height: 100%; /* Ocupa toda a altura da div pai */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
-.activity-input::placeholder {
-  font-style: italic;
-  color: #a0a0a0;
+/* Para garantir que não apareça borda nem quando clica */
+.activity-input-grupo:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
 }
-
 
 /* Estilo do botão de remover atividade (lixeira) */
 .activity-remove-button {

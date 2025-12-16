@@ -7,6 +7,7 @@ import iconProfile from '../../assets/images/icon_profile.png';
 import iconBack from '../../assets/images/seta_icon_esquerda.png';
 import { useNavigate } from 'react-router-dom';
 import Navbar from "../../components/ui/NavBar/index.js";
+
 const ActivityChip = ({ label, isSelected, onClick }) => (
   <button 
     className={`activity-chip ${isSelected ? 'selected' : ''}`} 
@@ -16,7 +17,6 @@ const ActivityChip = ({ label, isSelected, onClick }) => (
     {label}
   </button>
 );
-
 
 const TrashIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -55,10 +55,8 @@ function GroupActivitiesPage() {
   const [selectedCategory, setSelectedCategory] = useState('Leitura');
   const [groupName, setGroupName] = useState('');
   
-
   const [availableTasks, setAvailableTasks] = useState([]);
   
-
   const [groupActivities, setGroupActivities] = useState([{ uniqueId: Date.now(), taskId: '' }]); 
 
   const categories = ['Leitura', 'Escrita', 'Vocabulário', 'Compreensão'];
@@ -111,8 +109,8 @@ function GroupActivitiesPage() {
   const handleSave = async () => {
     const token = localStorage.getItem('authToken');
     
-    
-    const tasksIds = groupActivities
+    // Coleta apenas os IDs das tarefas selecionadas
+    const selectedIds = groupActivities
         .map(item => item.taskId)
         .filter(id => id !== '');
 
@@ -121,15 +119,16 @@ function GroupActivitiesPage() {
       alert("Por favor, preencha o Nome do Grupo.");
       return;
     }
-    if (tasksIds.length === 0) {
+    if (selectedIds.length === 0) {
       alert("Adicione pelo menos uma atividade válida ao grupo.");
       return;
     }
 
+    // AQUI ESTÁ A MUDANÇA: Usando 'tasksIds' (com S) no payload
     const payload = {
       name: groupName,
       category: categoryMap[selectedCategory] || 'reading',
-      tasksIds: tasksIds
+      tasksIds: selectedIds // A chave aqui agora é explicitamente 'tasksIds'
     };
 
     console.log("Enviando Payload:", payload);
@@ -197,7 +196,7 @@ function GroupActivitiesPage() {
                   <div className="activity-item">
                     
                     <select
-                      className="activity-input" 
+                      className="activity-input-grupo" 
                       value={item.taskId}
                       onChange={(e) => updateGroupActivitySelection(item.uniqueId, e.target.value)}
                       style={{width: '100%', height: '100%', border: 'none', background: 'transparent', outline: 'none'}}
