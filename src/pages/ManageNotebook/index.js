@@ -7,6 +7,7 @@ import iconProfile from "../../assets/images/icon_profile.png";
 import iconCard from "../../assets/images/caderneta.png";
 import iconSeta from "../../assets/images/seta_icon.png";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../../components/ui/NavBar/index.js";
 
 const TrashIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -94,27 +95,7 @@ function ManageNotebookPage() {
     
     return (
         <div className="dashboard-container">
-            <header className="header">
-                <img src={logo} alt="Labirinto do Saber" className="logo" />
-                <nav className="navbar">
-                    <a href="/home" className="nav-link">
-                        Dashboard
-                    </a>
-                    <a href="/activitiesMain" className="nav-link active">
-                        Atividades
-                    </a>
-                    <a href="/alunos" className="nav-link">
-                        Alunos
-                    </a>
-                    <a href="/MainReport" className="nav-link">
-                        Relatórios
-                    </a>
-                </nav>
-                <div className="user-controls">
-                    <img src={iconNotification} alt="Notificações" className="icon" />
-                    <img src={iconProfile} alt="Perfil" className="icon profile-icon" />
-                </div>
-            </header>
+           <Navbar activePage="activities" />
             
             <main className="manage-notebook-main-content">
                 

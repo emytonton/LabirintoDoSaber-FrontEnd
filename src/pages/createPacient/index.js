@@ -8,7 +8,7 @@ import iconBack from '../../assets/images/seta_icon_esquerda.png'
 import avatarPlaceholder from '../../assets/images/icon_random.png'; 
 import iconUpload from '../../assets/images/iconUpload.png';
 import iconPencil from '../../assets/images/edit.png';
-
+import Navbar from "../../components/ui/NavBar/index.js";
 function AlunosPage() {
     
     const [formData, setFormData] = useState({
@@ -90,20 +90,7 @@ function AlunosPage() {
 
     return (
         <div className="alunos-dashboard-container">
-            
-            <header className="alunos-header">
-                <img src={logo} alt="Labirinto do Saber" className="alunos-logo" />
-                <nav className="alunos-navbar">
-                    <a href="/home" className="alunos-nav-link">Dashboard</a> 
-                    <a href="/activitiesMain" className="alunos-nav-link">Atividades</a>
-                    <a href="/alunos" className="alunos-nav-link active">Alunos</a> 
-                    <a href="/MainReport" className="alunos-nav-link">Relatórios</a>
-                </nav>
-                <div className="alunos-user-controls">
-                    <img src={iconNotification} alt="Notificações" className="alunos-icon" />
-                    <img src={iconProfile} alt="Perfil" className="alunos-icon alunos-profile-icon" />
-                </div>
-            </header>
+            <Navbar activePage="students"/>
 
             <main className="alunos-main-content">
             

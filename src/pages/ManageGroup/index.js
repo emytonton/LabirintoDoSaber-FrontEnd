@@ -19,7 +19,7 @@ import iconActivitie from "../../assets/images/iconActivitie.png";
 import { useNavigate } from "react-router-dom";
 
 
-
+import Navbar from "../../components/ui/NavBar/index.js";
 
 
 const TrashIcon = () => (
@@ -220,36 +220,7 @@ function ManageGroupPage() {
 
         <div className="dashboard-container">
 
-            <header className="header">
-
-                <img src={logo} alt="Labirinto do Saber" className="logo" />
-
-
-
-                <nav className="navbar">
-
-                    <a href="/home" className="nav-link">Dashboard</a>
-
-                    <a href="/activitiesMain" className="nav-link active">Atividades</a>
-
-                    <a href="/alunos" className="nav-link">Alunos</a>
-
-                    <a href="/MainReport" className="nav-link">Relatórios</a>
-
-                </nav>
-
-
-
-                <div className="user-controls">
-
-                    <img src={iconNotification} alt="Notificações" className="icon" />
-
-                    <img src={iconProfile} alt="Perfil" className="icon profile-icon" />
-
-                </div>
-
-            </header>
-
+            <Navbar activePage="activities" />
 
 
             <main className="manage-groups-main-content">

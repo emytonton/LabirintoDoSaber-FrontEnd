@@ -6,8 +6,7 @@ import iconNotification from '../../assets/images/icon_notification.png';
 import iconProfile from '../../assets/images/icon_profile.png';
 import iconBack from '../../assets/images/seta_icon_esquerda.png';
 import { useNavigate } from 'react-router-dom';
-
-
+import Navbar from "../../components/ui/NavBar/index.js";
 const ActivityChip = ({ label, isSelected, onClick }) => (
   <button
     className={`activity-chip ${isSelected ? 'selected' : ''}`}
@@ -167,20 +166,8 @@ function AdicionarAtividade() {
 
   return (
     <div className="dashboard-container">
+      <Navbar activePage="activities" />
       
-      <header className="header">
-        <img src={logo} alt="Labirinto do Saber" className="logo" />
-        <nav className="navbar">
-          <a href="/home" className="nav-link">Dashboard</a>
-          <a href="/activitiesMain" className="nav-link active">Atividades</a>
-          <a href="/alunos" className="nav-link">Alunos</a>
-          <a href="/MainReport" className="nav-link">Relatórios</a>
-        </nav>
-        <div className="user-controls">
-          <img src={iconNotification} alt="Notificações" className="icon" />
-          <img src={iconProfile} alt="Perfil" className="icon profile-icon" />
-        </div>
-      </header>
 
       <main className="main-content">
         <button onClick={() => navigate('/activitiesMain')} className="back-arrow" style={{background: 'none', border: 'none', cursor: 'pointer'}}>
