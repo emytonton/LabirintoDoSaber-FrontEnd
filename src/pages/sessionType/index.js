@@ -9,7 +9,7 @@ import iconCaderno from "../../assets/images/iconDoublecard.png";
 import iconCard from "../../assets/images/caderneta.png"; 
 import iconActivity from "../../assets/images/iconActivitie.png"; 
 import { useNavigate, useLocation } from "react-router-dom"; // Importe useLocation
-
+import Navbar from "../../components/ui/NavBar/index.js";
 // Componente reútil para os botões de opção dentro do card
 const OptionButton = ({ label, iconSrc, onClick }) => (
     <button 
@@ -71,19 +71,7 @@ function SessionTypePage() {
 
     return (
         <div className="dashboard-container">
-            <header className="header">
-                <img src={logo} alt="Labirinto do Saber" className="logo" />
-                <nav className="navbar">
-                    <a href="/home" className="nav-link">Dashboard</a>
-                    <a href="/activitiesMain" className="nav-link active">Atividades</a>
-                    <a href="/alunos" className="nav-link">Alunos</a>
-                    <a href="/MainReport" className="nav-link">Relatórios</a>
-                </nav>
-                <div className="user-controls">
-                    <img src={iconNotification} alt="Notificações" className="icon" />
-                    <img src={iconProfile} alt="Perfil" className="icon profile-icon" />
-                </div>
-            </header>
+            <Navbar activePage="activities" />
 
             <main className="session-options-main-content">
                 <div className="session-options-container">

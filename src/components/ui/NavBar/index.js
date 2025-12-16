@@ -9,7 +9,8 @@ import iconProfile from "../../../assets/images/icon_profile.png";
 
 const API_BASE_URL = "https://labirinto-do-saber.vercel.app";
 
-function Navbar() {
+// Adicionamos a prop 'activePage' aqui
+function Navbar({ activePage }) {
   const [userName, setUserName] = useState("");
   const [userPhotoUrl, setUserPhotoUrl] = useState(iconProfile);
 
@@ -23,17 +24,15 @@ function Navbar() {
         const config = { headers: { Authorization: `Bearer ${token}` } };
 
         const userResponse = await axios.get(
-        `${API_BASE_URL}/educator/me`,
-        config
+          `${API_BASE_URL}/educator/me`,
+          config
         );
 
         const data = userResponse.data || {};
-        const avatar =
-        data.photoUrl || data._photoUrl || iconProfile;
+        const avatar = data.photoUrl || data._photoUrl || iconProfile;
 
         setUserName(data.name || "");
         setUserPhotoUrl(avatar);
-
       } catch (error) {
         console.error("Erro ao carregar dados do educador na navbar:", error);
       }
@@ -42,7 +41,14 @@ function Navbar() {
     fetchEducator();
   }, []);
 
-  const isActive = (path) => {
+  // Nova função para verificar qual item deve ficar ativo
+  const checkActive = (menuName, path) => {
+    // 1. Prioridade: Se a prop activePage foi passada, usamos ela
+    if (activePage) {
+      return activePage === menuName;
+    }
+
+    // 2. Fallback: Se não passou prop, tenta adivinhar pela URL
     if (path === "/home") return location.pathname === "/home";
     return location.pathname.startsWith(path);
   };
@@ -54,27 +60,32 @@ function Navbar() {
       <nav className="navbar">
         <Link
           to="/home"
-          className={`nav-link ${isActive("/home") ? "active" : ""}`}
+          // Usamos o identificador 'dashboard'
+          className={`nav-link ${checkActive("dashboard", "/home") ? "active" : ""}`}
         >
           Dashboard
         </Link>
+        
         <Link
           to="/activitiesMain"
-          className={`nav-link ${
-            isActive("/activitiesMain") ? "active" : ""
-          }`}
+          // Usamos o identificador 'activities'
+          className={`nav-link ${checkActive("activities", "/activitiesMain") ? "active" : ""}`}
         >
           Atividades
         </Link>
+        
         <Link
           to="/alunos"
-          className={`nav-link ${isActive("/alunos") ? "active" : ""}`}
+          // Usamos o identificador 'students'
+          className={`nav-link ${checkActive("students", "/alunos") ? "active" : ""}`}
         >
           Alunos
         </Link>
+        
         <Link
           to="/MainReport"
-          className={`nav-link ${isActive("/MainReport") ? "active" : ""}`}
+          // Usamos o identificador 'reports'
+          className={`nav-link ${checkActive("reports", "/MainReport") ? "active" : ""}`}
         >
           Relatórios
         </Link>

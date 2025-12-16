@@ -5,7 +5,7 @@ import logo from "../../assets/images/logo.png";
 import iconNotification from "../../assets/images/icon_notification.png";
 import iconProfile from "../../assets/images/icon_profile.png";
 import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png"; 
-
+import Navbar from "../../components/ui/NavBar/index.js";
 
 // SVG da caneta (PenIcon)
 const PenIcon = () => (
@@ -68,19 +68,7 @@ function SessionTitlePage() {
 
     return (
         <div className="dashboard-container">
-            <header className="header">
-                <img src={logo} alt="Labirinto do Saber" className="logo" />
-                <nav className="navbar">
-                    <a href="/home" className="nav-link">Dashboard</a>
-                    <a href="/activitiesMain" className="nav-link active">Atividades</a>
-                    <a href="/alunos" className="nav-link">Alunos</a>
-                    <a href="/MainReport" className="nav-link">Relatórios</a>
-                </nav>
-                <div className="user-controls">
-                    <img src={iconNotification} alt="Notificações" className="icon" />
-                    <img src={iconProfile} alt="Perfil" className="icon profile-icon" />
-                </div>
-            </header>
+            <Navbar activePage="activities" />
 
             <main className="start-session-main-content">
                 <div className="start-session-container">

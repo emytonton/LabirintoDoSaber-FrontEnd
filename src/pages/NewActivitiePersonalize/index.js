@@ -10,7 +10,7 @@ import iconAdd from "../../assets/images/add.png";
 import iconTrash from "../../assets/images/trash.png";
 import iconEyeClosed from "../../assets/images/eye-closed.png";
 import play from "../../assets/images/video.png";
-
+import Navbar from "../../components/ui/NavBar/index.js";
 
 
 /** Campo de arquivo com UI customizada e lógica de seleção */
@@ -143,19 +143,7 @@ export default function AdicionarAtividadePersonalize() {
 
   return (
     <div className="dashboard-container">
-      <header className="header">
-        <img src={logo} alt="Labirinto do Saber" className="logo" />
-        <nav className="navbar">
-          <NavLink to="/home" className="nav-link">Dashboard</NavLink>
-          <NavLink to="/activitiesMain" className="nav-link active">Atividades</NavLink>
-          <NavLink to="/alunos" className="nav-link">Alunos</NavLink>
-          <NavLink to="/MainReport" className="nav-link">Relatórios</NavLink>
-        </nav>
-        <div className="user-controls">
-          <img src={iconNotification} alt="Notificações" className="icon" />
-          <img src={iconProfile} alt="Perfil" className="icon profile-icon" />
-        </div>
-      </header>
+     <Navbar activePage="activities" />
 
       <main className="main-content">
         <button className="back-button" onClick={() => navigate(-1)} style={{border:'none', background:'none', cursor:'pointer'}}>

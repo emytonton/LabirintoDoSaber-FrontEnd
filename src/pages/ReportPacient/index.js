@@ -11,7 +11,7 @@ import patientAvatar from "../../assets/images/icon_random.png";
 import iconSeta from "../../assets/images/seta_icon.png";
 import iconSession from "../../assets/images/icon_profile.png"; 
 import SearchBar from "../../components/ui/SearchBar/Search";
-
+import Navbar from "../../components/ui/NavBar/index.js";
 const API_BASE_URL = "https://labirinto-do-saber.vercel.app";
 
 const formatDate = (dateString) => {
@@ -172,19 +172,7 @@ function ReportPacient() {
 
     return (
         <div className="dashboard-container">
-            <header className="header">
-                <img src={logo} alt="Labirinto do Saber" className="logo" />
-                <nav className="navbar">
-                    <a href="/home" className="nav-link">Dashboard</a>
-                    <a href="/activitiesMain" className="nav-link">Atividades</a>
-                    <a href="/alunos" className="nav-link">Alunos</a>
-                    <a href="/MainReport" className="nav-link active">Relatórios</a>
-                </nav>
-                <div className="user-controls">
-                    <img src={iconNotification} alt="Notificações" className="icon" />
-                    <img src={iconProfile} alt="Perfil" className="icon profile-icon" />
-                </div>
-            </header>
+            <Navbar activePage="reports" />
 
             <main className="session-main-content">
                 <div className="session-container">

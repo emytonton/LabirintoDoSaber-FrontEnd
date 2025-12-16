@@ -6,7 +6,7 @@ import logo from '../../assets/images/logo.png';
 import iconNotification from '../../assets/images/icon_notification.png';
 import iconProfile from '../../assets/images/icon_profile.png';
 import iconBack from '../../assets/images/seta_icon_esquerda.png'; 
-
+import Navbar from "../../components/ui/NavBar/index.js";
 const ActivityChip = ({ label, isSelected, onClick }) => (
   <button 
     className={`activity-chip ${isSelected ? 'selected' : ''}`} 
@@ -53,19 +53,7 @@ function AdicionarAtividade() {
 
     return (
         <div className="dashboard-container"> 
-            <header className="header">
-                <img src={logo} alt="Labirinto do Saber" className="logo" />
-                <nav className="navbar">
-                    <a href="/home" className={`nav-link ${currentPath === '/home' ? 'active' : ''}`}>Dashboard</a> 
-                    <a href="/activitiesMain" className={`nav-link active`}>Atividades</a>
-                    <a href="/alunos" className={`nav-link ${currentPath === '/alunos' ? 'active' : ''}`}>Alunos</a> 
-                    <a href="/MainReport" className={`nav-link ${currentPath === '/relatorios' ? 'active' : ''}`}>Relatórios</a>
-                </nav>
-                <div className="user-controls">
-                    <img src={iconNotification} alt="Notificações" className="icon" />
-                    <img src={iconProfile} alt="Perfil" className="icon profile-icon" />
-                </div>
-            </header>
+           <Navbar activePage="activities" />
 
             <main className="main-content">
                  <button className="back-button" onClick={() => navigate(-1)} style={{border: 'none', background: 'transparent', cursor: 'pointer', marginBottom: '10px'}}>
