@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './style.css'; 
 import axios from 'axios'; 
 import Navbar from "../../components/ui/NavBar/index.js";
+import PageTurner from '../../components/ui/PageTurner/index.js';
 import iconRandom from '../../assets/images/icon_random.png';
 import { useNavigate } from 'react-router-dom'; 
 
@@ -76,15 +77,9 @@ function AlunosPage() {
   const currentAlunos = alunos.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(alunos.length / itemsPerPage);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const nextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  };
+  const paginate = (page) => setCurrentPage(page);
 
-  const prevPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
 
   return (
     <div className="dashboard-container">
@@ -153,45 +148,11 @@ function AlunosPage() {
             )}
 
           </div>
-
-          {totalPages > 1 && (
-            <div className="pagination-controls">
-                <button 
-                    className="page-arrow" 
-                    onClick={prevPage} 
-                    disabled={currentPage === 1}
-                    style={{ background: 'none', border: 'none', cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
-                >
-                    &lt;
-                </button>
-                
-                {Array.from({ length: totalPages }, (_, i) => (
-                    <button
-                        key={i + 1}
-                        className={`page-number ${currentPage === i + 1 ? 'active' : ''}`}
-                        onClick={() => paginate(i + 1)}
-                        style={{ 
-                            background: 'none', 
-                            border: 'none', 
-                            cursor: 'pointer',
-                            fontWeight: currentPage === i + 1 ? 'bold' : 'normal'
-                        }}
-                    >
-                        {i + 1}
-                    </button>
-                ))}
-
-                <button 
-                    className="page-arrow" 
-                    onClick={nextPage} 
-                    disabled={currentPage === totalPages}
-                    style={{ background: 'none', border: 'none', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}
-                >
-                    &gt;
-                </button>
-            </div>
-          )}
-
+          <PageTurner
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={paginate}
+          />
         </div>
       </main>
     </div>

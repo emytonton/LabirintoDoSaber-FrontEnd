@@ -1,0 +1,34 @@
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3rem; 
+  gap: 0.5rem;
+}
+
+.page-arrow,
+.page-number {
+  text-decoration: none;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #999;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.page-arrow {
+  font-size: 1.3rem;
+  color: #aaa;
+}
+
+.page-number:hover {
+  background-color: #f0f0f0;
+  color: #555;
+}
+
+.page-number.active {
+  background-color: #D8F5F3; 
+  color: #63E9E2; 
+}

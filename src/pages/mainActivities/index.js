@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // Certifique-se de ter instalado: npm install axios
+import axios from 'axios';
 import './style.css'; 
 import Navbar from "../../components/ui/NavBar/index.js";
 import iconCaderno from '../../assets/images/caderneta.png';
 import iconSeta from '../../assets/images/seta_icon.png';
 import { useNavigate } from 'react-router-dom'; 
+import PageTurner from '../../components/ui/PageTurner/index.js';
 
 function AlunosPage() {
   const navigate = useNavigate(); 
@@ -54,17 +55,7 @@ function AlunosPage() {
   const currentNotebooks = notebooks.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(notebooks.length / itemsPerPage);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const handlePrevPage = (e) => {
-    e.preventDefault();
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
-
-  const handleNextPage = (e) => {
-    e.preventDefault();
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  };
+  const paginate = (page) => setCurrentPage(page);
 
   // --- NAVEGAÇÃO E MENUS ---
   const handleAlunoClick = (notebookId) => {
@@ -191,28 +182,11 @@ function AlunosPage() {
                 </p>
             )}
           </div>
-
-          {/* CONTROLES DE PAGINAÇÃO */}
-          {notebooks.length > 0 && (
-              <div className="pagination-controls">
-                <a href="#" onClick={handlePrevPage} className={`page-arrow ${currentPage === 1 ? 'disabled' : ''}`}>&lt;</a>
-                
-                {/* Gera os números das páginas dinamicamente */}
-                {Array.from({ length: totalPages }, (_, index) => (
-                    <a 
-                        key={index + 1} 
-                        href="#" 
-                        onClick={(e) => { e.preventDefault(); paginate(index + 1); }} 
-                        className={`page-number ${currentPage === index + 1 ? 'active' : ''}`}
-                    >
-                        {index + 1}
-                    </a>
-                ))}
-
-                <a href="#" onClick={handleNextPage} className={`page-arrow ${currentPage === totalPages ? 'disabled' : ''}`}>&gt;</a>
-              </div>
-          )}
-
+          <PageTurner
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={paginate}
+          />
         </div>
       </main>
     </div>

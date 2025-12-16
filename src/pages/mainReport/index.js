@@ -7,6 +7,7 @@ import iconSeta from "../../assets/images/seta_icon.png";
 import SearchBar from "../../components/ui/SearchBar/Search";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import PageTurner from "../../components/ui/PageTurner/index.js";
 
 function MainReport() {
     const navigate = useNavigate();
@@ -155,31 +156,11 @@ function MainReport() {
                             </div>
                         )}
 
-                        <div className="pagination-controls">
-                            <button
-                                className="page-arrow"
-                                onClick={() => changePage(currentPage - 1)}
-                            >
-                                &lt;
-                            </button>
-
-                            {Array.from({ length: totalPages }, (_, i) => (
-                                <button
-                                    key={i}
-                                    className={`page-number ${currentPage === i + 1 ? "active" : ""}`}
-                                    onClick={() => changePage(i + 1)}
-                                >
-                                    {i + 1}
-                                </button>
-                            ))}
-
-                            <button
-                                className="page-arrow"
-                                onClick={() => changePage(currentPage + 1)}
-                            >
-                                &gt;
-                            </button>
-                        </div>
+                        <PageTurner
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={changePage}
+                        />
                     </div>
                 </div>
             </main>
