@@ -1,70 +1,84 @@
-# Getting Started with Create React App
+# Labirinto do Saber 📖
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+O **Labirinto do Saber** é um ecossistema desktop especializado em alfabetização clínica e escolar. O software permite que profissionais (educadores, psicopedagogos ou fonoaudiólogos) gerenciem o progresso de alunos através de sessões personalizadas, utilizando uma estrutura modular de conteúdos e gerando métricas precisas de evolução.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## O Projeto
 
-### `npm start`
+Diferente de sistemas de gestão comuns, o Labirinto do Saber foca no **desempenho pedagógico**. O profissional tem total controle sobre a criação do material didático, enquanto o sistema se encarrega de transformar cada interação em dados e relatórios de progresso.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Como funciona o fluxo:
+1.  **Criação:** O profissional gerencia **Atividades**, **Grupos de Atividades** e **Cadernos**.
+2.  **Execução:** Realiza-se a **Sessão** com o aluno utilizando os materiais criados.
+3.  **Avaliação:** Cada sessão gera um **Relatório de Acertos** com métricas automáticas.
+4.  **Evolução:** O perfil do aluno consolida esses dados em uma **Porcentagem Geral de Evolução**.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 🛠️ Funcionalidades Principais
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 📑 Gestão de Conteúdo (Personalização Total)
+O profissional pode criar e organizar materiais em três níveis:
+* **Atividades:** Exercícios individuais personalizáveis com diferentes formatos.
+* **Grupos de Atividades:** Conjuntos temáticos de exercícios.
+* **Cadernos:** Compilados estruturados para trilhas de aprendizado longas.
 
-### `npm run build`
+**Categorias de Aplicação:**
+Todas as atividades e grupos são classificados em 4 eixos fundamentais:
+* 🔤 **Leitura**
+* ✍️ **Escrita**
+* 🗣️ **Vocabulário**
+* 🧠 **Compreensão**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### ⏱️ Sessões e Relatórios
+* **Sessão Assistida:** Realizada entre profissional e aluno.
+* **Métricas de Desempenho:** Registro imediato de acertos, erros e tempo de resposta.
+* **Relatórios Automáticos:** Ao fim de cada sessão, o sistema gera um diagnóstico do encontro.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 📈 Perfil do Aluno (Dashboard)
+* **Evolução Global:** Visualização em porcentagem do crescimento do aluno.
+* **Histórico:** Acesso a todos os relatórios de sessões anteriores para análise comparativa.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 💻 Stack Técnica
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+* **Frontend:** React.js (Interface reativa e componentes dinâmicos).
+* **Desktop:** Electron (Aplicação nativa para Windows/macOS/Linux).
+* **Linguagem:** JavaScript (ES6+).
+* **Armazenamento:** Estrutura local para garantir a privacidade dos dados dos alunos.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## ⚙️ Instalação e Desenvolvimento
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+1.  **Clone o repositório:**
+    ```bash
+    git clone [https://github.com/seu-usuario/labirinto-do-saber.git](https://github.com/seu-usuario/labirinto-do-saber.git)
+    ```
 
-## Learn More
+2.  **Instale as dependências:**
+    ```bash
+    npm install
+    ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+3.  **Inicie em modo de desenvolvimento:**
+    ```bash
+    npm run electron:dev
+    ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+4.  **Build para produção:**
+    ```bash
+    npm run build
+    ```
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🎯 Objetivo de Alfabetização
 
-### Analyzing the Bundle Size
+O objetivo central é fornecer dados concretos que auxiliem na tomada de decisão pedagógica. Ao categorizar atividades em *Leitura, Escrita, Vocabulário e Compreensão*, o software identifica exatamente onde o aluno possui lacunas, permitindo uma intervenção personalizada e eficiente.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+> **Labirinto do Saber** – Tecnologia a serviço da alfabetização consciente.
