@@ -6,9 +6,10 @@ import iconNotification from "../../assets/images/icon_notification.png";
 import iconProfile from "../../assets/images/icon_profile.png";
 import iconSeta from "../../assets/images/seta_icon.png";
 import iconDoubleCard from "../../assets/images/iconDoublecard.png";
-import iconActivitie from "../../assets/images/iconActivitie.png"; // Certifique-se de importar este ícone
+import iconActivitie from "../../assets/images/iconActivitie.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../../components/ui/NavBar/index.js";
+
 const TrashIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M5 6H19L18.1245 19.133C18.0544 20.1836 17.1818 21 16.1289 21H7.87111C6.81818 21 5.94558 20.1836 5.87554 19.133L5 6Z" stroke="black" strokeWidth="2"/>
@@ -56,18 +57,15 @@ function NotebookDetailsPage() {
                 const token = localStorage.getItem('authToken');
                 const config = { headers: { Authorization: `Bearer ${token}` } };
 
-                // Fazemos 2 requisições ao mesmo tempo: Cadernos e Tarefas
                 const [notebooksResponse, tasksResponse] = await Promise.all([
                     axios.get('https://labirinto-do-saber.vercel.app/task-notebook/', config),
                     axios.get('https://labirinto-do-saber.vercel.app/task/', config)
                 ]);
                 
-                // 1. Salvar todas as tarefas para consulta futura
                 if (Array.isArray(tasksResponse.data)) {
                     setAllTasks(tasksResponse.data);
                 }
 
-                // 2. Filtrar o caderno específico
                 const allNotebooks = notebooksResponse.data;
                 const foundItem = allNotebooks.find(item => item.notebook.id === notebookId);
 
@@ -92,7 +90,6 @@ function NotebookDetailsPage() {
 
     // --- LÓGICA DO MODAL ---
     
-    // Ao clicar num grupo (card)
     const handleGroupClick = (group) => {
         setSelectedGroup(group);
         setIsModalOpen(true);
@@ -103,29 +100,75 @@ function NotebookDetailsPage() {
         setSelectedGroup(null);
     };
 
-    // Função mágica que pega os IDs do grupo e transforma em objetos de tarefa completos
     const getResolvedTasksForGroup = (group) => {
         if (!group || !group.tasksIds) return [];
-        
-        // Mapeia os IDs e encontra a tarefa correspondente na lista 'allTasks'
         return group.tasksIds
             .map(id => allTasks.find(task => task.id === id))
-            .filter(Boolean); // Remove undefined se não achar alguma
+            .filter(Boolean);
     };
 
-    // Ações dentro do modal (opcionais por enquanto)
     const handleEditActivityInModal = () => {
         console.log("Editar atividade clicada.");
     };
 
-    const handleRemoveActivityFromGroup = (e) => {
-        e.stopPropagation();
-        alert("Remover atividade do grupo em breve.");
-    };
+    // --- LÓGICA DE REMOÇÃO DO GRUPO (NOVA) ---
+    const handleRemoveGroup = async (e, groupIdToRemove) => {
+        e.stopPropagation(); // Evita abrir o modal ao clicar na lixeira
+        
+        const token = localStorage.getItem('authToken');
+        const config = { headers: { Authorization: `Bearer ${token}` } };
 
-    const handleRemoveGroup = (e, id) => {
-        e.stopPropagation();
-        alert("Funcionalidade de remover grupo do caderno em breve.");
+        // 1. Calcula como ficaria a lista sem este grupo
+        const remainingGroups = taskGroups.filter(group => group.id !== groupIdToRemove);
+        const remainingGroupIds = remainingGroups.map(group => group.id);
+
+        try {
+            // CENÁRIO 1: É o último grupo (lista ficará vazia) -> Deletar Caderno
+            if (remainingGroups.length === 0) {
+                const confirmDeleteNotebook = window.confirm(
+                    "Ao remover este último grupo, o caderno inteiro será excluído. Deseja continuar?"
+                );
+
+                if (!confirmDeleteNotebook) return;
+
+                // Chama endpoint de DELETE do caderno
+                await axios.delete(
+                    `https://labirinto-do-saber.vercel.app/task-notebook/delete/${notebookId}`,
+                    config
+                );
+
+                alert("Caderno excluído com sucesso!");
+                navigate('/manageNotebooks'); // Redireciona para listagem de cadernos
+            } 
+            // CENÁRIO 2: Ainda restam grupos -> Atualizar Caderno
+            else {
+                const confirmRemoveGroup = window.confirm("Deseja remover este grupo do caderno?");
+                
+                if (!confirmRemoveGroup) return;
+
+                // Prepara o payload conforme o Schema fornecido
+                const payload = {
+                    taskNotebookId: notebookId,
+                    // category e description são opcionais, se quiser manter os atuais teria que tê-los no state.
+                    // Aqui mandamos apenas os IDs dos grupos atualizados.
+                    taskGroupsIds: remainingGroupIds 
+                };
+
+                // Chama endpoint de UPDATE (PUT)
+                await axios.put(
+                    'https://labirinto-do-saber.vercel.app/task-notebook/update',
+                    payload,
+                    config
+                );
+
+                // Atualiza o estado local para refletir a mudança na tela sem recarregar
+                setTaskGroups(remainingGroups);
+                alert("Grupo removido com sucesso!");
+            }
+        } catch (error) {
+            console.error("Erro ao remover grupo:", error);
+            alert("Ocorreu um erro ao tentar remover o grupo.");
+        }
     };
     
     return (
@@ -137,11 +180,16 @@ function NotebookDetailsPage() {
                     <div className="top-container">
                         <h1>Caderno: {notebookName}</h1>
                         <button 
-                            className="add-group-btn" 
-                            onClick={ () => navigate('/GroupSelect') }
-                        >
-                            Adicionar novo grupo
-                        </button>
+    className="add-group-btn" 
+    onClick={ () => navigate('/GroupSelect', { 
+        state: { 
+            notebookId: notebookId, // ID do caderno atual
+            currentGroupIds: taskGroups.map(g => g.id) // Lista atual de IDs para não duplicar
+        } 
+    })}
+>
+    Adicionar novo grupo
+</button>
                     </div>
 
                     <div className="details-activity-list">
@@ -158,7 +206,6 @@ function NotebookDetailsPage() {
                                 <div className="activity-details-row-wrapper" key={group.id}>
                                     <div 
                                         className="activity-details-list-item-card" 
-                                        // AQUI MUDOU: Agora abre o modal ao clicar
                                         onClick={() => handleGroupClick(group)} 
                                         style={{ cursor: "pointer" }}
                                     >
@@ -176,6 +223,7 @@ function NotebookDetailsPage() {
                                     </div>
                                     <button 
                                         className="remove-activity-btn" 
+                                        // Chama a nova função de remover
                                         onClick={(e) => handleRemoveGroup(e, group.id)} 
                                         title="Remover Grupo do Caderno"
                                     >
@@ -188,7 +236,7 @@ function NotebookDetailsPage() {
                 </div>
             </main>
 
-            {/* --- MODAL (IGUALZINHO AO DA TELA DE GRUPOS) --- */}
+            {/* --- MODAL --- */}
             {isModalOpen && selectedGroup && (
                 <div className="modal-overlay" onClick={closeModal}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -209,21 +257,17 @@ function NotebookDetailsPage() {
                                             <div
                                                 className="group-list-item-card modal-group-task-card"
                                                 onClick={handleEditActivityInModal}
-                                                style={{ cursor: "pointer" }}
+                                                style={{ cursor: "pointer", width: "100%" }} // Ajustei width já que removi o botão de lixeira
                                             >
                                                 <img src={iconActivitie} alt="icone atividade" className="activity-card-icon" />
                                                 <div className="group-card-info">
-                                                    {/* Exibindo prompt ou descrição da tarefa */}
                                                     <h3>{task.prompt ? (task.prompt.slice(0, 40) + "...") : "Tarefa sem título"}</h3>
                                                     <button className="group-bnt-details">
                                                         {categoryMap[task.category] || task.category}
                                                     </button>
                                                 </div>
                                             </div>
-
-                                            <button className="remove-group-btn" onClick={handleRemoveActivityFromGroup}>
-                                                <TrashIcon />
-                                            </button>
+                                            {/* REMOVIDO O BOTÃO DE LIXEIRA DAQUI COMO SOLICITADO */}
                                         </div>
                                     ))
                                 ) : (

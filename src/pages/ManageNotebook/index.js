@@ -1,14 +1,31 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./style.css";
-import logo from "../../assets/images/logo.png";
-import iconNotification from "../../assets/images/icon_notification.png";
-import iconProfile from "../../assets/images/icon_profile.png";
 import iconCard from "../../assets/images/caderneta.png";
 import iconSeta from "../../assets/images/seta_icon.png";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/ui/NavBar/index.js";
 
+// --- COMPONENTE MODAL (Com IDs Específicos para Cadernos) ---
+const DeleteModal = ({ isOpen, onClose, onConfirm }) => {
+    if (!isOpen) return null;
+  
+    return (
+      // Mudei as classes para serem únicas para esta página
+      <div className="notebook-manager-modal-overlay">
+        <div className="notebook-manager-modal-content">
+          <h3>Excluir Caderno</h3>
+          <p>Tem certeza que deseja excluir este caderno? Esta ação não pode ser desfeita e excluirá as tarefas associadas.</p>
+          <div className="notebook-manager-modal-actions">
+            <button className="notebook-manager-modal-btn cancel" onClick={onClose}>Cancelar</button>
+            <button className="notebook-manager-modal-btn confirm" onClick={onConfirm}>Excluir</button>
+          </div>
+        </div>
+      </div>
+    );
+};
+
+// --- ÍCONE LIXEIRA ---
 const TrashIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M5 6H19L18.1245 19.133C18.0544 20.1836 17.1818 21 16.1289 21H7.87111C6.81818 21 5.94558 20.1836 5.87554 19.133L5 6Z" stroke="black" strokeWidth="2"/>
@@ -26,11 +43,14 @@ function ManageNotebookPage() {
     const [notebooks, setNotebooks] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // Estados para o Modal
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [notebookToDelete, setNotebookToDelete] = useState(null);
+
     // Paginação
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 3; // Apenas 3 por página conforme solicitado
+    const itemsPerPage = 3; 
 
-    // Mapa de Categorias
     const categoryMap = {
         'reading': 'Leitura',
         'writing': 'Escrita',
@@ -40,50 +60,72 @@ function ManageNotebookPage() {
 
     // --- BUSCAR CADERNOS ---
     useEffect(() => {
-        const fetchNotebooks = async () => {
-            try {
-                const token = localStorage.getItem('authToken');
-                if (!token) {
-                    navigate('/');
-                    return;
-                }
-
-                const config = {
-                    headers: { Authorization: `Bearer ${token}` }
-                };
-
-                const response = await axios.get('https://labirinto-do-saber.vercel.app/task-notebook/', config);
-                
-                console.log("Cadernos retornados:", response.data);
-
-                if (Array.isArray(response.data)) {
-                    setNotebooks(response.data);
-                } else {
-                    console.error("Formato inesperado:", response.data);
-                }
-                setLoading(false);
-
-            } catch (error) {
-                console.error("Erro ao buscar cadernos:", error);
-                setLoading(false);
-            }
-        };
-
         fetchNotebooks();
     }, [navigate]);
+
+    const fetchNotebooks = async () => {
+        try {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                navigate('/');
+                return;
+            }
+
+            const config = {
+                headers: { Authorization: `Bearer ${token}` }
+            };
+
+            const response = await axios.get('https://labirinto-do-saber.vercel.app/task-notebook/', config);
+            
+            if (Array.isArray(response.data)) {
+                setNotebooks(response.data);
+            } else {
+                console.error("Formato inesperado:", response.data);
+            }
+            setLoading(false);
+
+        } catch (error) {
+            console.error("Erro ao buscar cadernos:", error);
+            setLoading(false);
+        }
+    };
     
     const handleNotebookClick = (id) => { 
-        // Passa o ID via state para a página de detalhes saber qual carregar
         navigate("/NotebookDetails", { state: { notebookId: id } });
     };
     
-    const handleRemoveNotebook = (e, id) => {
+    // --- LÓGICA DE EXCLUSÃO ---
+    const handleDeleteClick = (e, id) => {
         e.stopPropagation();
-        console.log("Remover CADERNO ID:", id);
-        alert("Funcionalidade de remover caderno em breve.");
+        setNotebookToDelete(id);
+        setIsModalOpen(true);
     };
 
-    // --- LÓGICA DE PAGINAÇÃO ---
+    const confirmDelete = async () => {
+        if (!notebookToDelete) return;
+    
+        try {
+            const token = localStorage.getItem('authToken');
+            const config = {
+                headers: { Authorization: `Bearer ${token}` }
+            };
+    
+            await axios.delete(`https://labirinto-do-saber.vercel.app/task-notebook/delete/${notebookToDelete}`, config);
+            
+            setNotebooks(notebooks.filter(item => item.notebook.id !== notebookToDelete));
+            
+            setIsModalOpen(false);
+            setNotebookToDelete(null);
+           
+    
+        } catch (error) {
+            console.error("Erro ao excluir:", error);
+            alert("Erro ao excluir caderno.");
+            setIsModalOpen(false);
+        }
+    };
+
+    // --- PAGINAÇÃO ---
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentNotebooks = notebooks.slice(indexOfFirstItem, indexOfLastItem);
@@ -95,20 +137,27 @@ function ManageNotebookPage() {
     
     return (
         <div className="dashboard-container">
-           <Navbar activePage="activities" />
+            {/* Modal com classes específicas */}
+            <DeleteModal 
+                isOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)} 
+                onConfirm={confirmDelete} 
+            />
+
+            <Navbar activePage="activities" />
             
             <main className="manage-notebook-main-content">
                 
                 <div className="manage-notebook-container">
-                    <div className="top-container">
+                    {/* Usei uma classe mais específica aqui também se houver conflito */}
+                    <div className="manage-notebook-header-top">
                         <div>
                             <h1>Gerenciar cadernos</h1>
                             <h2>Gerencie os cadernos</h2>
                         </div>
-                        {/* Botão opcional para criar novo caderno, se desejar */}
                         <button 
                             className="create-patient-bnt" 
-                            onClick={() => navigate('/addNotebook')} // Ajuste a rota se necessário
+                            onClick={() => navigate('/addNotebook')}
                             style={{marginLeft: 'auto'}}
                         >
                             Novo Caderno
@@ -123,8 +172,6 @@ function ManageNotebookPage() {
                             <p>Nenhum caderno encontrado.</p>
                         ) : (
                             currentNotebooks.map((item) => {
-                                // O objeto retornado tem a estrutura { notebook: {...}, taskGroups: [...] }
-                                // Precisamos acessar item.notebook
                                 const notebook = item.notebook;
                                 
                                 return (
@@ -136,7 +183,6 @@ function ManageNotebookPage() {
                                         >
                                             <img src={iconCard} alt="Avatar" className="notebook-card-icon" />
                                             <div className="notebook-card-info">
-                                                {/* Usando description como título, já que o JSON não tem 'name' */}
                                                 <h3>{notebook.description || "Caderno sem descrição"}</h3>
                                                 <button className="notebook-bnt-details">
                                                     {categoryMap[notebook.category] || notebook.category}
@@ -148,7 +194,7 @@ function ManageNotebookPage() {
                                         </div>
                                         <button 
                                             className="remove-notebook-btn" 
-                                            onClick={(e) => handleRemoveNotebook(e, notebook.id)} 
+                                            onClick={(e) => handleDeleteClick(e, notebook.id)} 
                                             title="Remover CADERNO"
                                         >
                                             <TrashIcon />
@@ -200,6 +246,8 @@ function ManageNotebookPage() {
                     )}
                 </div>
             </main>
+
+           
         </div>
     );
 }
