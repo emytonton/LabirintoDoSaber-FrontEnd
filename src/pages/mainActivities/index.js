@@ -58,15 +58,12 @@ function AlunosPage() {
   const paginate = (page) => setCurrentPage(page);
 
   // --- NAVEGAÇÃO E MENUS ---
-  const handleAlunoClick = (notebookId) => {
-    // É recomendável passar o ID para a próxima página saber o que carregar
-    // Opção A: Passar via state do router
-    navigate('/alunosDetails', { state: { id: notebookId } });
-    
-    // Opção B: Se preferir salvar no localstorage (descomente se usar)
-    // localStorage.setItem('selectedNotebookId', notebookId);
-    // navigate('/alunosDetails');
-  };
+const handleAlunoClick = (notebookId) => {
+    // CORREÇÃO AQUI:
+    // 1. A rota deve ser '/NotebookDetails'
+    // 2. A chave do objeto deve ser 'notebookId' (para bater com o código da outra página)
+    navigate('/NotebookDetails', { state: { notebookId: notebookId } });
+  };
   
   const handleNavigate = (path) => {
       setIsCriarOpen(false);

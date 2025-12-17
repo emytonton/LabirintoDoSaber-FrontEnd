@@ -245,3 +245,48 @@ body {
   font-family: Nunito;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); 
 }
+/* Adicione isso ao seu style.css */
+
+/* Animação do esqueleto */
+@keyframes skeleton-loading {
+  0% { background-color: #e0e0e0; }
+  50% { background-color: #f0f0f0; }
+  100% { background-color: #e0e0e0; }
+}
+
+.skeleton {
+  animation: skeleton-loading 1.5s infinite ease-in-out;
+  border-radius: 4px;
+  background-color: #e0e0e0;
+}
+
+/* Variantes de tamanho para usar no layout */
+.skeleton-text {
+  height: 20px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.skeleton-title {
+  height: 32px;
+  width: 60%;
+  margin-bottom: 16px;
+}
+
+.skeleton-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.skeleton-image-box {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+}
+
+.skeleton-chip {
+  width: 100px;
+  height: 24px;
+  border-radius: 12px;
+}

@@ -42,10 +42,14 @@ function Home() {
         const token = localStorage.getItem("authToken");
         const config = { headers: { Authorization: `Bearer ${token}` } };
 
-        const userResponse = await axios.get(`${API_BASE_URL}/educator/me`, config);
+        // Requisições paralelas para ser mais rápido
+        const userReq = axios.get(`${API_BASE_URL}/educator/me`, config);
+        const studentsReq = axios.get(`${API_BASE_URL}/student/`, config);
+
+        const [userResponse, studentsResponse] = await Promise.all([userReq, studentsReq]);
+
         setUserName(userResponse.data?.name || "");
 
-        const studentsResponse = await axios.get(`${API_BASE_URL}/student/`, config);
         const allStudents = Array.isArray(studentsResponse.data)
           ? studentsResponse.data
           : studentsResponse.data?.students || [];
@@ -102,13 +106,7 @@ function Home() {
     fetchData();
   }, [navigate, location.state]);
 
-  if (isLoading) {
-    return (
-      <div className="home-dashboard-container">
-        <h1>Carregando dashboard...</h1>
-      </div>
-    );
-  }
+  // REMOVI O "if (isLoading) return..." DAQUI
 
   return (
     <div className="home-dashboard-container">
@@ -118,13 +116,31 @@ function Home() {
         <div className="home-content-left">
           <h1>Dashboard</h1>
 
-          <p className="home-welcome-message">
-            Bem vindo(a) de volta, {userName || "Educador"}!
-          </p>
+          <div className="home-welcome-message">
+            {isLoading ? (
+              // Skeleton do texto de boas-vindas
+              <div className="skeleton skeleton-text" style={{ width: "250px", height: "24px" }} />
+            ) : (
+              `Bem vindo(a) de volta, ${userName || "Educador"}!`
+            )}
+          </div>
 
           <h2>Atividades recentes</h2>
 
-          {recentActivities.length > 0 ? (
+          {/* SKELETON LOADING PARA ATIVIDADES */}
+          {isLoading ? (
+            // Mostra 2 cartões falsos enquanto carrega
+            [1, 2].map((i) => (
+              <div className="home-activity-card" key={i}>
+                <div className="skeleton skeleton-image-box" />
+                <div className="home-activity-info" style={{ width: "100%" }}>
+                  <div className="skeleton skeleton-text" style={{ width: "60%" }} />
+                  <div className="skeleton skeleton-text" style={{ width: "40%" }} />
+                  <div className="skeleton skeleton-text" style={{ width: "30%", height: "14px" }} />
+                </div>
+              </div>
+            ))
+          ) : recentActivities.length > 0 ? (
             recentActivities.map((student, index) => (
               <div
                 className="home-activity-card"
@@ -146,7 +162,11 @@ function Home() {
 
                 <div className="home-activity-info">
                   <h3>Sessão com {getFirstName(student.name)}</h3>
-                  <p>{student.lastSession?.sessionName ? student.lastSession.sessionName : "Sessão realizada"}</p>
+                  <p>
+                    {student.lastSession?.sessionName
+                      ? student.lastSession.sessionName
+                      : "Sessão realizada"}
+                  </p>
                   <small style={{ color: "#666" }}>
                     Data: {formatDate(student.lastSession?.startedAt)}
                   </small>
@@ -175,19 +195,30 @@ function Home() {
               <span>Última atividade</span>
             </div>
 
-            {students.length > 0 ? (
+            {/* SKELETON LOADING PARA LISTA DE ALUNOS */}
+            {isLoading ? (
+              // Mostra 3 linhas falsas enquanto carrega
+              [1, 2, 3].map((i) => (
+                <div className="home-student-row" key={i}>
+                  <div className="home-student-name-group">
+                    <div className="skeleton skeleton-avatar" />
+                    <div className="skeleton skeleton-text" style={{ width: "80px", marginLeft: "10px" }} />
+                  </div>
+                  <div className="skeleton skeleton-chip" />
+                </div>
+              ))
+            ) : students.length > 0 ? (
               students.map((student) => (
                 <div className="home-student-row" key={student.id}>
                   <div className="home-student-name-group">
                     <img
-                    src={student.photoUrl || iconRandom}
-                    alt={student.name || "Avatar"}
-                    className="home-student-avatar"
-                    onError={(e) => {
-                      e.currentTarget.src = iconRandom;
-                    }}
-                  />
-
+                      src={student.photoUrl || iconRandom}
+                      alt={student.name || "Avatar"}
+                      className="home-student-avatar"
+                      onError={(e) => {
+                        e.currentTarget.src = iconRandom;
+                      }}
+                    />
                     <span title={student.name || ""}>{getFirstName(student.name)}</span>
                   </div>
 

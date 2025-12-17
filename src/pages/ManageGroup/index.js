@@ -7,6 +7,7 @@ import iconSeta from "../../assets/images/seta_icon.png";
 import iconActivitie from "../../assets/images/iconActivitie.png";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/ui/NavBar/index.js";
+import SearchBar from "../../components/ui/SearchBar/Search"; // Importação do SearchBar
 
 // --- Componente DeleteModal ---
 const DeleteModal = ({ isOpen, onClose, onConfirm, title, message }) => {
@@ -26,6 +27,7 @@ const DeleteModal = ({ isOpen, onClose, onConfirm, title, message }) => {
   );
 };
 
+// --- Ícone da Lixeira ---
 const TrashIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M5 6H19L18.1245 19.133C18.0544 20.1836 17.1818 21 16.1289 21H7.87111C6.81818 21 5.94558 20.1836 5.87554 19.133L5 6Z" stroke="black" strokeWidth="2"/>
@@ -41,6 +43,10 @@ function ManageGroupPage() {
     const [groups, setGroups] = useState([]);
     const [allTasks, setAllTasks] = useState([]);
     const [loading, setLoading] = useState(true);
+    
+    // Estado da Pesquisa
+    const [searchTerm, setSearchTerm] = useState(""); 
+
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4;
 
@@ -84,6 +90,11 @@ function ManageGroupPage() {
         fetchData();
     }, [navigate]);
 
+    // Resetar a paginação quando o termo de busca mudar
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
     // --- Controles do Modal de Detalhes ---
     const handleGroupClick = (group) => {
         setSelectedGroup(group);
@@ -113,7 +124,6 @@ function ManageGroupPage() {
         const currentTasksCount = selectedGroup.tasksIds ? selectedGroup.tasksIds.length : 0;
         let warningMessage = "Tem certeza que deseja remover esta atividade do grupo?";
 
-        // Verifica se é a última atividade
         if (currentTasksCount <= 1) {
             warningMessage = "Esta é a única atividade do grupo. Ao removê-la, o grupo também será excluído. Deseja continuar?";
         }
@@ -134,30 +144,24 @@ function ManageGroupPage() {
         const config = { headers: { Authorization: `Bearer ${token}` } };
 
         try {
-            // CASO 1: Deletar Grupo Inteiro (Direto da lista)
+            // CASO 1: Deletar Grupo Inteiro
             if (deleteTarget.type === 'GROUP') {
                 await axios.delete(`https://labirinto-do-saber.vercel.app/task-group/delete/${deleteTarget.id}`, config);
                 setGroups(groups.filter(group => group.id !== deleteTarget.id));
-                // Sem alert de sucesso
             } 
-            
             // CASO 2: Remover Atividade de dentro do Grupo
             else if (deleteTarget.type === 'TASK_FROM_GROUP') {
                 const currentTaskIds = selectedGroup.tasksIds || [];
                 const newTaskIds = currentTaskIds.filter(id => id !== deleteTarget.id);
 
-                // SE NÃO SOBROU NENHUMA ATIVIDADE -> DELETA O GRUPO
+                // Se não sobrou nenhuma atividade -> Deleta o grupo
                 if (newTaskIds.length === 0) {
                     await axios.delete(`https://labirinto-do-saber.vercel.app/task-group/delete/${selectedGroup.id}`, config);
-                    
-                    // Remove o grupo da lista geral
                     setGroups(groups.filter(g => g.id !== selectedGroup.id));
-                    
-                    // Fecha o modal de detalhes pois o grupo não existe mais
                     setIsGroupModalOpen(false);
                     setSelectedGroup(null);
                 } 
-                // SE AINDA TEM ATIVIDADES -> ATUALIZA O GRUPO
+                // Se ainda tem atividades -> Atualiza o grupo
                 else {
                     const payload = {
                         id: selectedGroup.id,
@@ -165,14 +169,11 @@ function ManageGroupPage() {
                     };
                     await axios.put('https://labirinto-do-saber.vercel.app/task-group/update', payload, config);
 
-                    // Atualiza estados locais
                     const updatedGroup = { ...selectedGroup, tasksIds: newTaskIds };
                     setSelectedGroup(updatedGroup);
                     setGroups(groups.map(g => g.id === selectedGroup.id ? updatedGroup : g));
                 }
-                // Sem alert de sucesso
             }
-
         } catch (error) {
             console.error("Erro na operação:", error);
             alert("Ocorreu um erro ao processar a solicitação.");
@@ -193,11 +194,15 @@ function ManageGroupPage() {
             .filter(Boolean);
     };
 
-    // Paginação
+    // --- LÓGICA DE FILTRAGEM E PAGINAÇÃO ---
+    const filteredGroups = groups.filter(group => 
+        group.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentGroups = groups.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(groups.length / itemsPerPage);
+    const currentGroups = filteredGroups.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredGroups.length / itemsPerPage);
 
     return (
         <div className="dashboard-container">
@@ -217,24 +222,39 @@ function ManageGroupPage() {
                         <img src={iconArrowLeft} alt="Voltar" className="back-arrow-icon" />
                     </a>
                 <div className="manage-groups-container">
-                    <div className="top-container-grup">
-                        <h1>Grupo de atividades</h1>
-                        <h2>Gerencie os grupos de atividades</h2>
-                    </div>
                     
-                    <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "20px" }}>
-                        <button
-                            className="create-patient-bnt"
-                            onClick={() => navigate('/GroupActivities')}
-                        >
-                            Novo Grupo
-                        </button>
+                    {/* --- HEADER: Título (Esq) e Ações (Dir) --- */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "30px", flexWrap: "wrap", gap: "20px" }}>
+                        
+                        {/* Lado Esquerdo: Textos */}
+                        <div className="top-container-grup">
+                            <h1>Grupo de atividades</h1>
+                            <h2>Gerencie os grupos de atividades</h2>
+                        </div>
+                        
+                        {/* Lado Direito: SearchBar + Botão */}
+                        <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                            <SearchBar 
+                                searchTerm={searchTerm} 
+                                setSearchTerm={setSearchTerm} 
+                                placeholder="Pesquisar..."
+                                onFilterClick={() => console.log("Filtro clicado")}
+                            />
+
+                            <button
+                                className="create-patient-bnt"
+                                onClick={() => navigate('/GroupActivities')}
+                                style={{ height: "45px" }} // Ajuste opcional para igualar altura
+                            >
+                                Novo Grupo
+                            </button>
+                        </div>
                     </div>
 
                     <div className="group-card-list">
                         {loading ? (
                             <p>Carregando grupos...</p>
-                        ) : groups.length === 0 ? (
+                        ) : filteredGroups.length === 0 ? (
                             <p>Nenhum grupo encontrado.</p>
                         ) : (
                             currentGroups.map((group) => (
@@ -270,13 +290,18 @@ function ManageGroupPage() {
 
                     {totalPages > 1 && (
                         <div className="pagination-controls">
-                            <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))}>&lt;</button>
+                            <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>&lt;</button>
                             {Array.from({ length: totalPages }, (_, i) => (
-                                <button key={i} onClick={() => setCurrentPage(i + 1)}>
+                                <button 
+                                    key={i} 
+                                    onClick={() => setCurrentPage(i + 1)}
+                                    className={currentPage === i + 1 ? 'active' : ''}
+                                    style={{ fontWeight: currentPage === i + 1 ? 'bold' : 'normal' }}
+                                >
                                     {i + 1}
                                 </button>
                             ))}
-                            <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}>&gt;</button>
+                            <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>&gt;</button>
                         </div>
                     )}
                 </div>

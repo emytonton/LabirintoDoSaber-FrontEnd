@@ -30,9 +30,7 @@ const SearchBar = ({ searchTerm, setSearchTerm, placeholder = "Pesquisar...", on
             </div>
             
             {/* Ícone de Filtro Integrado */}
-            <button className="filter-button" onClick={onFilterClick} title="Filtrar">
-                <FilterSVG />
-            </button>
+           
         </div>
     );
 };
