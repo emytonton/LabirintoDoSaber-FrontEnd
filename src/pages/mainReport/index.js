@@ -100,10 +100,6 @@ function MainReport() {
 
             <main className="session-main-content">
                 <div className="session-container">
-                    <a href="/Home" className="back-arrow-link">
-                        <img src={iconArrowLeft} alt="Voltar" className="back-arrow-icon" />
-                    </a>
-
                     <div className="session-header-top">
                         <h1>Relatórios</h1>
 

@@ -4,7 +4,6 @@ import axios from "axios";
 
 import "./style.css";
 import logo from "../../../assets/images/logo.png";
-import iconNotification from "../../../assets/images/icon_notification.png";
 import iconProfile from "../../../assets/images/icon_profile.png";
 
 const API_BASE_URL = "https://labirinto-do-saber.vercel.app";
@@ -92,11 +91,6 @@ function Navbar({ activePage }) {
       </nav>
 
       <div className="home-user-controls user-controls">
-        <img
-          src={iconNotification}
-          alt="Notificações"
-          className="icon"
-        />
         <img
           src={userPhotoUrl}
           alt={userName || "Perfil"}

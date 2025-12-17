@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./style.css";
 import axios from "axios";
+import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png";
 import iconDoubleCard from "../../assets/images/iconDoublecard.png";
 import iconSeta from "../../assets/images/seta_icon.png";
 import iconActivitie from "../../assets/images/iconActivitie.png";
@@ -212,6 +213,9 @@ function ManageGroupPage() {
             />
 
             <main className="manage-groups-main-content">
+                    <a href="/activitiesMain" className="back-arrow-link">
+                        <img src={iconArrowLeft} alt="Voltar" className="back-arrow-icon" />
+                    </a>
                 <div className="manage-groups-container">
                     <div className="top-container-grup">
                         <h1>Grupo de atividades</h1>

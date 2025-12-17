@@ -12,7 +12,6 @@ const API_BASE_URL = "https://labirinto-do-saber.vercel.app";
 function ProfileEdit() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -22,6 +21,7 @@ function ProfileEdit() {
   const [profileFile, setProfileFile] = useState(null);
   const [fileName, setFileName] = useState("Nenhum arquivo foi selecionado");
   const [avatarUrl, setAvatarUrl] = useState(iconProfile);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -39,12 +39,14 @@ function ProfileEdit() {
         );
         const userData = response.data;
 
+        // Preencher os dados do formulário com os dados recebidos da API
         setFormData({
           name: userData.name || "",
           email: userData.email || "",
           contact: userData.contact || "",
         });
 
+        // Carregar a foto do perfil
         const apiAvatar =
           userData.photoUrl || userData._photoUrl || iconProfile;
         setAvatarUrl(apiAvatar);
@@ -53,7 +55,7 @@ function ProfileEdit() {
       } catch (error) {
         console.error("Erro ao buscar perfil:", error);
         if (error.response && error.response.status === 401) {
-          alert("Sessão expirada.");
+          setError("Sessão expirada. Por favor, faça login novamente.");
           navigate("/");
         }
         setLoading(false);
@@ -112,16 +114,21 @@ function ProfileEdit() {
       return true;
     } catch (error) {
       console.error("ERRO DETALHADO NO UPLOAD (PUT FOTO):", error);
-      alert("❌ Erro ao atualizar foto de perfil. Verifique o console.");
+      setError("Erro ao atualizar foto de perfil.");
       return false;
     }
   };
 
   const handleUpdateTextData = async () => {
-    const dataToUpdate = {
-      newName: formData.name,
-      newContact: formData.contact,
-    };
+    const dataToUpdate = {};
+
+    if (formData.name.trim()) dataToUpdate.newName = formData.name;
+    if (formData.contact.trim()) dataToUpdate.newContact = formData.contact;
+
+    if (Object.keys(dataToUpdate).length === 0) {
+      setError("Nenhum dado foi alterado.");
+      return false;
+    }
 
     try {
       const token = localStorage.getItem("authToken");
@@ -140,27 +147,19 @@ function ProfileEdit() {
       return true;
     } catch (error) {
       console.error("ERRO DETALHADO NO PUT TEXTO:", error);
-      alert("❌ Erro ao atualizar nome/contato. Verifique o console.");
+      setError("Erro ao atualizar nome/contato.");
       return false;
     }
   };
 
   const handleSave = async () => {
     setLoading(true);
+    setError(""); // Limpar mensagens de erro antes de tentar salvar
 
     const results = await Promise.all([
       handleUpdateTextData(),
       handleProfilePictureUpload(),
     ]);
-
-    const success = results.every((result) => result === true);
-
-    if (success) {
-      alert("✅ Perfil atualizado com sucesso!");
-      navigate("/home", { state: { profileUpdated: Date.now() } });
-    } else {
-      alert("⚠️ Houve falhas no salvamento. Verifique o console.");
-    }
 
     setLoading(false);
   };
@@ -263,34 +262,7 @@ function ProfileEdit() {
               </div>
 
               <div className="form-group">
-                <label className="field-label">
-                  Profissão 
-                </label>
-                <input
-                  type="text"
-                  value="Preencha aqui"
-                  disabled
-                  className="form-input"
-                  style={{ backgroundColor: "#f5f5f5" }}
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="field-label">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  className="form-input"
-                  disabled
-                  style={{ backgroundColor: "#f5f5f5", cursor: "not-allowed" }}
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="field-label">
-                  Contato do profissional
-                </label>
+                <label className="field-label">Contato do profissional</label>
                 <input
                   type="text"
                   name="contact"
@@ -300,6 +272,8 @@ function ProfileEdit() {
                   placeholder="Preencha aqui..."
                 />
               </div>
+
+              {error && <p className="error-message">{error}</p>}
 
               <div className="form-actions">
                 <button

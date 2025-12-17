@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./style.css";
 import axios from "axios";
-import logo from "../../assets/images/logo.png";
-import iconNotification from "../../assets/images/icon_notification.png";
-import iconProfile from "../../assets/images/icon_profile.png";
+import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png";
 import iconActivitie from "../../assets/images/iconActivitie.png";
 import iconSeta from "../../assets/images/seta_icon.png";
 import { useNavigate } from "react-router-dom";
@@ -149,7 +147,9 @@ function ManageActivitiesPage() {
      <Navbar activePage="activities" />
 
       <main className="manage-activities-main-content">
-        
+          <a href="/activitiesMain" className="back-arrow-link">
+              <img src={iconArrowLeft} alt="Voltar" className="back-arrow-icon" />
+          </a>
         <div className="manage-activities-container">
           
           <div className="top-container">

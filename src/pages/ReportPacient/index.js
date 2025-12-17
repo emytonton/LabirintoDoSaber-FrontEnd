@@ -3,13 +3,11 @@ import "./styles.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
-import logo from "../../assets/images/logo.png";
-import iconNotification from "../../assets/images/icon_notification.png";
-import iconProfile from "../../assets/images/icon_profile.png";
+import PageTurner from "../../components/ui/PageTurner/index.js";
+import patientAvatar from "../../assets/images/icon_random.png";
 import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png";
-import patientAvatar from "../../assets/images/icon_random.png"; 
 import iconSeta from "../../assets/images/seta_icon.png";
-import iconSession from "../../assets/images/icon_profile.png"; 
+import iconSession from "../../assets/images/icon_profile.png";
 import SearchBar from "../../components/ui/SearchBar/Search";
 import Navbar from "../../components/ui/NavBar/index.js";
 const API_BASE_URL = "https://labirinto-do-saber.vercel.app";
@@ -35,6 +33,7 @@ function ReportPacient() {
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(true);
     const [student, setStudent] = useState({ name: "Carregando...", age: "", level: "..." });
+    const [studentPhotoUrl, setStudentPhotoUrl] = useState(""); // Adicionado para armazenar a foto do aluno
     const [sessions, setSessions] = useState([]);
     
     const [metrics, setMetrics] = useState({
@@ -63,7 +62,7 @@ function ReportPacient() {
                 const config = { headers: { Authorization: `Bearer ${token}` } };
 
                 // 1. Busca Dados do Aluno
-                let studentData = { name: "Aluno", age: "?", level: "Em progresso" };
+                let studentData = { name: "Aluno", age: "?", level: "Em progresso", photoUrl: "" }; // Inicialização com photoUrl
                 try {
                     const studentRes = await axios.get(`${API_BASE_URL}/student`, config);
                     const foundStudent = studentRes.data.find(s => s.id === patientId) || 
@@ -73,13 +72,15 @@ function ReportPacient() {
                         studentData = {
                             name: foundStudent.name,
                             age: foundStudent.age,
-                            level: foundStudent.learningTopics?.[0] || "Geral"
+                            level: foundStudent.learningTopics?.[0] || "Geral",
+                            photoUrl: foundStudent.photoUrl || ""  // Atribuindo a URL da foto do aluno
                         };
                     }
                 } catch (err) {
                     console.warn("Erro ao buscar detalhes do aluno", err);
                 }
                 setStudent(studentData);
+                setStudentPhotoUrl(studentData.photoUrl); // Atualiza o estado com a foto do aluno
 
                 // 2. Busca Sessões do Aluno
                 console.log(`Buscando sessões em: ${API_BASE_URL}/task-notebook-session/student/${patientId}`);
@@ -139,7 +140,6 @@ function ReportPacient() {
     };
 
     const handleSessionClick = (session) => {
-        // Tenta pegar o ID de 'sessionId' OU 'id' (caso o back mande diferente)
         const idToSend = session.sessionId || session.id;
         
         console.log("--- Clique na Sessão ---");
@@ -185,7 +185,7 @@ function ReportPacient() {
                     <div className="student-report-card">
                         <div className="student-header-info">
                             <div className="student-profile-left">
-                                <img src={patientAvatar} alt={student.name} className="big-avatar" />
+                                <img src={studentPhotoUrl || patientAvatar} alt={student.name} className="big-avatar" />
                                 <div className="student-text">
                                     {loading ? (
                                         <h2>Carregando...</h2>
@@ -216,10 +216,8 @@ function ReportPacient() {
                                 <div className="sessions-list">
                                     {currentSessions.map((session, index) => (
                                         <div 
-                                            // Fallback para key se sessionId for nulo
                                             key={session.sessionId || session.id || index} 
                                             className="session-item"
-                                            // Passamos o objeto INTEIRO session para a função de click
                                             onClick={() => handleSessionClick(session)} 
                                             style={{ cursor: "pointer" }}
                                         >
@@ -229,7 +227,6 @@ function ReportPacient() {
                                             <div className="session-info">
                                                 <h4>Sessão Realizada</h4>
                                                 <p>{formatDate(session.startedAt)} - {session.status === 'IN_PROGRESS' ? 'Em Andamento' : 'Finalizada'}</p>
-                                                {/* Debug visual temporário */}
                                                 <small style={{fontSize:'10px', color:'#ccc'}}>ID: {session.sessionId || session.id}</small>
                                             </div>
                                             <img src={iconSeta} alt="Ver detalhes" className="arrow-right" />
@@ -241,15 +238,11 @@ function ReportPacient() {
                             )}
 
                             {!loading && filteredSessions.length > 0 && (
-                                <div className="pagination-controls simple-pagination">
-                                    <button className="page-arrow" onClick={() => changePage(currentPage - 1)} disabled={currentPage === 1}>&lt;</button>
-                                    {Array.from({ length: totalPages }, (_, i) => (
-                                        <button key={i} className={`page-number ${currentPage === i + 1 ? "active" : ""}`} onClick={() => changePage(i + 1)}>
-                                            {i + 1}
-                                        </button>
-                                    ))}
-                                    <button className="page-arrow" onClick={() => changePage(currentPage + 1)} disabled={currentPage === totalPages}>&gt;</button>
-                                </div>
+                                <PageTurner 
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    onPageChange={changePage}
+                                />
                             )}
                         </div>
 
