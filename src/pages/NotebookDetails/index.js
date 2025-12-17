@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./style.css";
 import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png";
-import iconSeta from "../../assets/images/seta_icon.png";
 import iconDoubleCard from "../../assets/images/iconDoublecard.png";
 import iconActivitie from "../../assets/images/iconActivitie.png";
 import iconSeta from "../../assets/images/seta_icon.png";

@@ -236,7 +236,7 @@ body {
 .top-container-head{
   display: flex;
   align-items: center;        
-  margin-bottom: 60px; 
+  margin-bottom: 50px; 
   flex-direction: row;
   justify-content: space-between;
 }
@@ -325,3 +325,4 @@ body {
     width: 32px; 
     height: 32px;
 }
+
