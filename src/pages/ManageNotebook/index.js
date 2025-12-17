@@ -5,13 +5,13 @@ import iconCard from "../../assets/images/caderneta.png";
 import iconSeta from "../../assets/images/seta_icon.png";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/ui/NavBar/index.js";
+import SearchBar from "../../components/ui/SearchBar/Search";
 
-// --- COMPONENTE MODAL (Com IDs Específicos para Cadernos) ---
+// --- 1. MODAL DE CONFIRMAÇÃO DE EXCLUSÃO ---
 const DeleteModal = ({ isOpen, onClose, onConfirm }) => {
     if (!isOpen) return null;
   
     return (
-      // Mudei as classes para serem únicas para esta página
       <div className="notebook-manager-modal-overlay">
         <div className="notebook-manager-modal-content">
           <h3>Excluir Caderno</h3>
@@ -22,6 +22,23 @@ const DeleteModal = ({ isOpen, onClose, onConfirm }) => {
           </div>
         </div>
       </div>
+    );
+};
+
+// --- 2. NOVO MODAL DE AVISO (Sucesso/Erro) ---
+const WarningModal = ({ isOpen, onClose, title, message }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className="notebook-manager-modal-overlay">
+            <div className="notebook-manager-modal-content">
+                <h3>{title}</h3>
+                <p>{message}</p>
+                <div className="notebook-manager-modal-actions">
+                    <button className="notebook-manager-modal-btn confirm" onClick={onClose}>OK</button>
+                </div>
+            </div>
+        </div>
     );
 };
 
@@ -42,10 +59,14 @@ function ManageNotebookPage() {
     // --- ESTADOS ---
     const [notebooks, setNotebooks] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState(""); 
 
-    // Estados para o Modal
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    // Estados dos Modais
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [notebookToDelete, setNotebookToDelete] = useState(null);
+    
+    // Estado do Modal de Aviso (Substitui o Alert)
+    const [warningModal, setWarningModal] = useState({ isOpen: false, title: "", message: "" });
 
     // Paginação
     const [currentPage, setCurrentPage] = useState(1);
@@ -58,10 +79,14 @@ function ManageNotebookPage() {
         'comprehension': 'Compreensão'
     };
 
-    // --- BUSCAR CADERNOS ---
+    // --- BUSCAR DADOS ---
     useEffect(() => {
         fetchNotebooks();
     }, [navigate]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
 
     const fetchNotebooks = async () => {
         try {
@@ -70,20 +95,13 @@ function ManageNotebookPage() {
                 navigate('/');
                 return;
             }
-
-            const config = {
-                headers: { Authorization: `Bearer ${token}` }
-            };
-
+            const config = { headers: { Authorization: `Bearer ${token}` } };
             const response = await axios.get('https://labirinto-do-saber.vercel.app/task-notebook/', config);
             
             if (Array.isArray(response.data)) {
                 setNotebooks(response.data);
-            } else {
-                console.error("Formato inesperado:", response.data);
             }
             setLoading(false);
-
         } catch (error) {
             console.error("Erro ao buscar cadernos:", error);
             setLoading(false);
@@ -98,7 +116,7 @@ function ManageNotebookPage() {
     const handleDeleteClick = (e, id) => {
         e.stopPropagation();
         setNotebookToDelete(id);
-        setIsModalOpen(true);
+        setIsDeleteModalOpen(true);
     };
 
     const confirmDelete = async () => {
@@ -106,30 +124,50 @@ function ManageNotebookPage() {
     
         try {
             const token = localStorage.getItem('authToken');
-            const config = {
-                headers: { Authorization: `Bearer ${token}` }
-            };
+            const config = { headers: { Authorization: `Bearer ${token}` } };
     
             await axios.delete(`https://labirinto-do-saber.vercel.app/task-notebook/delete/${notebookToDelete}`, config);
             
             setNotebooks(notebooks.filter(item => item.notebook.id !== notebookToDelete));
             
-            setIsModalOpen(false);
+            // Fecha modal de delete
+            setIsDeleteModalOpen(false);
             setNotebookToDelete(null);
-           
+
+            // Abre modal de Sucesso (Substituindo Alert)
+            setWarningModal({
+                isOpen: true,
+                title: "Sucesso",
+                message: "Caderno excluído com sucesso!"
+            });
     
         } catch (error) {
             console.error("Erro ao excluir:", error);
-            alert("Erro ao excluir caderno.");
-            setIsModalOpen(false);
+            
+            // Fecha modal de delete e Abre modal de Erro (Substituindo Alert)
+            setIsDeleteModalOpen(false);
+            setWarningModal({
+                isOpen: true,
+                title: "Erro",
+                message: "Não foi possível excluir o caderno. Tente novamente."
+            });
         }
     };
 
-    // --- PAGINAÇÃO ---
+    const closeWarningModal = () => {
+        setWarningModal({ ...warningModal, isOpen: false });
+    };
+
+    // --- FILTRO E PAGINAÇÃO ---
+    const filteredNotebooks = notebooks.filter(item => {
+        const description = item.notebook.description || "";
+        return description.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentNotebooks = notebooks.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(notebooks.length / itemsPerPage);
+    const currentNotebooks = filteredNotebooks.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredNotebooks.length / itemsPerPage);
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
     const nextPage = () => currentPage < totalPages && setCurrentPage(currentPage + 1);
@@ -137,11 +175,20 @@ function ManageNotebookPage() {
     
     return (
         <div className="dashboard-container">
-            {/* Modal com classes específicas */}
+            
+            {/* Modal de Confirmação (Sim/Não) */}
             <DeleteModal 
-                isOpen={isModalOpen} 
-                onClose={() => setIsModalOpen(false)} 
+                isOpen={isDeleteModalOpen} 
+                onClose={() => setIsDeleteModalOpen(false)} 
                 onConfirm={confirmDelete} 
+            />
+
+            {/* Modal de Aviso (Sucesso/Erro) */}
+            <WarningModal 
+                isOpen={warningModal.isOpen}
+                onClose={closeWarningModal}
+                title={warningModal.title}
+                message={warningModal.message}
             />
 
             <Navbar activePage="activities" />
@@ -149,31 +196,41 @@ function ManageNotebookPage() {
             <main className="manage-notebook-main-content">
                 
                 <div className="manage-notebook-container">
-                    {/* Usei uma classe mais específica aqui também se houver conflito */}
-                    <div className="manage-notebook-header-top">
+                    
+                    {/* Header */}
+                    <div className="manage-notebook-header-top" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "30px", flexWrap: "wrap", gap: "20px" }}>
                         <div>
                             <h1>Gerenciar cadernos</h1>
                             <h2>Gerencie os cadernos</h2>
                         </div>
-                        <button 
-                            className="create-patient-bnt" 
-                            onClick={() => navigate('/addNotebook')}
-                            style={{marginLeft: 'auto'}}
-                        >
-                            Novo Caderno
-                        </button>
+                        
+                        <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                            <SearchBar 
+                                searchTerm={searchTerm} 
+                                setSearchTerm={setSearchTerm} 
+                                placeholder="Pesquisar..."
+                                onFilterClick={() => console.log("Filtro clicado")}
+                            />
+
+                            <button 
+                                className="create-patient-bnt" 
+                                onClick={() => navigate('/addNotebook')}
+                                style={{ height: "45px" }}
+                            >
+                                Novo Caderno
+                            </button>
+                        </div>
                     </div>
 
+                    {/* Lista */}
                     <div className="notebook-card-list">
-                        
                         {loading ? (
                             <p>Carregando cadernos...</p>
-                        ) : notebooks.length === 0 ? (
+                        ) : filteredNotebooks.length === 0 ? (
                             <p>Nenhum caderno encontrado.</p>
                         ) : (
                             currentNotebooks.map((item) => {
                                 const notebook = item.notebook;
-                                
                                 return (
                                     <div className="notebook-row-wrapper" key={notebook.id}>
                                         <div 
@@ -203,7 +260,6 @@ function ManageNotebookPage() {
                                 );
                             })
                         )}
-
                     </div>
 
                     {/* Paginação */}
@@ -246,8 +302,6 @@ function ManageNotebookPage() {
                     )}
                 </div>
             </main>
-
-           
         </div>
     );
 }

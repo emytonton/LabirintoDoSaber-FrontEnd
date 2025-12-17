@@ -8,6 +8,7 @@ import iconActivitie from "../../assets/images/iconActivitie.png";
 import iconSeta from "../../assets/images/seta_icon.png";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/ui/NavBar/index.js";
+import SearchBar from "../../components/ui/SearchBar/Search"; // Importação do SearchBar
 
 const DeleteModal = ({ isOpen, onClose, onConfirm }) => {
   if (!isOpen) return null;
@@ -26,21 +27,31 @@ const DeleteModal = ({ isOpen, onClose, onConfirm }) => {
   );
 };
 
+// Ícone movido para fora para evitar recriação a cada render
+const TrashIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 6H19L18.1245 19.133C18.0544 20.1836 17.1818 21 16.1289 21H7.87111C6.81818 21 5.94558 20.1836 5.87554 19.133L5 6Z" stroke="black" strokeWidth="2"/>
+        <path d="M9 6V3H15V6" stroke="black" strokeWidth="2" strokeLinejoin="round"/>
+        <path d="M3 6H21" stroke="black" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M10 10V17" stroke="black" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M14 10V17" stroke="black" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+);
+
 function ManageActivitiesPage() {
   const navigate = useNavigate();
-  
 
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   
+  // Estado da Pesquisa
+  const [searchTerm, setSearchTerm] = useState(""); 
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
- 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activityToDelete, setActivityToDelete] = useState(null);
-
 
   const categoryMap = {
     'reading': 'Leitura',
@@ -49,20 +60,14 @@ function ManageActivitiesPage() {
     'comprehension': 'Compreensão'
   };
 
-  const TrashIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M5 6H19L18.1245 19.133C18.0544 20.1836 17.1818 21 16.1289 21H7.87111C6.81818 21 5.94558 20.1836 5.87554 19.133L5 6Z" stroke="black" strokeWidth="2"/>
-        <path d="M9 6V3H15V6" stroke="black" strokeWidth="2" strokeLinejoin="round"/>
-        <path d="M3 6H21" stroke="black" strokeWidth="2" strokeLinecap="round"/>
-        <path d="M10 10V17" stroke="black" strokeWidth="2" strokeLinecap="round"/>
-        <path d="M14 10V17" stroke="black" strokeWidth="2" strokeLinecap="round"/>
-    </svg>
-  );
-
-  
   useEffect(() => {
     fetchActivities();
   }, []);
+
+  // Resetar a página para 1 quando pesquisar
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   const fetchActivities = async () => {
     try {
@@ -78,7 +83,6 @@ function ManageActivitiesPage() {
 
       const response = await axios.get('https://labirinto-do-saber.vercel.app/task/', config);
       
-      
       if (Array.isArray(response.data)) {
         setActivities(response.data);
       } else {
@@ -92,7 +96,6 @@ function ManageActivitiesPage() {
     }
   };
 
-  
   const handleDeleteClick = (e, id) => {
     e.stopPropagation();
     setActivityToDelete(id);
@@ -110,11 +113,10 @@ function ManageActivitiesPage() {
 
       await axios.delete(`https://labirinto-do-saber.vercel.app/task/delete/${activityToDelete}`, config);
       
-     
       setActivities(activities.filter(act => act.id !== activityToDelete));
       setIsModalOpen(false);
       setActivityToDelete(null);
-      alert("Atividade excluída com sucesso!");
+      // alert("Atividade excluída com sucesso!"); // Opcional
 
     } catch (error) {
       console.error("Erro ao excluir:", error);
@@ -127,10 +129,15 @@ function ManageActivitiesPage() {
     navigate(`/activityDetails`, { state: { activityId: id } });
   };
 
+  // --- LÓGICA DE FILTRO E PAGINAÇÃO ---
+  const filteredActivities = activities.filter(activity => 
+    activity.prompt.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentActivities = activities.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(activities.length / itemsPerPage);
+  const currentActivities = filteredActivities.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredActivities.length / itemsPerPage);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   const nextPage = () => currentPage < totalPages && setCurrentPage(currentPage + 1);
@@ -139,7 +146,6 @@ function ManageActivitiesPage() {
   return (
     <div className="dashboard-container">
       
-   
       <DeleteModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
@@ -152,25 +158,40 @@ function ManageActivitiesPage() {
         
         <div className="manage-activities-container">
           
-          <div className="top-container">
+          {/* --- HEADER MODIFICADO (Igual ao ManageGroups) --- */}
+          <div className="top-container" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "30px", flexWrap: "wrap", gap: "20px" }}>
+            
+            {/* Lado Esquerdo: Textos */}
             <div>
                 <h1>Atividades</h1>
                 <h2>Gerencie as atividades</h2>
             </div>
-            <button 
-                className="create-patient-bnt" 
-                onClick={() => navigate('/CreateNewActivitie')}
-                style={{marginLeft: 'auto'}}
-            >
-                Nova Atividade
-            </button>
+            
+            {/* Lado Direito: SearchBar + Botão */}
+            <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                <SearchBar 
+                    searchTerm={searchTerm} 
+                    setSearchTerm={setSearchTerm} 
+                    placeholder="Pesquisar..."
+                    onFilterClick={() => console.log("Filtro clicado")}
+                />
+                
+                <button 
+                    className="create-patient-bnt" 
+                    onClick={() => navigate('/CreateNewActivitie')}
+                    style={{ height: "45px" }} // Ajuste opcional para alinhar altura
+                >
+                    Nova Atividade
+                </button>
+            </div>
           </div>
+          {/* --- FIM DO HEADER --- */}
 
           <div className="activity-card-list">
             
             {loading ? (
                 <p>Carregando atividades...</p>
-            ) : activities.length === 0 ? (
+            ) : filteredActivities.length === 0 ? (
                 <p>Nenhuma atividade encontrada.</p>
             ) : (
                 currentActivities.map((activity) => (
