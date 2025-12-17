@@ -51,29 +51,6 @@ Todas as atividades e grupos são classificados em 4 eixos fundamentais:
 
 ---
 
-## ⚙️ Instalação e Desenvolvimento
-
-1.  **Clone o repositório:**
-    ```bash
-    git clone [https://github.com/seu-usuario/labirinto-do-saber.git](https://github.com/seu-usuario/labirinto-do-saber.git)
-    ```
-
-2.  **Instale as dependências:**
-    ```bash
-    npm install
-    ```
-
-3.  **Inicie em modo de desenvolvimento:**
-    ```bash
-    npm run electron:dev
-    ```
-
-4.  **Build para produção:**
-    ```bash
-    npm run build
-    ```
-
----
 
 ## 🎯 Objetivo de Alfabetização
 
