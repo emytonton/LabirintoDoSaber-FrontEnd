@@ -7,35 +7,81 @@ import iconSeta from "../../assets/images/seta_icon.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../../components/ui/NavBar/index.js";
 
-// --- 1. MODAL DE CONFIRMAÇÃO (Delete) ---
+// --- ESTILOS INJETADOS (Separados por tamanho) ---
+const modalStyles = `
+    /* OVERLAY COMUM */
+    .notebook-modal-overlay {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex; justify-content: center; align-items: center; z-index: 9999;
+    }
+
+    /* --- ESTILOS PARA MODAL PEQUENO (Confirmação/Aviso) --- */
+    .notebook-small-modal-content {
+        background: white; padding: 2rem; border-radius: 8px;
+        width: 90%; max-width: 450px; /* Tamanho compacto */
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    .notebook-small-modal-actions {
+        display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem;
+    }
+    .notebook-small-modal-btn {
+        padding: 0.6rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;
+    }
+    .notebook-small-modal-btn.cancel { background-color: #f0f0f0; color: #333; border: 1px solid #ccc; }
+    .notebook-small-modal-btn.confirm { background-color: #008D85; color: white; }
+
+    /* --- ESTILOS PARA MODAL GRANDE (Detalhes/Lista) --- */
+    .notebook-large-modal-content {
+        background: white; padding: 2rem; border-radius: 8px;
+        width: 95%; max-width: 800px; /* Tamanho LARGO para a lista */
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    .notebook-large-modal-header {
+        display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;
+    }
+    .notebook-large-modal-title {
+        margin: 0; font-size: 1.5rem; color: #333;
+    }
+    .notebook-large-modal-close-btn { 
+        background: none; border: none; font-size: 2rem; cursor: pointer; color: #666; 
+    }
+    .notebook-large-modal-body-scroll {
+        max-height: 70vh; overflow-y: auto; text-align: left; padding-right: 5px;
+    }
+`;
+
+// --- 1. MODAL DE CONFIRMAÇÃO (Usa estilos SMALL) ---
 const DeleteModal = ({ isOpen, onClose, onConfirm, message }) => {
     if (!isOpen) return null;
   
     return (
-      <div className="modal-overlay">
-        <div className="modal-content">
-          <h3>Confirmação</h3>
-          <p>{message || "Tem certeza que deseja realizar esta ação?"}</p>
-          <div className="modal-actions">
-            <button className="modal-btn cancel" onClick={onClose}>Cancelar</button>
-            <button className="modal-btn confirm" onClick={onConfirm}>Confirmar</button>
+      <div className="notebook-modal-overlay">
+        <div className="notebook-small-modal-content">
+          <h3 style={{ marginBottom: '10px' }}>Confirmação</h3>
+          <p style={{ color: '#555' }}>{message || "Tem certeza que deseja realizar esta ação?"}</p>
+          <div className="notebook-small-modal-actions">
+            <button className="notebook-small-modal-btn cancel" onClick={onClose}>Cancelar</button>
+            <button className="notebook-small-modal-btn confirm" onClick={onConfirm}>Confirmar</button>
           </div>
         </div>
       </div>
     );
 };
 
-// --- 2. MODAL DE AVISO (Sucesso/Erro) ---
+// --- 2. MODAL DE AVISO (Usa estilos SMALL) ---
 const WarningModal = ({ isOpen, onClose, title, message }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="modal-overlay">
-            <div className="modal-content">
-                <h3>{title}</h3>
-                <p>{message}</p>
-                <div className="modal-actions" style={{ justifyContent: 'center' }}>
-                    <button className="modal-btn confirm" onClick={onClose}>OK</button>
+        <div className="notebook-modal-overlay">
+            <div className="notebook-small-modal-content">
+                <h3 style={{ marginBottom: '10px' }}>{title}</h3>
+                <p style={{ color: '#555' }}>{message}</p>
+                <div className="notebook-small-modal-actions">
+                    <button className="notebook-small-modal-btn confirm" onClick={onClose}>OK</button>
                 </div>
             </div>
         </div>
@@ -52,32 +98,6 @@ const TrashIcon = () => (
         <path d="M14 10V17" stroke="black" strokeWidth="2" strokeLinecap="round"/>
     </svg>
 );
-
-// --- ESTILOS INLINE PARA OS MODAIS (Caso não tenha no CSS global) ---
-const modalStyles = `
-    .modal-overlay {
-        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex; justify-content: center; align-items: center; z-index: 1000;
-    }
-    .modal-content {
-        background: white; padding: 2rem; border-radius: 8px;
-        width: 90%; max-width: 400px; text-align: center;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .modal-header {
-        display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;
-    }
-    .modal-actions {
-        display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem;
-    }
-    .modal-btn {
-        padding: 0.5rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;
-    }
-    .modal-btn.cancel { background-color: #e0e0e0; color: #333; }
-    .modal-btn.confirm { background-color: #008D85; color: white; }
-    .modal-close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
-`;
 
 function NotebookDetailsPage() {
     const navigate = useNavigate();
@@ -109,7 +129,7 @@ function NotebookDetailsPage() {
         isOpen: false, 
         title: "", 
         message: "", 
-        onCloseAction: null // Função opcional para rodar ao fechar (ex: navegar)
+        onCloseAction: null
     });
 
     const categoryMap = {
@@ -123,7 +143,6 @@ function NotebookDetailsPage() {
     useEffect(() => {
         const fetchData = async () => {
             if (!notebookId) {
-                // Usando o Warning Modal aqui seria complexo pois o componente nem montou direito, mantive alert/redirect rápido
                 alert("Erro: ID do caderno não informado.");
                 navigate('/ManageNotebook');
                 return;
@@ -186,11 +205,10 @@ function NotebookDetailsPage() {
         console.log("Editar atividade clicada.");
     };
 
-    // --- LÓGICA DE EXCLUSÃO (Passo 1: Abrir Modal de Confirmação) ---
+    // --- LÓGICA DE EXCLUSÃO ---
     const requestRemoveGroup = (e, groupIdToRemove) => {
         e.stopPropagation();
         
-        // Verifica se é o último grupo para definir a mensagem
         const remainingGroups = taskGroups.filter(group => group.id !== groupIdToRemove);
         let msg = "Tem certeza que deseja remover este grupo do caderno?";
         
@@ -205,7 +223,6 @@ function NotebookDetailsPage() {
         });
     };
 
-    // --- LÓGICA DE EXCLUSÃO (Passo 2: Executar Ação) ---
     const confirmRemoveGroup = async () => {
         const groupIdToRemove = deleteModalState.groupId;
         if (!groupIdToRemove) return;
@@ -224,13 +241,12 @@ function NotebookDetailsPage() {
                     config
                 );
 
-                // Fecha modal de delete e abre Warning de sucesso com redirecionamento
                 setDeleteModalState({ isOpen: false, groupId: null, message: "" });
                 setWarningModal({
                     isOpen: true,
                     title: "Caderno Excluído",
                     message: "O caderno foi excluído pois ficou sem grupos.",
-                    onCloseAction: () => navigate('/ManageNotebook') // REDIRECIONAMENTO AQUI
+                    onCloseAction: () => navigate('/ManageNotebook')
                 });
             } 
             // CENÁRIO 2: Atualizar Caderno
@@ -248,9 +264,13 @@ function NotebookDetailsPage() {
 
                 setTaskGroups(remainingGroups);
                 
-                // Fecha modal de delete e abre Warning de sucesso simples
                 setDeleteModalState({ isOpen: false, groupId: null, message: "" });
-               
+                setWarningModal({
+                    isOpen: true,
+                    title: "Sucesso",
+                    message: "Grupo removido com sucesso!",
+                    onCloseAction: null
+                });
             }
         } catch (error) {
             console.error("Erro ao remover grupo:", error);
@@ -264,7 +284,6 @@ function NotebookDetailsPage() {
         }
     };
 
-    // Função para fechar o Warning Modal e executar ação extra se houver (ex: navegar)
     const handleCloseWarning = () => {
         const action = warningModal.onCloseAction;
         setWarningModal({ ...warningModal, isOpen: false });
@@ -273,11 +292,12 @@ function NotebookDetailsPage() {
 
     return (
         <div className="dashboard-container">
+            {/* INJEÇÃO DO CSS ESPECÍFICO */}
             <style>{modalStyles}</style>
 
             <Navbar activePage="activities" />
 
-            {/* --- MODAL DE CONFIRMAÇÃO (DELETE) --- */}
+            {/* --- MODAL DE CONFIRMAÇÃO (DELETE) - USA STYLE SMALL --- */}
             <DeleteModal 
                 isOpen={deleteModalState.isOpen}
                 onClose={() => setDeleteModalState({ ...deleteModalState, isOpen: false })}
@@ -285,7 +305,7 @@ function NotebookDetailsPage() {
                 message={deleteModalState.message}
             />
 
-            {/* --- MODAL DE AVISO (SUCESSO/ERRO) --- */}
+            {/* --- MODAL DE AVISO (SUCESSO/ERRO) - USA STYLE SMALL --- */}
             <WarningModal 
                 isOpen={warningModal.isOpen}
                 onClose={handleCloseWarning}
@@ -351,16 +371,17 @@ function NotebookDetailsPage() {
                 </div>
             </main>
 
-            {/* --- MODAL DE DETALHES DO GRUPO --- */}
+            {/* --- MODAL DE DETALHES DO GRUPO (USA STYLE LARGE) --- */}
             {isDetailsModalOpen && selectedGroup && (
-                <div className="modal-overlay" onClick={closeDetailsModal}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h2 className="modal-title">{selectedGroup.name}</h2>
-                            <button className="modal-close-btn" onClick={closeDetailsModal}>&times;</button>
+                <div className="notebook-modal-overlay" onClick={closeDetailsModal}>
+                    <div className="notebook-large-modal-content" onClick={(e) => e.stopPropagation()}>
+                        
+                        <div className="notebook-large-modal-header">
+                            <h2 className="notebook-large-modal-title">{selectedGroup.name}</h2>
+                            <button className="notebook-large-modal-close-btn" onClick={closeDetailsModal}>&times;</button>
                         </div>
 
-                        <div className="modal-body">
+                        <div className="notebook-large-modal-body-scroll">
                             <p style={{ color: "#666", marginBottom: "15px" }}>
                                 Categoria: {categoryMap[selectedGroup.category] || selectedGroup.category}
                             </p>
