@@ -12,170 +12,220 @@ const API_BASE_URL = "https://labirinto-do-saber.vercel.app";
 
 
 const formatDuration = (seconds) => {
-    const val = Number(seconds) || 0; 
-    if (val < 60) {
-        return `${Math.round(val)} segundos`;
-    }
-    const m = Math.floor(val / 60);
-    const s = Math.round(val % 60);
-    
-    if (s === 0) return `${m} minutos`;
-    return `${m} min e ${s} seg`;
+  const val = Number(seconds) || 0; 
+  
+  if (val < 60) {
+    return `${Math.round(val)} segundos`;
+  }
+  const m = Math.floor(val / 60);
+  const s = Math.round(val % 60);
+
+  if (s === 0) return `${m} minutos`;
+  return `${m} min e ${s} seg`;
 };
 
 function ReportSession() {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const { sessionId } = location.state || {};
-    const [loading, setLoading] = useState(true);
-    const [sessionData, setSessionData] = useState({
-        title: "Carregando...",
-        timeMetrics: [],
-        categoryRates: [],
-        activityRates: []
-    });
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    useEffect(() => {
-        if (!sessionId) {
-            alert("Erro: sessão não identificada.");
-            navigate(-1);
-            return;
-        }
 
-        const fetchSessionData = async () => {
-            try {
-                const token = localStorage.getItem("authToken");
-                
-                const res = await axios.get(
-                    `${API_BASE_URL}/task-notebook-session/report/${sessionId}`,
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
+  const { sessionId } = location.state || {};
 
-                const api = res.data;
+  const [loading, setLoading] = useState(true);
 
-                if (!api) {
-                    throw new Error("Dados vazios retornados pela API.");
-                }
+  const [sessionData, setSessionData] = useState({
+    title: "Carregando...",
+    timeMetrics: [],
+    categoryRates: [],
+    activityRates: [],
+  });
 
-                const displayTitle = api.sessionName ? api.sessionName : `Sessão ${sessionId.substring(0, 8)}`;
+  useEffect(() => {
+    if (!sessionId) {
+      alert("Erro: sessão não identificada.");
+      navigate(-1);
+      return;
+    }
 
-                setSessionData({
-                    title: displayTitle, 
-                    timeMetrics: [
-                        { label: "Tempo total da sessão", value: formatDuration(api.totalTimeSession) },
-                        { label: "Tempo médio de resposta", value: formatDuration(api.averageTimePerQuestion) },
-                        { label: "Tempo médio para acerto", value: formatDuration(api.averageCorrectTime) },
-                        { label: "Tempo médio para erro", value: formatDuration(api.averageIncorrectTime) },
-                    ],
+    const fetchSessionData = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
 
-                    categoryRates: api.percentageByCategory ? Object.keys(api.percentageByCategory).map(key => ({
-                        label: key,
-                        value: `${api.percentageByCategory[key]}%`
-                    })) : [],
+        const res = await axios.get(
+          `${API_BASE_URL}/task-notebook-session/report/${sessionId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
 
-                    activityRates: api.percentageByType ? Object.keys(api.percentageByType).map(key => ({
-                        label: key,
-                        value: `${api.percentageByType[key]}%`
-                    })) : []
-                });
+        const api = res.data;
 
-                setLoading(false);
-
-            } catch (err) {
-                console.error("Erro ao carregar relatório:", err);
-                setLoading(false);
-            }
+        const formatPercent = (value) => {
+          const n = Number(value);
+          if (!Number.isFinite(n)) return "0%";
+          return `${n.toFixed(1)}%`;
         };
 
-        fetchSessionData();
-    }, [sessionId, navigate]);
+        const displayTitle = api.sessionName
+          ? api.sessionName
+          : `Sessão ${sessionId.substring(0, 8)}`;
 
-    return (
-        <div className="dashboard-container">
-           <Navbar activePage="reports" />
+        setSessionData({
+          title: displayTitle,
 
-            <main className="session-main-content">
-                <div className="session-container">
+          timeMetrics: [
+            {
+              label: "Tempo total da sessão",
+              value: formatDuration(api.totalTimeSession),
+            },
+            {
+              label: "Tempo médio de resposta",
+              value: formatDuration(api.averageTimePerQuestion),
+            },
+            {
+              label: "Tempo médio para acerto",
+              value: formatDuration(api.averageCorrectTime),
+            },
+            {
+              label: "Tempo médio para erro",
+              value: formatDuration(api.averageIncorrectTime),
+            },
+          ],
 
+          categoryRates: api.percentageByCategory
+            ? Object.entries(api.percentageByCategory).map(([key, val]) => ({
+                label: key,
+                value: formatPercent(val),
+              }))
+            : [],
+
+          activityRates: api.percentageByType
+            ? Object.entries(api.percentageByType).map(([key, val]) => ({
+                label: key,
+                value: formatPercent(val),
+              }))
+            : [],
+        });
+
+        setLoading(false);
+      } catch (err) {
+        console.error("Erro ao carregar relatório:", err);
+        setLoading(false);
+      }
+    };
+
+    fetchSessionData();
+  }, [sessionId, navigate]);
+
+  return (
+    <div className="dashboard-container">
+      <Navbar activePage="reports" />
+
+      <main className="session-main-content">
+        <div className="session-container">
                     <div className="top-nav-row">
-                        <button onClick={() => navigate(-1)} className="back-arrow-link">
+                        <button onClick={() => navigate(-1)} className="back-arrow-link-report" style={{background: 'none', border: 'none', cursor: 'pointer'}}>
                             <img src={iconArrowLeft} alt="Voltar" className="back-arrow-icon" />
                         </button>
                     </div>
 
-                    <div className="session-report-card">
-                        <h1 className="session-page-title">
-                            {sessionData.title}
-                        </h1>
+          <div className="session-report-card">
+            <h1 className="session-page-title">{sessionData.title}</h1>
 
-                        {loading ? (
-                            <div style={{ textAlign: "center", marginTop: "40px" }}>
-                                <p>Gerando relatório...</p>
+            {loading ? (
+              <div style={{ textAlign: "center", marginTop: "40px" }}>
+                <p>Gerando relatório...</p>
+              </div>
+            ) : (
+              <div className="metrics-white-box-large">
+                <h2 className="box-subtitle">Relação de tempos e taxas</h2>
+
+                <div className="metrics-split-layout">
+                  <div className="metrics-column left-column">
+                    {sessionData.timeMetrics.map((item, i) => (
+                      <div key={i} className="metric-row">
+                        <span className="metric-label-text">{item.label}</span>
+                        <div className="metric-pill-large">{item.value}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="vertical-separator"></div>
+
+                 
+                  <div className="metrics-column right-column">
+                
+                    <div className="rates-group">
+                      <h3 className="group-title">
+                        Taxa de acerto por categoria
+                      </h3>
+                      <div className="rates-grid">
+                        {sessionData.categoryRates.length > 0 ? (
+                          sessionData.categoryRates.map((item, i) => (
+                            <div key={i} className="rate-item">
+                              <span className="rate-label">
+                                {(() => {
+                                  if (item.label === "reading")
+                                    return "Leitura";
+                                  if (item.label === "writing")
+                                    return "Escrita";
+                                  if (item.label === "Vocabulary")
+                                    return "Vocabulário";
+                                  if (item.label === "comprehension")
+                                    return "Compreensão";
+                                  return item.label;
+                                })()}
+                              </span>
+                              <div className="metric-pill-medium">
+                                {item.value}
+                              </div>
                             </div>
+                          ))
                         ) : (
-                            <div className="metrics-white-box-large">
-                                <h2 className="box-subtitle">Relação de tempos e taxas</h2>
-
-                                <div className="metrics-split-layout">
-
-                                
-                                    <div className="metrics-column left-column">
-                                        {sessionData.timeMetrics.map((item, i) => (
-                                            <div key={i} className="metric-row">
-                                                <span className="metric-label-text">{item.label}</span>
-                                                <div className="metric-pill-large">{item.value}</div>
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    <div className="vertical-separator"></div>
-
-                                   
-                                    <div className="metrics-column right-column">
-
-                                      
-                                        <div className="rates-group">
-                                            <h3 className="group-title">Taxa de acerto por categoria</h3>
-                                            <div className="rates-grid">
-                                                {sessionData.categoryRates.length > 0 ? (
-                                                    sessionData.categoryRates.map((item, i) => (
-                                                        <div key={i} className="rate-item">
-                                                            <span className="rate-label">{item.label}</span>
-                                                            <div className="metric-pill-medium">{item.value}</div>
-                                                        </div>
-                                                    ))
-                                                ) : (
-                                                    <p style={{fontSize:'14px', color:'#999'}}>Sem dados de categoria</p>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                      
-                                        <div className="rates-group">
-                                            <h3 className="group-title">Taxa de acerto por tipo de atividade</h3>
-                                            <div className="rates-grid">
-                                                {sessionData.activityRates.length > 0 ? (
-                                                    sessionData.activityRates.map((item, i) => (
-                                                        <div key={i} className="rate-item">
-                                                            <span className="rate-label">{item.label}</span>
-                                                            <div className="metric-pill-medium">{item.value}</div>
-                                                        </div>
-                                                    ))
-                                                ) : (
-                                                    <p style={{fontSize:'14px', color:'#999'}}>Sem dados de tipo</p>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
+                          <p style={{ fontSize: "14px", color: "#999" }}>
+                            Sem dados de categoria
+                          </p>
                         )}
+                      </div>
                     </div>
+
+                   
+                    <div className="rates-group">
+                      <h3 className="group-title">
+                        Taxa de acerto por tipo de atividade
+                      </h3>
+                      <div className="rates-grid">
+                        {sessionData.activityRates.length > 0 ? (
+                          sessionData.activityRates.map((item, i) => (
+                            <div key={i} className="rate-item">
+                              <span className="rate-label">
+                                {(() => {
+                                  if (item.label === "multipleChoice")
+                                    return "Múltipla escolha";
+                                  if (item.label === "multipleChoiceWithMedia")
+                                    return "Múltipla escolha com mídia";
+                                  return item.label;
+                                })()}
+                              </span>
+                              <div className="metric-pill-medium">
+                                {item.value}
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <p style={{ fontSize: "14px", color: "#999" }}>
+                            Sem dados de tipo
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-            </main>
+              </div>
+            )}
+          </div>
         </div>
-    );
+      </main>
+    </div>
+  );
 }
 
 export default ReportSession;
