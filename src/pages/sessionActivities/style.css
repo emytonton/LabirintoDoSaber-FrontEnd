@@ -118,7 +118,7 @@
 
 .activity-select-card-icon {
     margin-right: 20px;
-    width: 40px; /* Ícone de Atividade Individual (documento único) pode ser menor */
+    width: 40px; 
     min-width: 40px;
     height: 45px;
 }
@@ -187,4 +187,3 @@
     background-color: #D8F5F3;
     color: #008D85;
 }
-/* ... (Seus estilos de body, logo, icon, etc.) ... */

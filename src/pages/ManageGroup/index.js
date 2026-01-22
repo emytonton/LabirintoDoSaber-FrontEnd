@@ -7,9 +7,9 @@ import iconSeta from "../../assets/images/seta_icon.png";
 import iconActivitie from "../../assets/images/iconActivitie.png";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/ui/NavBar/index.js";
-import SearchBar from "../../components/ui/SearchBar/Search"; // Importação do SearchBar
+import SearchBar from "../../components/ui/SearchBar/Search"; 
 
-// --- Componente DeleteModal ---
+
 const DeleteModal = ({ isOpen, onClose, onConfirm, title, message }) => {
   if (!isOpen) return null;
 
@@ -27,7 +27,7 @@ const DeleteModal = ({ isOpen, onClose, onConfirm, title, message }) => {
   );
 };
 
-// --- Ícone da Lixeira ---
+
 const TrashIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M5 6H19L18.1245 19.133C18.0544 20.1836 17.1818 21 16.1289 21H7.87111C6.81818 21 5.94558 20.1836 5.87554 19.133L5 6Z" stroke="black" strokeWidth="2"/>
@@ -43,18 +43,11 @@ function ManageGroupPage() {
     const [groups, setGroups] = useState([]);
     const [allTasks, setAllTasks] = useState([]);
     const [loading, setLoading] = useState(true);
-    
-    // Estado da Pesquisa
     const [searchTerm, setSearchTerm] = useState(""); 
-
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4;
-
-    // Estado do Modal de Detalhes do Grupo
     const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState(null);
-
-    // Estados para o Modal de Confirmação (Delete)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState({ type: null, id: null, message: '' }); 
     
@@ -90,12 +83,12 @@ function ManageGroupPage() {
         fetchData();
     }, [navigate]);
 
-    // Resetar a paginação quando o termo de busca mudar
+
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm]);
 
-    // --- Controles do Modal de Detalhes ---
+   
     const handleGroupClick = (group) => {
         setSelectedGroup(group);
         setIsGroupModalOpen(true);
@@ -106,7 +99,7 @@ function ManageGroupPage() {
         setSelectedGroup(null);
     };
 
-    // --- Passo 1: Solicitar Exclusão de GRUPO ---
+   
     const requestDeleteGroup = (e, id) => {
         e.stopPropagation();
         setDeleteTarget({ 
@@ -117,7 +110,7 @@ function ManageGroupPage() {
         setIsDeleteModalOpen(true);
     };
 
-    // --- Passo 1: Solicitar Remoção de ATIVIDADE do Grupo ---
+  
     const requestRemoveActivityFromGroup = (e, taskId) => {
         e.stopPropagation();
         
@@ -136,7 +129,7 @@ function ManageGroupPage() {
         setIsDeleteModalOpen(true);
     };
 
-    // --- Passo 2: Confirmar a Ação (Executada pelo Modal) ---
+  
     const handleConfirmAction = async () => {
         if (!deleteTarget.type) return;
 
@@ -144,24 +137,24 @@ function ManageGroupPage() {
         const config = { headers: { Authorization: `Bearer ${token}` } };
 
         try {
-            // CASO 1: Deletar Grupo Inteiro
+
             if (deleteTarget.type === 'GROUP') {
                 await axios.delete(`https://labirinto-do-saber.vercel.app/task-group/delete/${deleteTarget.id}`, config);
                 setGroups(groups.filter(group => group.id !== deleteTarget.id));
             } 
-            // CASO 2: Remover Atividade de dentro do Grupo
+           
             else if (deleteTarget.type === 'TASK_FROM_GROUP') {
                 const currentTaskIds = selectedGroup.tasksIds || [];
                 const newTaskIds = currentTaskIds.filter(id => id !== deleteTarget.id);
 
-                // Se não sobrou nenhuma atividade -> Deleta o grupo
+               
                 if (newTaskIds.length === 0) {
                     await axios.delete(`https://labirinto-do-saber.vercel.app/task-group/delete/${selectedGroup.id}`, config);
                     setGroups(groups.filter(g => g.id !== selectedGroup.id));
                     setIsGroupModalOpen(false);
                     setSelectedGroup(null);
                 } 
-                // Se ainda tem atividades -> Atualiza o grupo
+                
                 else {
                     const payload = {
                         id: selectedGroup.id,
@@ -184,7 +177,7 @@ function ManageGroupPage() {
     };
 
     const handleEditActivityInModal = () => {
-        // Lógica de edição futura
+      
     };
 
     const getResolvedTasksForGroup = (group) => {
@@ -194,7 +187,7 @@ function ManageGroupPage() {
             .filter(Boolean);
     };
 
-    // --- LÓGICA DE FILTRAGEM E PAGINAÇÃO ---
+   
     const filteredGroups = groups.filter(group => 
         group.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -208,7 +201,7 @@ function ManageGroupPage() {
         <div className="dashboard-container">
             <Navbar activePage="activities" />
 
-            {/* --- MODAL DE CONFIRMAÇÃO --- */}
+          
             <DeleteModal 
                 isOpen={isDeleteModalOpen} 
                 onClose={() => setIsDeleteModalOpen(false)} 
@@ -223,16 +216,16 @@ function ManageGroupPage() {
                     </a>
                 <div className="manage-groups-container">
                     
-                    {/* --- HEADER: Título (Esq) e Ações (Dir) --- */}
+                    
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "30px", flexWrap: "wrap", gap: "20px" }}>
                         
-                        {/* Lado Esquerdo: Textos */}
+                       
                         <div className="top-container-grup">
                             <h1>Grupo de atividades</h1>
                             <h2>Gerencie os grupos de atividades</h2>
                         </div>
                         
-                        {/* Lado Direito: SearchBar + Botão */}
+                       
                         <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
                             <SearchBar 
                                 searchTerm={searchTerm} 
@@ -244,7 +237,7 @@ function ManageGroupPage() {
                             <button
                                 className="create-patient-bnt"
                                 onClick={() => navigate('/GroupActivities')}
-                                style={{ height: "45px" }} // Ajuste opcional para igualar altura
+                                style={{ height: "45px" }} 
                             >
                                 Novo Grupo
                             </button>
@@ -307,7 +300,7 @@ function ManageGroupPage() {
                 </div>
             </main>
 
-            {/* --- MODAL DE DETALHES DO GRUPO --- */}
+            
             {isGroupModalOpen && selectedGroup && (
                 <div className="modal-overlay" onClick={closeGroupModal}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>

@@ -10,16 +10,12 @@ import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png";
 import Navbar from "../../components/ui/NavBar/index.js";
 const API_BASE_URL = "https://labirinto-do-saber.vercel.app";
 
-// --- NOVA FUNÇÃO AUXILIAR PARA FORMATAR O TEMPO ---
+
 const formatDuration = (seconds) => {
-    const val = Number(seconds) || 0; // Garante que é número
-    
-    // Se for menos de 1 minuto, mostra em segundos
+    const val = Number(seconds) || 0; 
     if (val < 60) {
         return `${Math.round(val)} segundos`;
     }
-    
-    // Se for maior, calcula minutos e segundos restantes
     const m = Math.floor(val / 60);
     const s = Math.round(val % 60);
     
@@ -30,12 +26,8 @@ const formatDuration = (seconds) => {
 function ReportSession() {
     const navigate = useNavigate();
     const location = useLocation();
-
-    // Recebe sessionId da tela anterior
     const { sessionId } = location.state || {};
-
     const [loading, setLoading] = useState(true);
-
     const [sessionData, setSessionData] = useState({
         title: "Carregando...",
         timeMetrics: [],
@@ -65,13 +57,10 @@ function ReportSession() {
                     throw new Error("Dados vazios retornados pela API.");
                 }
 
-                // Usa o sessionName vindo do back. Se não tiver, usa "Sessão" + parte do ID.
                 const displayTitle = api.sessionName ? api.sessionName : `Sessão ${sessionId.substring(0, 8)}`;
 
                 setSessionData({
                     title: displayTitle, 
-                    
-                    // --- AQUI APLICAMOS A FORMATAÇÃO INTELIGENTE ---
                     timeMetrics: [
                         { label: "Tempo total da sessão", value: formatDuration(api.totalTimeSession) },
                         { label: "Tempo médio de resposta", value: formatDuration(api.averageTimePerQuestion) },
@@ -129,7 +118,7 @@ function ReportSession() {
 
                                 <div className="metrics-split-layout">
 
-                                    {/* COLUNA ESQUERDA */}
+                                
                                     <div className="metrics-column left-column">
                                         {sessionData.timeMetrics.map((item, i) => (
                                             <div key={i} className="metric-row">
@@ -141,10 +130,10 @@ function ReportSession() {
 
                                     <div className="vertical-separator"></div>
 
-                                    {/* COLUNA DIREITA */}
+                                   
                                     <div className="metrics-column right-column">
 
-                                        {/* CATEGORIAS */}
+                                      
                                         <div className="rates-group">
                                             <h3 className="group-title">Taxa de acerto por categoria</h3>
                                             <div className="rates-grid">
@@ -161,7 +150,7 @@ function ReportSession() {
                                             </div>
                                         </div>
 
-                                        {/* TIPOS */}
+                                      
                                         <div className="rates-group">
                                             <h3 className="group-title">Taxa de acerto por tipo de atividade</h3>
                                             <div className="rates-grid">

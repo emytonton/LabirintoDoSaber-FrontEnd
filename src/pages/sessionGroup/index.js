@@ -9,7 +9,7 @@ import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png";
 import SearchBar from "../../components/ui/SearchBar/Search";
 import { useNavigate, useLocation } from "react-router-dom"; 
 import Navbar from "../../components/ui/NavBar/index.js";
-// --- ÍCONES (Mantidos iguais) ---
+
 const PlusIcon = () => (
     <svg width="25" height="25" viewBox="0 0 65 69" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g filter="url(#filter0_d_398_2393)">
@@ -41,21 +41,13 @@ const CheckIcon = () => (
 function SessionGroupPage() {
     const navigate = useNavigate();
     const location = useLocation();
-
-    // 1. RECUPERANDO DADOS DO FLUXO
     const { studentId, sessionName } = location.state || {};
-
-    // Estados
     const [groups, setGroups] = useState([]);
-    const [allTasks, setAllTasks] = useState([]); // NOVO: Guarda todas as tarefas para referência
+    const [allTasks, setAllTasks] = useState([]); 
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
     const [isStarting, setIsStarting] = useState(false); 
-    
-    // ESTADO DE SELEÇÃO ÚNICA
     const [selectedGroup, setSelectedGroup] = useState(null);
-
-    // Estados de Paginação
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4;
 
@@ -67,14 +59,14 @@ function SessionGroupPage() {
         general: "Geral"
     };
 
-    // --- VERIFICAÇÃO DE FLUXO ---
+   
     useEffect(() => {
         if (!studentId || !sessionName) {
             console.warn("Dados de sessão perdidos (studentId/sessionName).");
         }
     }, [studentId, sessionName]);
 
-    // --- INTEGRANDO A API (LISTAR GRUPOS E TAREFAS) ---
+    
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -87,7 +79,7 @@ function SessionGroupPage() {
                     headers: { Authorization: `Bearer ${token}` }
                 };
 
-                // Executa as duas requisições em paralelo
+               
                 const [groupsResponse, tasksResponse] = await Promise.all([
                     axios.get("https://labirinto-do-saber.vercel.app/task-group/list-by-educator", config),
                     axios.get("https://labirinto-do-saber.vercel.app/task/", config)
@@ -95,7 +87,7 @@ function SessionGroupPage() {
                 
                 setGroups(groupsResponse.data);
                 
-                // Salva todas as tarefas para podermos "traduzir" os IDs do grupo depois
+               
                 if (Array.isArray(tasksResponse.data)) {
                     setAllTasks(tasksResponse.data);
                 }
@@ -114,7 +106,7 @@ function SessionGroupPage() {
         fetchData();
     }, [navigate]);
 
-    // Lógica de Seleção ÚNICA
+
     const handleGroupSelection = (group) => {
         if (selectedGroup && selectedGroup.id === group.id) {
             setSelectedGroup(null);
@@ -123,14 +115,13 @@ function SessionGroupPage() {
         }
     };
 
-  // --- LÓGICA CORRIGIDA PARA HABILITAR O BOTÃO ---
+
     const handleStartSession = async () => {
         if (!selectedGroup) {
             alert("Selecione um grupo.");
             return;
         }
 
-        // 1. Pega a lista crua de IDs ou Objetos
         const rawTasksOrIds = selectedGroup.tasksIds || selectedGroup.tasks || [];
 
         if (rawTasksOrIds.length === 0) {
@@ -140,10 +131,8 @@ function SessionGroupPage() {
 
         setIsStarting(true);
 
-        // 2. NORMALIZAÇÃO DE DADOS (A CORREÇÃO ESTÁ AQUI)
+  
         const resolvedTasks = rawTasksOrIds.map(item => {
-            // Acha a tarefa original completa na lista global 'allTasks'
-            // Verifica tanto pelo .id quanto pelo ._id para garantir
             const originalTask = typeof item === 'object' 
                 ? item 
                 : allTasks.find(t => t.id === item || t._id === item);
@@ -151,18 +140,12 @@ function SessionGroupPage() {
             if (!originalTask) return undefined;
 
             console.log("Processando tarefa:", originalTask.prompt || originalTask.name);
-
-            // Retorna um objeto limpo e formatado corretamente para o SessionInit
             return {
                 ...originalTask,
-                // Garante que o ID da tarefa seja o do banco (_id tem prioridade)
                 id: originalTask._id || originalTask.id, 
-                
-                // Mapeia as alternativas garantindo que o ID seja uma STRING VÁLIDA
-                // Se o backend receber número (index), ele pode rejeitar.
+        
                 alternatives: (originalTask.alternatives || originalTask.options || []).map((opt, index) => ({
                     ...opt,
-                    // PRIORIDADE MÁXIMA PARA O _id do banco
                     id: opt._id || opt.id || String(index), 
                     text: opt.text || opt.label || "Opção sem texto"
                 }))
@@ -178,8 +161,6 @@ function SessionGroupPage() {
         try {
             const token = localStorage.getItem('authToken');
             const config = { headers: { Authorization: `Bearer ${token}` } };
-
-            // Payload para criar a sessão no banco
             const payload = {
                 studentId: studentId,
                 name: sessionName,
@@ -199,8 +180,6 @@ function SessionGroupPage() {
             }
 
             console.log("Sessão iniciada com tarefas:", resolvedTasks);
-
-            // Navega para a tela de execução com tudo pronto
             navigate('/sessionInit', { 
                 state: { 
                     sessionId: realSessionId,
@@ -218,7 +197,7 @@ function SessionGroupPage() {
             setIsStarting(false);
         }
     };
-    // --- PAGINAÇÃO E FILTROS ---
+
     const filteredGroups = groups.filter((group) => 
         group.name && group.name.toLowerCase().includes(searchTerm.toLowerCase())
     );

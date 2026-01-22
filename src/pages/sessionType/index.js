@@ -8,9 +8,9 @@ import iconSeta from "../../assets/images/seta_icon.png";
 import iconCaderno from "../../assets/images/iconDoublecard.png"; 
 import iconCard from "../../assets/images/caderneta.png"; 
 import iconActivity from "../../assets/images/iconActivitie.png"; 
-import { useNavigate, useLocation } from "react-router-dom"; // Importe useLocation
+import { useNavigate, useLocation } from "react-router-dom"; 
 import Navbar from "../../components/ui/NavBar/index.js";
-// Componente reútil para os botões de opção dentro do card
+
 const OptionButton = ({ label, iconSrc, onClick }) => (
     <button 
         className="session-option-button" 
@@ -27,21 +27,18 @@ const OptionButton = ({ label, iconSrc, onClick }) => (
 function SessionTypePage() {
     const navigate = useNavigate();
     const location = useLocation();
-    
-    // RECUPERANDO OS DADOS DO FLUXO (Vindos de SessionTitlePage)
     const { studentId, sessionName } = location.state || {};
 
     useEffect(() => {
         console.log("State recebido na SessionTypePage:", location.state);
         console.log("SessionType - Dados recebidos:", { studentId, sessionName });
         
-        // Segurança: Se perdeu os dados, avisa (ou redireciona)
         if (!studentId || !sessionName) {
             console.warn("Atenção: studentId ou sessionName estão faltando!");
         }
     }, [studentId, sessionName]);
 
-    // Funções de navegação AGORA REPASSAM OS DADOS
+ 
     const handleSelectNotebooks = () => {
         console.log("Indo para Cadernos com:", { studentId, sessionName });
         navigate('/sessionNotebook', { 
@@ -64,8 +61,6 @@ function SessionTypePage() {
     };
     
     const handleBack = () => {
-        // Ao voltar, devolvemos os dados para não perder o preenchimento se possível, 
-        // ou apenas voltamos normal.
         navigate('/sessionTitle', { state: { patientId: studentId } }); 
     };
 

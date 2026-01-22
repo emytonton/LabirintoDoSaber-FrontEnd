@@ -108,8 +108,7 @@ function GroupActivitiesPage() {
 
   const handleSave = async () => {
     const token = localStorage.getItem('authToken');
-    
-    // Coleta apenas os IDs das tarefas selecionadas
+   
     const selectedIds = groupActivities
         .map(item => item.taskId)
         .filter(id => id !== '');
@@ -124,11 +123,11 @@ function GroupActivitiesPage() {
       return;
     }
 
-    // AQUI ESTÁ A MUDANÇA: Usando 'tasksIds' (com S) no payload
+    /
     const payload = {
       name: groupName,
       category: categoryMap[selectedCategory] || 'reading',
-      tasksIds: selectedIds // A chave aqui agora é explicitamente 'tasksIds'
+      tasksIds: selectedIds 
     };
 
     console.log("Enviando Payload:", payload);

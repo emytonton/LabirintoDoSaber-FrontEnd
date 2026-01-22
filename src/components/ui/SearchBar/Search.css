@@ -1,8 +1,8 @@
-/* Container que agrupa a caixa de busca e o botão de filtro */
+
 .search-filter-container {
     display: flex;
     align-items: center;
-    gap: 10px; /* Espaçamento entre a barra de busca e o botão de filtro */
+    gap: 10px; 
 }
 
 .search-box {

@@ -8,7 +8,6 @@ import iconProfile from "../../../assets/images/icon_profile.png";
 
 const API_BASE_URL = "https://labirinto-do-saber.vercel.app";
 
-// Adicionamos a prop 'activePage' aqui
 function Navbar({ activePage }) {
   const [userName, setUserName] = useState("");
   const [userPhotoUrl, setUserPhotoUrl] = useState(iconProfile);
@@ -40,14 +39,14 @@ function Navbar({ activePage }) {
     fetchEducator();
   }, []);
 
-  // Nova função para verificar qual item deve ficar ativo
+ 
   const checkActive = (menuName, path) => {
-    // 1. Prioridade: Se a prop activePage foi passada, usamos ela
+  
     if (activePage) {
       return activePage === menuName;
     }
 
-    // 2. Fallback: Se não passou prop, tenta adivinhar pela URL
+  
     if (path === "/home") return location.pathname === "/home";
     return location.pathname.startsWith(path);
   };
@@ -59,7 +58,6 @@ function Navbar({ activePage }) {
       <nav className="navbar">
         <Link
           to="/home"
-          // Usamos o identificador 'dashboard'
           className={`nav-link ${checkActive("dashboard", "/home") ? "active" : ""}`}
         >
           Dashboard
@@ -67,7 +65,6 @@ function Navbar({ activePage }) {
         
         <Link
           to="/activitiesMain"
-          // Usamos o identificador 'activities'
           className={`nav-link ${checkActive("activities", "/activitiesMain") ? "active" : ""}`}
         >
           Atividades
@@ -75,7 +72,6 @@ function Navbar({ activePage }) {
         
         <Link
           to="/alunos"
-          // Usamos o identificador 'students'
           className={`nav-link ${checkActive("students", "/alunos") ? "active" : ""}`}
         >
           Alunos
@@ -83,7 +79,6 @@ function Navbar({ activePage }) {
         
         <Link
           to="/MainReport"
-          // Usamos o identificador 'reports'
           className={`nav-link ${checkActive("reports", "/MainReport") ? "active" : ""}`}
         >
           Relatórios

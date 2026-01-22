@@ -9,17 +9,13 @@ import PageTurner from '../../components/ui/PageTurner/index.js';
 
 function AlunosPage() {
   const navigate = useNavigate(); 
-  
-  // Estados para dados e paginação
   const [notebooks, setNotebooks] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
-
-  // Estados dos menus dropdown
   const [isCriarOpen, setIsCriarOpen] = useState(false);
   const [isGerenciarOpen, setIsGerenciarOpen] = useState(false);
 
-  // --- INTEGRAÇÃO COM BACKEND ---
+ 
   useEffect(() => {
     const fetchNotebooks = async () => {
       const token = localStorage.getItem('authToken');
@@ -35,11 +31,9 @@ function AlunosPage() {
 
       try {
         const response = await axios.get('https://labirinto-do-saber.vercel.app/task-notebook/', config);
-        // O backend retorna um array de objetos { notebook: {...}, taskGroups: [...] }
         setNotebooks(response.data);
       } catch (error) {
         console.error("Erro ao buscar cadernos:", error);
-        // Opcional: Tratar erro 401 (token expirado) redirecionando para login
         if (error.response && error.response.status === 401) {
             navigate('/');
         }
@@ -49,7 +43,7 @@ function AlunosPage() {
     fetchNotebooks();
   }, [navigate]);
 
-  // --- LÓGICA DE PAGINAÇÃO ---
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentNotebooks = notebooks.slice(indexOfFirstItem, indexOfLastItem);
@@ -57,11 +51,8 @@ function AlunosPage() {
 
   const paginate = (page) => setCurrentPage(page);
 
-  // --- NAVEGAÇÃO E MENUS ---
+
 const handleAlunoClick = (notebookId) => {
-    // CORREÇÃO AQUI:
-    // 1. A rota deve ser '/NotebookDetails'
-    // 2. A chave do objeto deve ser 'notebookId' (para bater com o código da outra página)
     navigate('/NotebookDetails', { state: { notebookId: notebookId } });
   };
   
@@ -91,7 +82,6 @@ const handleAlunoClick = (notebookId) => {
           <div className="top-container-head">
           <h1>Atividades</h1>
           <div className="bnts-top">
-                {/* Botão CRIAR */}
                 <div className="button-and-subtitle-wrapper">
                     <div className={`dropdown-button-container ${isCriarOpen ? 'active' : ''}`}>
                         <div 
@@ -114,7 +104,6 @@ const handleAlunoClick = (notebookId) => {
                     </div>
                 </div>
 
-                {/* Botão GERENCIAR */}
                 <div className="button-and-subtitle-wrapper">
                     <div className={`dropdown-button-container ${isGerenciarOpen ? 'active' : ''}`}>
                         <div 
@@ -140,7 +129,7 @@ const handleAlunoClick = (notebookId) => {
             </div>
         </div>
           
-          {/* LISTA DE CADERNOS DINÂMICA */}
+
           <div className="student-card-list">
             {currentNotebooks.length > 0 ? (
                 currentNotebooks.map((item) => (
@@ -152,17 +141,17 @@ const handleAlunoClick = (notebookId) => {
                     >
                         <img src={iconCaderno} alt="Avatar" className="caderno-avatar" />
                         <div className="student-card-info">
-                            {/* Título do Caderno */}
+                        
                             <h3>{item.notebook.description || "Caderno sem título"}</h3>
                             
-                            {/* Descrição baseada nos grupos ou texto fixo se preferir */}
+                        
                             <p>
                                 {item.taskGroups.length > 0 
                                 ? `${item.taskGroups.length} grupo(s) de atividades.` 
                                 : "Nenhum grupo de atividades vinculado."}
                             </p>
                             
-                            {/* Categoria como botão */}
+                    
                             <button className="bnt-details"> 
                                 {item.notebook.category ? item.notebook.category : "Geral"} 
                             </button>

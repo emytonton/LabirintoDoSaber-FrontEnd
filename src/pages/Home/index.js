@@ -41,8 +41,6 @@ function Home() {
       try {
         const token = localStorage.getItem("authToken");
         const config = { headers: { Authorization: `Bearer ${token}` } };
-
-        // Requisições paralelas para ser mais rápido
         const userReq = axios.get(`${API_BASE_URL}/educator/me`, config);
         const studentsReq = axios.get(`${API_BASE_URL}/student/`, config);
 
@@ -106,7 +104,7 @@ function Home() {
     fetchData();
   }, [navigate, location.state]);
 
-  // REMOVI O "if (isLoading) return..." DAQUI
+
 
   return (
     <div className="home-dashboard-container">
@@ -118,7 +116,6 @@ function Home() {
 
           <div className="home-welcome-message">
             {isLoading ? (
-              // Skeleton do texto de boas-vindas
               <div className="skeleton skeleton-text" style={{ width: "250px", height: "24px" }} />
             ) : (
               `Bem vindo(a) de volta, ${userName || "Educador"}!`
@@ -127,9 +124,8 @@ function Home() {
 
           <h2>Atividades recentes</h2>
 
-          {/* SKELETON LOADING PARA ATIVIDADES */}
+     
           {isLoading ? (
-            // Mostra 2 cartões falsos enquanto carrega
             [1, 2].map((i) => (
               <div className="home-activity-card" key={i}>
                 <div className="skeleton skeleton-image-box" />
@@ -195,9 +191,8 @@ function Home() {
               <span>Última atividade</span>
             </div>
 
-            {/* SKELETON LOADING PARA LISTA DE ALUNOS */}
+      
             {isLoading ? (
-              // Mostra 3 linhas falsas enquanto carrega
               [1, 2, 3].map((i) => (
                 <div className="home-student-row" key={i}>
                   <div className="home-student-name-group">

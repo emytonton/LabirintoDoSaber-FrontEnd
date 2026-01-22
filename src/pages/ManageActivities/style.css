@@ -282,14 +282,13 @@ body {
     margin-right: 100px; 
 }
 
-/* O botão base (Criar/Gerenciar) */
+
 .create-caderno.dropdown-toggle {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* Menu Dropdown - Estilo da Caixa */
 .dropdown-menu {
     position: absolute;
     top: 100%; 
@@ -304,7 +303,6 @@ body {
     margin-top: 5px; 
 }
 
-/* Links dentro do Dropdown */
 .dropdown-menu a {
     padding: 10px 15px;
     text-decoration: none;
@@ -359,30 +357,27 @@ body {
 }
 
 .activity-row-wrapper {
-    display: flex; /* Permite que o card e a lixeira fiquem na mesma linha */
-    align-items: center; /* Alinha verticalmente */
-    gap: 15px; /* Espaço entre o card e a lixeira */
-    width: 100%; /* Ocupa a largura total do activity-card-list */
+    display: flex; 
+    align-items: center; 
+    gap: 15px; 
+    width: 100%; 
 }
 
-/* Estilo do Botão de Remover */
+
 .remove-activity-btn {
-    /* Estilos existentes */
     background: transparent;
     border: none;
     cursor: pointer;
     padding: 8px; 
     transition: color 0.2s;
     line-height: 1; 
-    
-    /* Posição Final: Apenas alinha ao centro e não precisa de margem extra */
-    margin-left: 0; /* Remova qualquer margin-left: 10px; */
+    margin-left: 0; 
     align-self: center;
-    flex-shrink: 0; /* Garante que o botão não encolha */
+    flex-shrink: 0; 
 }
 
 .remove-activity-btn:hover {
-    color: #cc0000; /* Cor vermelha ao passar o mouse */
+    color: #cc0000; 
     background-color: #ffebeb;
     border-radius: 50%;
 }
@@ -393,20 +388,59 @@ body {
     display: block;
 }
 
-/* Ajuste Fino nos Itens Finais do Card */
+
 .activity-list-item-card {
     flex: 1;
-    /* ... (seus estilos existentes) ... */
-    
-    /* Garante que a lixeira e a seta fiquem em linha */
-    justify-content: space-between; /* Certifique-se que está usando space-between ou similar */
-}
+    justify-content: space-between; }
 
-/* Reduzir a margem da seta (que antes era 'auto') para permitir espaço para a lixeira */
+
 .seta {
-    /* Remova margin-left: auto; */ 
-    margin-left: 10px; /* Margem da seta para o conteúdo */
+    margin-left: 10px; 
     align-self: center;
     width: 20px; 
     height: 20px;
 }
+
+
+.modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .modal-btn {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .modal-btn.cancel {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+        .modal-btn.confirm {
+            background-color: #008D85;
+            color: white;
+        }

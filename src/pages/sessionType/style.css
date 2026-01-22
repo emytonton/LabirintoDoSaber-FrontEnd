@@ -44,15 +44,15 @@
     height: 44px;
 }
 
-/* Card Centralizado de Opções */
+
 .selection-card {
     background-color: #F3FBFB;
     border-radius: 20px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     padding: 40px;
     width: 100%;
-    max-width: 550px; /* Largura do card */
-    margin: 3px auto 0 auto; /* Centraliza o card na tela */
+    max-width: 550px; 
+    margin: 3px auto 0 auto; 
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -117,8 +117,6 @@
     opacity: 0.5;
 }
 
-
-/* ESTILOS GLOBAIS (Header, etc. - Devem ser mantidos em seu arquivo global) */
 .dashboard-container {
     display: flex;
     flex-direction: column;
@@ -138,4 +136,3 @@
     color: #63E9E2;
     border-bottom: 3px solid #63E9E2;
 }
-/* ... (Seus estilos de logo, icon, profile-icon, etc.) */

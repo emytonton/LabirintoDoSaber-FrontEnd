@@ -12,26 +12,20 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/ui/NavBar/index.js";
 function SessionPage() {
     const navigate = useNavigate();
-    
-    // Estados
     const [searchTerm, setSearchTerm] = useState("");
     const [patients, setPatients] = useState([]); 
     const [loading, setLoading] = useState(true);
-    
-    // Paginação
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 3;
 
-    // --- BUSCA DE DADOS (CORRIGIDA COM TOKEN) ---
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                // 1. Pega o token salvo (Igual na Home)
                 const token = localStorage.getItem('authToken');
 
                 if (!token) {
                     console.error("Token não encontrado");
-                    navigate('/'); // Redireciona se não tiver token
+                    navigate('/'); 
                     return;
                 }
 
@@ -39,10 +33,10 @@ function SessionPage() {
                     headers: { Authorization: `Bearer ${token}` }
                 };
 
-                // 2. Faz a chamada com Axios passando o config
+                
                 const response = await axios.get("https://labirinto-do-saber.vercel.app/student/", config);
                 
-                // 3. Formata os dados
+               
                 const formattedData = response.data.map(student => ({
                     id: student.id,
                     name: student.name,
@@ -53,7 +47,7 @@ function SessionPage() {
                             : "Geral"
                 }));
 
-                // Ordenar por nome (opcional, mas ajuda na busca)
+              
                 formattedData.sort((a, b) => a.name.localeCompare(b.name));
 
                 setPatients(formattedData);
@@ -61,7 +55,6 @@ function SessionPage() {
 
             } catch (error) {
                 console.error("Erro ao buscar alunos:", error);
-                // Se der erro de autorização (401), joga pro login igual na Home
                 if (error.response && error.response.status === 401) {
                     alert("Sessão expirada.");
                     navigate('/');
@@ -83,20 +76,17 @@ function SessionPage() {
 
     };
 
-    // --- LÓGICA DE FILTRO E PAGINAÇÃO ---
-
-    // 1. Filtra
     const filteredPatients = patients.filter((patient) => 
         patient.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // 2. Pagina
+   
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredPatients.slice(indexOfFirstItem, indexOfLastItem);
     const totalPages = Math.ceil(filteredPatients.length / itemsPerPage);
 
-    // Controles
+   
     const goToNextPage = (e) => {
         e.preventDefault();
         if (currentPage < totalPages) setCurrentPage(currentPage + 1);
@@ -181,7 +171,6 @@ function SessionPage() {
                         )}
                     </div>
 
-                    {/* Paginação */}
                     {!loading && filteredPatients.length > 0 && (
                         <div className="pagination-controls">
                             <a 

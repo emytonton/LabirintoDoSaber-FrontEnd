@@ -1,4 +1,4 @@
-/* --- IMPORTAÇÃO DE FONTE E RESET BÁSICO --- */
+
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
 
 * {
@@ -12,16 +12,13 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* --- ESTRUTURA GERAL (LAYOUT) --- */
+
 .dashboard-container {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
 }
 
-/* ==========================================================================
-   HEADER / NAVBAR (AGORA AJUSTADO PARA O PADRÃO DA HOME)
-   ========================================================================== */
 .header {
     display: flex;
     justify-content: space-between;
@@ -32,7 +29,7 @@ body {
 }
 
 .logo {
-    /* Ajustado para o padrão da Home */
+   
     width: 150px;
     height: 70px;
     object-fit: contain;
@@ -45,9 +42,9 @@ body {
 
 .nav-link {
     text-decoration: none;
-    color: #555; /* Ajustado cor */
+    color: #555; 
     font-weight: 600;
-    font-size: 20px; /* Ajustado para 20px (padrão grande) */
+    font-size: 20px; 
     padding-bottom: 4px;
 }
 
@@ -63,7 +60,6 @@ body {
 }
 
 .icon {
-    /* Ajustado para o padrão da Home */
     height: 41px;
     width: 48px;
     cursor: pointer;
@@ -71,18 +67,12 @@ body {
 }
 
 .profile-icon {
-    /* Ajustado para o padrão da Home */
     border-radius: 50%;
     background-color: #333;
     height: 59px;
     width: 59px;
 }
 
-/* ==========================================================================
-   ESTILOS DA TELA DE RELATÓRIO DE ALUNO (StudentDetails / ReportPacient)
-   ========================================================================== */
-
-/* --- ÁREA PRINCIPAL DA SESSÃO --- */
 .session-main-content {
     flex: 1;
     display: flex;
@@ -93,12 +83,12 @@ body {
 
 .session-container {
     width: 100%;
-    max-width: 1200px; /* Largura máxima do conteúdo central */
+    max-width: 1200px; 
     display: flex;
     flex-direction: column;
 }
 
-/* Botão de Voltar (Seta) */
+
 .top-nav-row {
     margin-bottom: 1rem;
     padding-left: 1rem;
@@ -114,13 +104,13 @@ body {
 }
 
 .back-arrow-icon {
-    width: 44px; /* Ajuste leve para a seta */
+    width: 44px; 
     height: 44px;
 }
 
-/* --- CARTÃO PRINCIPAL (FUNDO AZUL CLARO) --- */
+
 .student-report-card {
-    background-color: #F3FBFB; /* Cor base do card grande */
+    background-color: #F3FBFB; 
     border: 1px solid #E0F2F1;
     border-radius: 40px;
     padding: 2rem 3rem;
@@ -130,7 +120,7 @@ body {
     gap: 2rem;
 }
 
-/* --- 1. CABEÇALHO DO ALUNO --- */
+
 .student-header-info {
     display: flex;
     justify-content: space-between;
@@ -168,15 +158,15 @@ body {
 }
 
 .student-level {
-    color: #999 !important; /* Cor cinza mais clara para o nível */
+    color: #999 !important; 
     font-size: 0.95rem;
 }
 
 .student-search-area {
-    width: 320px; /* Largura fixa para a barra de pesquisa */
+    width: 320px; 
 }
 
-/* --- 2. ÁREA BRANCA DAS SESSÕES --- */
+
 .sessions-white-box {
     background-color: #fff;
     border-radius: 30px;
@@ -198,13 +188,13 @@ body {
     gap: 1rem;
 }
 
-/* Card Individual da Sessão */
+
 .session-item {
     display: flex;
     align-items: center;
     padding: 0.8rem 1.2rem;
     border: 1px solid #f0f0f0;
-    border-radius: 50px; /* Arredondamento "Pílula" */
+    border-radius: 50px;
     background-color: #fff;
     transition: all 0.2s ease;
     cursor: pointer;
@@ -220,7 +210,7 @@ body {
 .session-icon-box {
     width: 48px;
     height: 48px;
-    background-color: #FFF8E1; /* Fundo amarelo claro do ícone */
+    background-color: #FFF8E1; 
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -249,7 +239,7 @@ body {
 .session-info p {
     margin: 2px 0 0 0;
     font-size: 0.9rem;
-    color: #aaa; /* Cinza claro para subtítulo */
+    color: #aaa; 
     font-weight: 600;
 }
 
@@ -260,7 +250,7 @@ body {
     margin-left: 10px;
 }
 
-/* Paginação Simples */
+
 .pagination-controls {
     display: flex;
     justify-content: center;
@@ -287,7 +277,7 @@ body {
 }
 
 .pagination-controls .active {
-    color: #63E9E2; /* Cor de destaque (Ciano) */
+    color: #63E9E2; 
     font-weight: 700;
 }
 
@@ -296,12 +286,12 @@ body {
     background-color: #f5f5f5;
 }
 
-/* --- 3. DASHBOARD METRICS (RODAPÉ) --- */
+
 .dashboard-metrics-section {
     padding: 0 1rem;
 }
 
-/* Ajuste do título para alinhar com o design */
+
 .dashboard-metrics-section .section-title {
     margin-bottom: 2rem;
 }
@@ -309,7 +299,7 @@ body {
 .metrics-grid {
     display: flex;
     justify-content: space-around;
-    align-items: flex-start; /* Alinha no topo para caso tenham alturas diferentes */
+    align-items: flex-start; 
 }
 
 .metric-item {
@@ -322,17 +312,17 @@ body {
 
 .metric-label {
     font-weight: 700;
-    color: #bbb; /* Cinza bem claro para os títulos das métricas */
+    color: #bbb; 
     font-size: 1.1rem;
     text-align: center;
 }
 
 .metric-pill {
-    background-color: #D8F5F3; /* Verde água bem claro */
+    background-color: #D8F5F3; 
     color: #000;
     font-weight: 700;
     padding: 0.6rem 3rem;
-    border-radius: 25px; /* Arredondamento forte */
+    border-radius: 25px; 
     font-size: 1.1rem;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     white-space: nowrap;
@@ -348,11 +338,11 @@ body {
     width: 1px;
     height: 70px;
     background-color: #000;
-    opacity: 0.1; /* Linha divisória bem sutil */
+    opacity: 0.1; 
     align-self: center;
 }
 
-/* --- RESPONSIVIDADE --- */
+
 @media (max-width: 900px) {
     .student-report-card {
         padding: 1.5rem;
@@ -375,7 +365,7 @@ body {
     }
 
     .vertical-divider {
-        display: none; /* Esconde divisores verticais no mobile */
+        display: none;
     }
 
     .metric-pill {

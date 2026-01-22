@@ -1,8 +1,4 @@
-/* ==========================================================================
-   ESTILOS GLOBAIS DE HEADER E NAV (IDÊNTICOS À HOME)
-   ========================================================================== */
 
-/* Mantendo exatamente o que você me mandou da Home para não ter diferença */
 .header {
     display: flex;
     justify-content: space-between;
@@ -21,15 +17,13 @@
 .navbar {
     display: flex;
     gap: 2rem;
-    /* margin-left: -10%; -> Removi margem negativa aqui p/ não quebrar layout centralizado, 
-       mas mantive o tamanho da fonte e gap iguais */
 }
 
 .nav-link {
     text-decoration: none;
     color: #555;
     font-weight: 600;
-    font-size: 20px; /* Tamanho GRANDE original */
+    font-size: 20px; 
     padding-bottom: 4px;
 }
 
@@ -45,7 +39,7 @@
 }
 
 .icon {
-    height: 41px; /* Tamanho GRANDE original */
+    height: 41px; 
     width: 48px;
     cursor: pointer;
     object-fit: contain;
@@ -54,15 +48,11 @@
 .profile-icon {
     border-radius: 50%;
     background-color: #333;
-    height: 59px; /* Tamanho GRANDE original */
+    height: 59px; 
     width: 59px;
 }
 
-/* ==========================================================================
-   ESTILOS ESPECÍFICOS DA TELA DE RELATÓRIO (SESSION)
-   ========================================================================== */
 
-/* --- CONTAINER E FUNDO --- */
 .session-main-content {
     flex: 1;
     display: flex;
@@ -78,7 +68,6 @@
     flex-direction: column;
 }
 
-/* Botão Voltar (Seta) */
 .top-nav-row {
     margin-bottom: 1rem;
     padding-left: 1rem;
@@ -94,11 +83,10 @@
 }
 
 .back-arrow-icon {
-    width: 44px; /* Ajuste visual leve para a seta de voltar */
+    width: 44px; 
     height: 44px;
 }
 
-/* --- CARD AZUL PRINCIPAL --- */
 .session-report-card {
     background-color: #F3FBFB;
     border: 1px solid #E0F2F1;
@@ -120,7 +108,7 @@
     padding-left: 10px;
 }
 
-/* --- BOX BRANCO INTERNO --- */
+
 .metrics-white-box-large {
     background-color: #fff;
     border-radius: 35px;
@@ -137,7 +125,7 @@
     margin-bottom: 3rem;
 }
 
-/* --- LAYOUT DIVIDIDO --- */
+
 .metrics-split-layout {
     display: flex;
     justify-content: space-between;
@@ -151,9 +139,8 @@
     flex-direction: column;
 }
 
-/* --- LADO ESQUERDO: TEMPOS --- */
+
 .left-column {
-    /* AQUI ESTÁ O AJUSTE DE ALINHAMENTO QUE VOCÊ PEDIU */
     padding-top: 3.5rem; 
     align-items: center;
     gap: 2rem;
@@ -187,14 +174,14 @@
     border: 1px solid #EAF6F6;
 }
 
-/* --- SEPARADOR VERTICAL --- */
+
 .vertical-separator {
     width: 1px;
     background-color: #ccc;
     margin: 0 2rem;
 }
 
-/* --- LADO DIREITO: TAXAS --- */
+
 .right-column {
     gap: 3rem;
     align-items: center;
@@ -253,13 +240,13 @@
     border: 1px solid #EAF6F6;
 }
 
-/* --- RESPONSIVIDADE --- */
+
 @media (max-width: 968px) {
     .metrics-split-layout {
         flex-direction: column;
     }
 
-    /* Remove o espaçamento de compensação no mobile */
+  
     .left-column {
         padding-top: 0;
     }

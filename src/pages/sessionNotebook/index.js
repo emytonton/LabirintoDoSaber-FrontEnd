@@ -9,7 +9,7 @@ import iconCard from "../../assets/images/caderneta.png";
 import SearchBar from "../../components/ui/SearchBar/Search";
 import { useNavigate, useLocation } from "react-router-dom"; 
 import Navbar from "../../components/ui/NavBar/index.js";
-// --- ÍCONES (Mantidos iguais) ---
+
 const PlusIcon = () => (
     <svg width="25" height="25" viewBox="0 0 65 69" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g filter="url(#filter0_d_398_2393)">
@@ -42,20 +42,13 @@ function SessionNotebookPage() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // 1. RECUPERANDO DADOS DO FLUXO
     const { studentId, sessionName } = location.state || {};
-
-    // Estados
     const [notebooks, setNotebooks] = useState([]);
     const [allTasks, setAllTasks] = useState([]); 
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
     const [isStarting, setIsStarting] = useState(false); 
-    
-    // Seleção
     const [selectedNotebook, setSelectedNotebook] = useState(null);
-
-    // Paginação
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4;
 
@@ -67,14 +60,14 @@ function SessionNotebookPage() {
         general: "Geral"
     };
 
-    // Segurança
+
     useEffect(() => {
         if (!studentId || !sessionName) {
             console.warn("Dados da sessão perdidos (studentId/sessionName).");
         }
     }, [studentId, sessionName]);
 
-    // --- FETCH DATA ---
+  
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -83,25 +76,20 @@ function SessionNotebookPage() {
                 
                 const config = { headers: { Authorization: `Bearer ${token}` } };
 
-                // Busca Cadernos e Tarefas
+             
                 const [notebooksResponse, tasksResponse] = await Promise.all([
                     axios.get("https://labirinto-do-saber.vercel.app/task-notebook/", config),
                     axios.get("https://labirinto-do-saber.vercel.app/task/", config)
                 ]);
                 
-                // Mapeamento correto inspirado no seu NotebookDetailsPage
+                
                 const formattedNotebooks = notebooksResponse.data.map(item => {
-                    // O objeto real do caderno pode estar em 'item.notebook' ou ser o próprio 'item'
                     const coreData = item.notebook ? item.notebook : item;
                     
                     return {
                         id: coreData.id || coreData._id,
                         name: coreData.description || coreData.name || "Caderno sem nome",
                         category: coreData.category || "general",
-                        
-                        // IMPORTANTE: Trazemos os dados crus para processar no Start
-                        // Se tiver taskGroups (vindo da raiz do item), guardamos.
-                        // Se tiver tasksIds (vindo do coreData), guardamos.
                         taskGroups: item.taskGroups || [], 
                         tasksIds: coreData.tasksIds || coreData.tasks || [],
                         
@@ -134,7 +122,7 @@ function SessionNotebookPage() {
         }
     };
 
-    // --- START SESSION (A CORREÇÃO ESTÁ AQUI) ---
+
     const handleStartSession = async () => {
         if (!selectedNotebook) {
             alert("Por favor, selecione um caderno.");
@@ -148,13 +136,11 @@ function SessionNotebookPage() {
 
         setIsStarting(true);
 
-        // 1. EXTRAÇÃO INTELIGENTE DAS TAREFAS
-        // Verificamos se o caderno tem GRUPOS ou TAREFAS DIRETAS
+     
         let targetTasksIds = [];
 
         if (selectedNotebook.taskGroups && selectedNotebook.taskGroups.length > 0) {
-            // CASO 1: O caderno é feito de grupos.
-            // Precisamos pegar todas as tarefas de todos os grupos e juntar numa lista só.
+            
             console.log("Caderno com Grupos detectado.");
             selectedNotebook.taskGroups.forEach(group => {
                 if (group.tasksIds && Array.isArray(group.tasksIds)) {
@@ -162,7 +148,6 @@ function SessionNotebookPage() {
                 }
             });
         } else {
-            // CASO 2: O caderno tem tarefas diretas.
             console.log("Caderno com Tarefas Diretas detectado.");
             targetTasksIds = selectedNotebook.tasksIds || [];
         }
@@ -173,9 +158,9 @@ function SessionNotebookPage() {
             return;
         }
 
-        // 2. RESOLUÇÃO (IDs -> Objetos)
+       
         const resolvedTasks = targetTasksIds.map(item => {
-            // Busca a tarefa completa na lista global
+           
             const originalTask = typeof item === 'object' 
                 ? item 
                 : allTasks.find(t => t.id === item || t._id === item);
@@ -184,7 +169,6 @@ function SessionNotebookPage() {
 
             return {
                 ...originalTask,
-                // Normaliza ID e Alternativas para o SessionInit não travar
                 id: originalTask._id || originalTask.id, 
                 alternatives: (originalTask.alternatives || originalTask.options || []).map((opt, index) => ({
                     ...opt,
@@ -220,7 +204,7 @@ function SessionNotebookPage() {
 
             const sessionId = response.data.sessionId || response.data.id;
 
-            // Envia o array 'resolvedTasks' que montamos a partir dos grupos/tarefas
+            
             navigate(`/sessionInit`, { 
                 state: { 
                     sessionId: sessionId,

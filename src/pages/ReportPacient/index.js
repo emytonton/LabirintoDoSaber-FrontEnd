@@ -33,14 +33,14 @@ function ReportPacient() {
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(true);
     const [student, setStudent] = useState({ name: "Carregando...", age: "", level: "..." });
-    const [studentPhotoUrl, setStudentPhotoUrl] = useState(""); // Adicionado para armazenar a foto do aluno
+    const [studentPhotoUrl, setStudentPhotoUrl] = useState(""); 
     const [sessions, setSessions] = useState([]);
     
     const [metrics, setMetrics] = useState({
         totalTime: 0,
         accuracy: 0,
         avgTimePerAnswer: 0,
-        avgSessionTime: 0 // Adicionado inicialização
+        avgSessionTime: 0 
     });
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -60,9 +60,7 @@ function ReportPacient() {
             try {
                 const token = localStorage.getItem("authToken");
                 const config = { headers: { Authorization: `Bearer ${token}` } };
-
-                // 1. Busca Dados do Aluno
-                let studentData = { name: "Aluno", age: "?", level: "Em progresso", photoUrl: "" }; // Inicialização com photoUrl
+                let studentData = { name: "Aluno", age: "?", level: "Em progresso", photoUrl: "" }; 
                 try {
                     const studentRes = await axios.get(`${API_BASE_URL}/student`, config);
                     const foundStudent = studentRes.data.find(s => s.id === patientId) || 
@@ -73,16 +71,16 @@ function ReportPacient() {
                             name: foundStudent.name,
                             age: foundStudent.age,
                             level: foundStudent.learningTopics?.[0] || "Geral",
-                            photoUrl: foundStudent.photoUrl || ""  // Atribuindo a URL da foto do aluno
+                            photoUrl: foundStudent.photoUrl || ""  
                         };
                     }
                 } catch (err) {
                     console.warn("Erro ao buscar detalhes do aluno", err);
                 }
                 setStudent(studentData);
-                setStudentPhotoUrl(studentData.photoUrl); // Atualiza o estado com a foto do aluno
+                setStudentPhotoUrl(studentData.photoUrl); 
 
-                // 2. Busca Sessões do Aluno
+              
                 console.log(`Buscando sessões em: ${API_BASE_URL}/task-notebook-session/student/${patientId}`);
                 const sessionsRes = await axios.get(`${API_BASE_URL}/task-notebook-session/student/${patientId}`, config);
                 

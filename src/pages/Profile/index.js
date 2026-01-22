@@ -39,14 +39,14 @@ function ProfileEdit() {
         );
         const userData = response.data;
 
-        // Preencher os dados do formulário com os dados recebidos da API
+  
         setFormData({
           name: userData.name || "",
           email: userData.email || "",
           contact: userData.contact || "",
         });
 
-        // Carregar a foto do perfil
+
         const apiAvatar =
           userData.photoUrl || userData._photoUrl || iconProfile;
         setAvatarUrl(apiAvatar);
@@ -154,7 +154,7 @@ function ProfileEdit() {
 
   const handleSave = async () => {
     setLoading(true);
-    setError(""); // Limpar mensagens de erro antes de tentar salvar
+    setError(""); 
 
     const results = await Promise.all([
       handleUpdateTextData(),

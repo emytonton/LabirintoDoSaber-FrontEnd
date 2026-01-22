@@ -65,11 +65,6 @@ body {
   width: 59px;
 }
 
-/*
-====================================
-ESTILOS DO CONTEÚDO PRINCIPAL (FORMULÁRIO)
-====================================
-*/
 .main-content {
     padding: 10px 50px;
 }
@@ -97,7 +92,7 @@ ESTILOS DO CONTEÚDO PRINCIPAL (FORMULÁRIO)
     margin-bottom: 30px;
 }
 
-/* Estilo do Grupo de Formulário (Label + Campo) */
+
 .form-group {
     margin-bottom: 30px;
 }
@@ -115,7 +110,7 @@ ESTILOS DO CONTEÚDO PRINCIPAL (FORMULÁRIO)
     color: red;
 }
 
-/* --- CHIPS DE CATEGORIA --- */
+
 .chips-container {
     display: flex;
     gap: 15px;
@@ -138,7 +133,7 @@ ESTILOS DO CONTEÚDO PRINCIPAL (FORMULÁRIO)
   background-color: #D8F5F3;
 }
 
-/* --- INPUT DE TEXTO E DROPDOWN --- */
+
 .text-input,.dropdown-select {
     width: 100%;
     padding: 12px 15px;

@@ -178,7 +178,7 @@ function AdicionarAtividade() {
           <h1 className="form-title">Adicionar novo caderno</h1>
           <hr className="title-separator" />
 
-          {/* Categoria */}
+        
           <div className="form-group">
             <label className="form-label required">Categoria do caderno</label>
             <div className="chips-container">

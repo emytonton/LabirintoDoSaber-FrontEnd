@@ -119,7 +119,7 @@
 .notebook-select-card-icon {
     margin-right: 20px;
     width: 65px;
-    min-width: 65px; /* Ícone do Caderno (livro aberto) geralmente é mais largo */
+    min-width: 65px; 
     height: 65px;
 }
 

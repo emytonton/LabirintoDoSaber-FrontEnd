@@ -6,7 +6,7 @@ import iconActivitie from "../../assets/images/iconActivitie.png";
 import iconSeta from "../../assets/images/seta_icon.png";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/ui/NavBar/index.js";
-import SearchBar from "../../components/ui/SearchBar/Search"; // Importação do SearchBar
+import SearchBar from "../../components/ui/SearchBar/Search"; 
 
 const DeleteModal = ({ isOpen, onClose, onConfirm }) => {
   if (!isOpen) return null;
@@ -25,7 +25,7 @@ const DeleteModal = ({ isOpen, onClose, onConfirm }) => {
   );
 };
 
-// Ícone movido para fora para evitar recriação a cada render
+
 const TrashIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M5 6H19L18.1245 19.133C18.0544 20.1836 17.1818 21 16.1289 21H7.87111C6.81818 21 5.94558 20.1836 5.87554 19.133L5 6Z" stroke="black" strokeWidth="2"/>
@@ -41,13 +41,9 @@ function ManageActivitiesPage() {
 
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
-  
-  // Estado da Pesquisa
   const [searchTerm, setSearchTerm] = useState(""); 
-
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activityToDelete, setActivityToDelete] = useState(null);
 
@@ -62,7 +58,7 @@ function ManageActivitiesPage() {
     fetchActivities();
   }, []);
 
-  // Resetar a página para 1 quando pesquisar
+
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
@@ -114,7 +110,7 @@ function ManageActivitiesPage() {
       setActivities(activities.filter(act => act.id !== activityToDelete));
       setIsModalOpen(false);
       setActivityToDelete(null);
-      // alert("Atividade excluída com sucesso!"); // Opcional
+     
 
     } catch (error) {
       console.error("Erro ao excluir:", error);
@@ -127,7 +123,7 @@ function ManageActivitiesPage() {
     navigate(`/activityDetails`, { state: { activityId: id } });
   };
 
-  // --- LÓGICA DE FILTRO E PAGINAÇÃO ---
+ 
   const filteredActivities = activities.filter(activity => 
     activity.prompt.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -158,16 +154,16 @@ function ManageActivitiesPage() {
           </a>
         <div className="manage-activities-container">
           
-          {/* --- HEADER MODIFICADO (Igual ao ManageGroups) --- */}
+      
           <div className="top-container" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "30px", flexWrap: "wrap", gap: "20px" }}>
             
-            {/* Lado Esquerdo: Textos */}
+           
             <div>
                 <h1>Atividades</h1>
                 <h2>Gerencie as atividades</h2>
             </div>
             
-            {/* Lado Direito: SearchBar + Botão */}
+       
             <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
                 <SearchBar 
                     searchTerm={searchTerm} 
@@ -179,13 +175,13 @@ function ManageActivitiesPage() {
                 <button 
                     className="create-patient-bnt" 
                     onClick={() => navigate('/CreateNewActivitie')}
-                    style={{ height: "45px" }} // Ajuste opcional para alinhar altura
+                    style={{ height: "45px" }} 
                 >
                     Nova Atividade
                 </button>
             </div>
           </div>
-          {/* --- FIM DO HEADER --- */}
+         
 
           <div className="activity-card-list">
             
@@ -272,52 +268,6 @@ function ManageActivitiesPage() {
 
         </div>
       </main>
-
-    
-      <style>{`
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .modal-actions {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-        .modal-btn {
-            padding: 0.5rem 1.5rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .modal-btn.cancel {
-            background-color: #e0e0e0;
-            color: #333;
-        }
-        .modal-btn.confirm {
-            background-color: #008D85;
-            color: white;
-        }
-      `}</style>
     </div>
   );
 }

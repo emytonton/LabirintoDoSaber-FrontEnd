@@ -7,7 +7,7 @@ import iconProfile from "../../assets/images/icon_profile.png";
 import iconArrowLeft from "../../assets/images/seta_icon_esquerda.png"; 
 import Navbar from "../../components/ui/NavBar/index.js";
 
-// SVG da caneta (PenIcon)
+
 const PenIcon = () => (
     <svg width="34" height="26" viewBox="0 0 34 26" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M5.12634 17C5.04271 17.6571 5 18.325 5 19V21M5.12634 17C6.03384 9.86861 11.7594 4 20 4L19 8H16L17 10L15 12H11L13 14L12 16H8L5.12634 17Z" stroke="black"/>
@@ -17,9 +17,7 @@ const PenIcon = () => (
 function SessionTitlePage() {
     const navigate = useNavigate();
     const location = useLocation();
-    
     const [sessionName, setSessionName] = useState("");
-    // Vamos chamar de studentId para alinhar com a API, mesmo que venha como patientId
     const [studentId, setStudentId] = useState(null); 
 
         useEffect(() => {
@@ -37,13 +35,10 @@ function SessionTitlePage() {
         }, [location]);
 
     const handleNext = () => {
-        // Validação do nome
         if (sessionName.trim() === "") {
             alert("Por favor, dê um nome à sessão.");
             return;
         }
-
-        // Validação do ID
         if (!studentId) {
             alert("Erro: Aluno não identificado. Volte e selecione o aluno novamente.");
             return;
@@ -51,9 +46,6 @@ function SessionTitlePage() {
 
         console.log(`Avançando para Tipo de Sessão.`);
         console.log(`Dados: StudentID: ${studentId}, Nome: ${sessionName}`);
-        
-        // PASSANDO OS DADOS PARA A PRÓXIMA TELA (/sessionType)
-        // A tela SessionType deve receber isso e repassar para SessionNotebookPage/Group/Activity
         navigate('/sessionType', { 
             state: { 
                 studentId: studentId, 
@@ -63,7 +55,7 @@ function SessionTitlePage() {
     };
 
     const handleBack = () => {
-        navigate('/session'); // Volta para a seleção de alunos
+        navigate('/session'); 
     };
 
     return (

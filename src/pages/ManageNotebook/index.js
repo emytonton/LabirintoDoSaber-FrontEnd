@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/ui/NavBar/index.js";
 import SearchBar from "../../components/ui/SearchBar/Search";
 
-// --- 1. MODAL DE CONFIRMAÇÃO DE EXCLUSÃO ---
+
 const DeleteModal = ({ isOpen, onClose, onConfirm }) => {
     if (!isOpen) return null;
   
@@ -26,7 +26,7 @@ const DeleteModal = ({ isOpen, onClose, onConfirm }) => {
     );
 };
 
-// --- 2. NOVO MODAL DE AVISO (Sucesso/Erro) ---
+
 const WarningModal = ({ isOpen, onClose, title, message }) => {
     if (!isOpen) return null;
 
@@ -43,7 +43,7 @@ const WarningModal = ({ isOpen, onClose, title, message }) => {
     );
 };
 
-// --- ÍCONE LIXEIRA ---
+
 const TrashIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M5 6H19L18.1245 19.133C18.0544 20.1836 17.1818 21 16.1289 21H7.87111C6.81818 21 5.94558 20.1836 5.87554 19.133L5 6Z" stroke="black" strokeWidth="2"/>
@@ -57,19 +57,12 @@ const TrashIcon = () => (
 function ManageNotebookPage() {
     const navigate = useNavigate();
     
-    // --- ESTADOS ---
     const [notebooks, setNotebooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState(""); 
-
-    // Estados dos Modais
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [notebookToDelete, setNotebookToDelete] = useState(null);
-    
-    // Estado do Modal de Aviso (Substitui o Alert)
     const [warningModal, setWarningModal] = useState({ isOpen: false, title: "", message: "" });
-
-    // Paginação
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 3; 
 
@@ -80,7 +73,7 @@ function ManageNotebookPage() {
         'comprehension': 'Compreensão'
     };
 
-    // --- BUSCAR DADOS ---
+
     useEffect(() => {
         fetchNotebooks();
     }, [navigate]);
@@ -113,7 +106,7 @@ function ManageNotebookPage() {
         navigate("/NotebookDetails", { state: { notebookId: id } });
     };
     
-    // --- LÓGICA DE EXCLUSÃO ---
+ 
     const handleDeleteClick = (e, id) => {
         e.stopPropagation();
         setNotebookToDelete(id);
@@ -130,12 +123,8 @@ function ManageNotebookPage() {
             await axios.delete(`https://labirinto-do-saber.vercel.app/task-notebook/delete/${notebookToDelete}`, config);
             
             setNotebooks(notebooks.filter(item => item.notebook.id !== notebookToDelete));
-            
-            // Fecha modal de delete
             setIsDeleteModalOpen(false);
             setNotebookToDelete(null);
-
-            // Abre modal de Sucesso (Substituindo Alert)
             setWarningModal({
                 isOpen: true,
                 title: "Sucesso",
@@ -144,8 +133,6 @@ function ManageNotebookPage() {
     
         } catch (error) {
             console.error("Erro ao excluir:", error);
-            
-            // Fecha modal de delete e Abre modal de Erro (Substituindo Alert)
             setIsDeleteModalOpen(false);
             setWarningModal({
                 isOpen: true,
@@ -159,7 +146,6 @@ function ManageNotebookPage() {
         setWarningModal({ ...warningModal, isOpen: false });
     };
 
-    // --- FILTRO E PAGINAÇÃO ---
     const filteredNotebooks = notebooks.filter(item => {
         const description = item.notebook.description || "";
         return description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -177,14 +163,13 @@ function ManageNotebookPage() {
     return (
         <div className="dashboard-container">
             
-            {/* Modal de Confirmação (Sim/Não) */}
             <DeleteModal 
                 isOpen={isDeleteModalOpen} 
                 onClose={() => setIsDeleteModalOpen(false)} 
                 onConfirm={confirmDelete} 
             />
 
-            {/* Modal de Aviso (Sucesso/Erro) */}
+         
             <WarningModal 
                 isOpen={warningModal.isOpen}
                 onClose={closeWarningModal}
@@ -200,7 +185,7 @@ function ManageNotebookPage() {
                     </a>
                 <div className="manage-notebook-container">
                     
-                    {/* Header */}
+                  
                     <div className="manage-notebook-header-top" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "30px", flexWrap: "wrap", gap: "20px" }}>
                         <div>
                             <h1>Gerenciar cadernos</h1>
@@ -225,7 +210,7 @@ function ManageNotebookPage() {
                         </div>
                     </div>
 
-                    {/* Lista */}
+                  
                     <div className="notebook-card-list">
                         {loading ? (
                             <p>Carregando cadernos...</p>
@@ -265,7 +250,7 @@ function ManageNotebookPage() {
                         )}
                     </div>
 
-                    {/* Paginação */}
+             
                     {totalPages > 1 && (
                         <div className="pagination-controls">
                             <button 

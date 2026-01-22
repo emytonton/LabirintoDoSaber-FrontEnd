@@ -39,9 +39,6 @@ function AdicionarAtividade() {
             alert("Por favor, preencha a categoria e o título da atividade.");
             return;
         }
-
-        // --- MUDANÇA AQUI: Navegar para a página nova enviando os dados ---
-        // Certifique-se que a rota '/NewActivitiePersonalize' existe no seu Router
         navigate('/NewActivitiePersonalize', { 
             state: { 
                 selectedCategory: selectedCategory,

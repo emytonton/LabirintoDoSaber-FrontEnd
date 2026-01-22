@@ -17,7 +17,7 @@ const FilterSVG = () => (
 
 const SearchBar = ({ searchTerm, setSearchTerm, placeholder = "Pesquisar...", onFilterClick }) => {
     return (
-        <div className="search-filter-container"> {/* Novo container pai para ambos os elementos */}
+        <div className="search-filter-container"> 
             <div className="search-box">
                 <input 
                     type="text"
@@ -28,9 +28,6 @@ const SearchBar = ({ searchTerm, setSearchTerm, placeholder = "Pesquisar...", on
                 />
                 <SearchSVG />
             </div>
-            
-            {/* Ícone de Filtro Integrado */}
-           
         </div>
     );
 };

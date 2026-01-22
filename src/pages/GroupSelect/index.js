@@ -6,7 +6,7 @@ import iconSeta from "../../assets/images/seta_icon.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../../components/ui/NavBar/index.js";
 
-// Ícone de Mais (+)
+
 const PlusIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 5V19" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -14,7 +14,7 @@ const PlusIcon = () => (
     </svg>
 );
 
-// Ícone de Check (para indicar selecionado)
+
 const CheckIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M20 6L9 17L4 12" stroke="#AEE2E0" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
@@ -24,13 +24,10 @@ const CheckIcon = () => (
 function GroupSelectPage() {
     const navigate = useNavigate();
     const location = useLocation();
-
-    // Recebe o ID do caderno e os grupos atuais (para não duplicar ou para manter o histórico)
-    // Exemplo de chamada na página anterior: navigate('/GroupSelect', { state: { notebookId: '123', currentGroupIds: ['abc'] } })
     const { notebookId, currentGroupIds = [] } = location.state || {};
 
     const [availableGroups, setAvailableGroups] = useState([]);
-    const [selectedIds, setSelectedIds] = useState([]); // Apenas os NOVOS selecionados
+    const [selectedIds, setSelectedIds] = useState([]); 
     const [loading, setLoading] = useState(true);
 
     const categoryMap = {
@@ -40,19 +37,13 @@ function GroupSelectPage() {
         'comprehension': 'Compreensão'
     };
 
-    // --- 1. BUSCAR TODOS OS GRUPOS DO EDUCADOR ---
+   
     useEffect(() => {
         const fetchGroups = async () => {
             try {
                 const token = localStorage.getItem('authToken');
                 const config = { headers: { Authorization: `Bearer ${token}` } };
-                
                 const response = await axios.get('https://labirinto-do-saber.vercel.app/task-group/list-by-educator', config);
-                
-                // Filtra para não mostrar grupos que já estão no caderno (opcional, mas melhora a UX)
-                // Se quiser mostrar todos e apenas marcar como "já adicionado", a lógica seria diferente.
-                // Aqui vou mostrar todos, mas os que já estão no caderno virão desabilitados ou pré-marcados?
-                // Vamos mostrar todos.
                 setAvailableGroups(response.data || []);
                 setLoading(false);
             } catch (error) {
@@ -70,21 +61,20 @@ function GroupSelectPage() {
         fetchGroups();
     }, [notebookId, navigate]);
 
-    // --- 2. SELECIONAR / DESELECIONAR GRUPO ---
+
     const toggleSelection = (groupId) => {
-        // Se o grupo já faz parte do caderno original, ignoramos ou avisamos (opcional)
         if (currentGroupIds.includes(groupId)) return; 
 
         setSelectedIds(prev => {
             if (prev.includes(groupId)) {
-                return prev.filter(id => id !== groupId); // Remove se já estava selecionado
+                return prev.filter(id => id !== groupId); 
             } else {
-                return [...prev, groupId]; // Adiciona
+                return [...prev, groupId]; 
             }
         });
     };
 
-    // --- 3. SALVAR (ATUALIZAR CADERNO) ---
+   
     const handleSaveToNotebook = async () => {
         if (selectedIds.length === 0) {
             alert("Nenhum grupo novo selecionado.");
@@ -94,9 +84,6 @@ function GroupSelectPage() {
         try {
             const token = localStorage.getItem('authToken');
             const config = { headers: { Authorization: `Bearer ${token}` } };
-
-            // O endpoint UPDATE substitui a lista de IDs? Geralmente sim.
-            // Então enviamos: IDs Antigos + IDs Novos Selecionados
             const finalGroupIds = [...currentGroupIds, ...selectedIds];
 
             const payload = {
@@ -105,9 +92,7 @@ function GroupSelectPage() {
             };
 
             await axios.put('https://labirinto-do-saber.vercel.app/task-notebook/update', payload, config);
-
             alert("Grupos adicionados com sucesso!");
-            // Volta para a tela do caderno
            navigate('/NotebookDetails', { 
                 state: { notebookId: notebookId } 
             });
@@ -118,7 +103,7 @@ function GroupSelectPage() {
         }
     };
 
-    // Estilo para indicar visualmente que o item já está no caderno
+ 
     const isAlreadyInNotebook = (id) => currentGroupIds.includes(id);
 
     return (
@@ -168,12 +153,9 @@ function GroupSelectPage() {
                                                 </button>
                                                 {isOwned && <span style={{fontSize: '12px', color: 'gray', marginLeft: '10px'}}>(Já adicionado)</span>}
                                             </div>
-                                            
-                                            {/* Opcional: manter a seta se quiser ver detalhes, ou remover se for só seleção */}
-                                            {/* <span className="back-arrow"><img src={iconSeta} alt="seta" className="seta" /></span> */}
                                         </div>
 
-                                        {/* BOTÃO DE MAIS (+) OU CHECK */}
+                                        
                                         <button 
                                             className="remove-group-select-btn" 
                                             style={{ 
@@ -192,8 +174,7 @@ function GroupSelectPage() {
 
                     </div>
 
-                    {/* Controles de Paginação (Frontend ou API se tiver paginação no backend) */}
-                    {/* Mantido estático por enquanto conforme seu design original */}
+                   
                     {!loading && availableGroups.length > 0 && (
                         <div className="pagination-controls">
                             <a href="#" className="page-arrow">&lt;</a>
@@ -202,7 +183,7 @@ function GroupSelectPage() {
                         </div>
                     )}
 
-                    {/* BOTÃO FLUTUANTE DE SALVAR */}
+                   
                     <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '40px' }}>
                         <button 
                             onClick={handleSaveToNotebook}

@@ -8,16 +8,16 @@ import iconSeta from "../../assets/images/seta_icon.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../../components/ui/NavBar/index.js";
 
-// --- ESTILOS INJETADOS (Separados por tamanho) ---
+
 const modalStyles = `
-    /* OVERLAY COMUM */
+
     .notebook-modal-overlay {
         position: fixed; top: 0; left: 0; right: 0; bottom: 0;
         background-color: rgba(0, 0, 0, 0.5);
         display: flex; justify-content: center; align-items: center; z-index: 9999;
     }
 
-    /* --- ESTILOS PARA MODAL PEQUENO (Confirmação/Aviso) --- */
+ 
     .notebook-small-modal-content {
         background: white; padding: 2rem; border-radius: 8px;
         width: 90%; max-width: 450px; /* Tamanho compacto */
@@ -33,7 +33,7 @@ const modalStyles = `
     .notebook-small-modal-btn.cancel { background-color: #f0f0f0; color: #333; border: 1px solid #ccc; }
     .notebook-small-modal-btn.confirm { background-color: #008D85; color: white; }
 
-    /* --- ESTILOS PARA MODAL GRANDE (Detalhes/Lista) --- */
+ 
     .notebook-large-modal-content {
         background: white; padding: 2rem; border-radius: 8px;
         width: 95%; max-width: 800px; /* Tamanho LARGO para a lista */
@@ -54,7 +54,7 @@ const modalStyles = `
     }
 `;
 
-// --- 1. MODAL DE CONFIRMAÇÃO (Usa estilos SMALL) ---
+
 const DeleteModal = ({ isOpen, onClose, onConfirm, message }) => {
     if (!isOpen) return null;
   
@@ -72,7 +72,7 @@ const DeleteModal = ({ isOpen, onClose, onConfirm, message }) => {
     );
 };
 
-// --- 2. MODAL DE AVISO (Usa estilos SMALL) ---
+
 const WarningModal = ({ isOpen, onClose, title, message }) => {
     if (!isOpen) return null;
 
@@ -89,7 +89,7 @@ const WarningModal = ({ isOpen, onClose, title, message }) => {
     );
 };
 
-// --- ÍCONE LIXEIRA ---
+
 const TrashIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M5 6H19L18.1245 19.133C18.0544 20.1836 17.1818 21 16.1289 21H7.87111C6.81818 21 5.94558 20.1836 5.87554 19.133L5 6Z" stroke="black" strokeWidth="2"/>
@@ -103,29 +103,20 @@ const TrashIcon = () => (
 function NotebookDetailsPage() {
     const navigate = useNavigate();
     const location = useLocation();
-
-    // ID do caderno vindo da navegação
     const { notebookId } = location.state || {};
-
-    // --- ESTADOS DE DADOS ---
     const [notebookName, setNotebookName] = useState("Carregando...");
     const [taskGroups, setTaskGroups] = useState([]); 
     const [allTasks, setAllTasks] = useState([]); 
     const [loading, setLoading] = useState(true);
-
-    // --- ESTADOS DE UI (MODAIS) ---
-    // 1. Modal de Detalhes do Grupo
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState(null);
-
-    // 2. Modal de Confirmação (Delete)
     const [deleteModalState, setDeleteModalState] = useState({
         isOpen: false,
         groupId: null,
         message: ""
     });
 
-    // 3. Modal de Aviso (Sucesso/Erro)
+
     const [warningModal, setWarningModal] = useState({ 
         isOpen: false, 
         title: "", 
@@ -140,7 +131,7 @@ function NotebookDetailsPage() {
         'comprehension': 'Compreensão'
     };
 
-    // --- BUSCAR DADOS ---
+
     useEffect(() => {
         const fetchData = async () => {
             if (!notebookId) {
@@ -184,7 +175,7 @@ function NotebookDetailsPage() {
     }, [notebookId, navigate]);
 
 
-    // --- LÓGICA DO MODAL DE DETALHES ---
+
     const handleGroupClick = (group) => {
         setSelectedGroup(group);
         setIsDetailsModalOpen(true);
@@ -206,7 +197,7 @@ function NotebookDetailsPage() {
         console.log("Editar atividade clicada.");
     };
 
-    // --- LÓGICA DE EXCLUSÃO ---
+  
     const requestRemoveGroup = (e, groupIdToRemove) => {
         e.stopPropagation();
         
@@ -235,7 +226,7 @@ function NotebookDetailsPage() {
         const remainingGroupIds = remainingGroups.map(group => group.id);
 
         try {
-            // CENÁRIO 1: Caderno Vazio -> Deletar Caderno
+        
             if (remainingGroups.length === 0) {
                 await axios.delete(
                     `https://labirinto-do-saber.vercel.app/task-notebook/delete/${notebookId}`,
@@ -250,7 +241,7 @@ function NotebookDetailsPage() {
                     onCloseAction: () => navigate('/ManageNotebook')
                 });
             } 
-            // CENÁRIO 2: Atualizar Caderno
+          
             else {
                 const payload = {
                     taskNotebookId: notebookId,
@@ -293,12 +284,12 @@ function NotebookDetailsPage() {
 
     return (
         <div className="dashboard-container">
-            {/* INJEÇÃO DO CSS ESPECÍFICO */}
+    
             <style>{modalStyles}</style>
 
             <Navbar activePage="activities" />
 
-            {/* --- MODAL DE CONFIRMAÇÃO (DELETE) - USA STYLE SMALL --- */}
+           
             <DeleteModal 
                 isOpen={deleteModalState.isOpen}
                 onClose={() => setDeleteModalState({ ...deleteModalState, isOpen: false })}
@@ -306,7 +297,6 @@ function NotebookDetailsPage() {
                 message={deleteModalState.message}
             />
 
-            {/* --- MODAL DE AVISO (SUCESSO/ERRO) - USA STYLE SMALL --- */}
             <WarningModal 
                 isOpen={warningModal.isOpen}
                 onClose={handleCloseWarning}
@@ -375,7 +365,7 @@ function NotebookDetailsPage() {
                 </div>
             </main>
 
-            {/* --- MODAL DE DETALHES DO GRUPO (USA STYLE LARGE) --- */}
+
             {isDetailsModalOpen && selectedGroup && (
                 <div className="notebook-modal-overlay" onClick={closeDetailsModal}>
                     <div className="notebook-large-modal-content" onClick={(e) => e.stopPropagation()}>

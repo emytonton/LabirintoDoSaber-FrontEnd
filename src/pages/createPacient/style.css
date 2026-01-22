@@ -192,8 +192,6 @@ body {
   font-family: 'Nunito', sans-serif;
   box-sizing: border-box; 
 }
-/* Adicionei input[type="number"] acima para garantir que o campo Idade 
-   receba o mesmo estilo dos inputs de texto, mantendo a consistência */
 
 .alunos-form-group input[type="text"]::placeholder,
 .alunos-form-group input[type="number"]::placeholder {

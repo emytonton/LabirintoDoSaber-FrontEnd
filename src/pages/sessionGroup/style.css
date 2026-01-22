@@ -24,10 +24,10 @@
 
 .top-container h1 {
     font-family: 'Nunito', sans-serif;
-    font-size: 1.8rem; /* Fonte ligeiramente menor para caber com a barra de pesquisa */
+    font-size: 1.8rem; 
     font-weight: 700;
     margin: 0;
-    flex-grow: 1; /* Ocupa o espaço restante */
+    flex-grow: 1; 
 }
 
 .back-arrow-link {
@@ -99,7 +99,7 @@
 }
 
 .group-select-bnt-details {
-    padding: 4px 8px; /* Ajuste para chip mais compacto */
+    padding: 4px 8px; 
     border: none;
     border-radius: 20px;
     font-weight: 500;
@@ -125,7 +125,6 @@
     height: 65px;
 }
 
-/* NOVO: Estilo para o botão de Adicionar (+) */
 .select-plus-btn {
     background: none;
     border: none;
@@ -142,13 +141,12 @@
 }
 
 .select-plus-btn svg {
-    width: 25px; /* Tamanho visual do ícone */
+    width: 25px; 
     height: 25px;
     display: block;
 }
 
 
-/* ESTILOS GLOBAIS REUTILIZADOS (Header, etc.) */
 .dashboard-container {
     display: flex;
     flex-direction: column;
@@ -192,4 +190,3 @@
     background-color: #D8F5F3;
     color: #008D85;
 }
-/* ... (Seus estilos de body, logo, icon, etc.) ... */

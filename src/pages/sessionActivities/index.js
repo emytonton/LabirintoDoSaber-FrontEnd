@@ -108,7 +108,6 @@ function SessionActivitiesPage() {
       try {
         const token = localStorage.getItem("authToken");
         if (!token) {
-          // tratar ausência de token aqui, se necessário
         }
         const config = {
           headers: { Authorization: `Bearer ${token}` },
@@ -146,7 +145,6 @@ function SessionActivitiesPage() {
   };
 
  const handleStartSession = async () => {
-    // 1. Validações Iniciais
     if (!selectedActivity) {
       alert("Selecione uma atividade.");
       return;
@@ -161,20 +159,13 @@ function SessionActivitiesPage() {
 
     try {
       const token = localStorage.getItem("authToken");
-      
-      // 2. Monta o Payload para a rota /start
-      // Geralmente essa rota espera receber quem é o aluno e qual é a tarefa
       const payload = {
         studentId: studentId,
         name: sessionName,
         taskId: selectedActivity.id
-        // Se o backend exigir notebookId mesmo que nulo, descomente abaixo:
-        // notebookId: null 
       };
 
       console.log("Iniciando sessão em /start com:", payload);
-
-      // 3. Chamada POST para a rota CORRETA
       const response = await axios.post(
         "https://labirinto-do-saber.vercel.app/task-notebook-session/start", 
         payload,
@@ -184,19 +175,16 @@ function SessionActivitiesPage() {
       );
 
       console.log("Resposta do servidor:", response.data);
-
-      // 4. Extrai o sessionId da resposta
-      // Verifica se o backend devolve { sessionId: "..." } ou o objeto completo da sessão
       const realSessionId = response.data.sessionId || response.data.id;
 
       if (!realSessionId) {
         throw new Error("ID da sessão não foi retornado pelo servidor.");
       }
 
-      // 5. Navega para a tela de execução com o ID VÁLIDO
+    
       navigate(`/sessionInit`, {
         state: {
-          sessionId: realSessionId, // UUID vindo do banco
+          sessionId: realSessionId, 
           studentId: studentId,
           itemType: "activity",
           task: selectedActivity.originalData,
@@ -207,7 +195,6 @@ function SessionActivitiesPage() {
       console.error("❌ Erro ao iniciar sessão:", error);
       
       if (error.response) {
-         // Mostra erro detalhado se o servidor recusar (ex: aluno não encontrado, task inválida)
          alert(`Erro ao iniciar: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
       } else {
          alert("Erro de conexão. Verifique sua internet.");
